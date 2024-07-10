@@ -250,7 +250,8 @@ class eval_model():
                 type_map=config.get("type_map")
                 )
             test_res=model_data_obj.evaluate(dp_test=True)
-            return test_res.update({"sys_name":system.name})
+            test_res.update({"sys_name":system.name})
+            return test_res
 
 
             
