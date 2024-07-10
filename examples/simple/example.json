@@ -1,0 +1,211 @@
+{
+    "name":"distill-test",
+    "bohrium_config": {
+        "username": "urname",
+        "password": "urpassword",
+        "project_id": 12345,
+        "_comment": "all"
+    },
+    "default_step_config": {
+        "template_config": {
+            "image": "registry.dp.tech/dptech/deepmd-kit:2024Q1-d23cf3e"
+        },
+        "executor": {
+            "type": "dispatcher",
+            "image_pull_policy": "IfNotPresent",
+            "machine_dict": {
+                "batch_type": "Bohrium",
+                "context_type": "Bohrium",
+                "remote_profile": {
+                    "input_data": {
+                        "job_type": "container",
+                        "platform": "ali",
+                        "scass_type": "c2_m4_cpu"
+                    }
+                }
+            }
+        }
+    },
+    "step_configs": {
+        "run_train_config": { 
+            "template_config": {
+                "image": "registry.dp.tech/dptech/deepmd-kit:2024Q1-d23cf3e"
+            },
+            "executor": {
+                "type": "dispatcher",
+                "retry_on_submission_error": 10,
+                "image_pull_policy": "IfNotPresent",
+                "machine_dict": {
+                    "batch_type": "Bohrium",
+                    "context_type": "Bohrium",
+                    "remote_profile": {
+                        "input_data": {
+                            "job_type": "container",
+                            "platform": "ali",
+                            "scass_type": "1 * NVIDIA V100_32g"
+                        }
+                    }
+                }
+            }
+        },
+        "run_explore_config": {
+            "template_config": {
+                "image": "registry.dp.tech/dptech/deepmd-kit:2024Q1-d23cf3e"
+            },
+            "continue_on_success_ratio": 0.8,
+            "executor": {
+                "type": "dispatcher",
+                "image_pull_policy": "IfNotPresent",
+                "machine_dict": {
+                    "batch_type": "Bohrium",
+                    "context_type": "Bohrium",
+                    "remote_profile": {
+                        "email": "ruoyuwang1995@gmail.com",
+                        "password": "ai4m@1234",
+                         "program_id": 18739,
+                        "input_data": {
+                            "job_type": "container",
+                            "platform": "ali",
+                            "scass_type": "1 * NVIDIA V100_32g"
+                        }
+                    }
+                }
+            }
+        },
+        "run_validation_config": {
+            "template_config": {
+                "image": "registry.dp.tech/dptech/deepmd-kit:2024Q1-d23cf3e",
+                "_comment": "all"
+            },
+            "continue_on_success_ratio": 0.8,
+            "executor": {
+                "type": "dispatcher",
+                "image_pull_policy": "IfNotPresent",
+                "machine_dict": {
+                    "batch_type": "Bohrium",
+                    "context_type": "Bohrium",
+                    "remote_profile": {
+                        "input_data": {
+                            "job_type": "container",
+                            "platform": "ali",
+                            "scass_type": "1 * NVIDIA V100_32g"
+                        }
+                    }
+                }
+            },
+            "_comment": "all"
+        },
+        "_comment": "all"
+    },
+    "upload_python_packages": [
+        "/opt/mamba/envs/openlam/lib/python3.12/site-packages/dpgen2",
+        "/opt/mamba/envs/openlam/lib/python3.12/site-packages/dpdata",
+        "/opt/mamba/envs/openlam/lib/python3.12/site-packages/fpop"
+
+    ],
+    "inputs": {
+        "type_map": [
+            "Li",
+            "B",
+            "O",
+            "Al",
+            "Si",
+            "P",
+            "S",
+            "Cl",
+            "Sc",
+            "Ga",
+            "Ge",
+            "As",
+            "Se",
+            "Br",
+            "Y",
+            "Zr",
+            "In",
+            "Sn",
+            "Sb",
+            "I",
+            "Dy",
+            "Ho",
+            "Er",
+            "Tm",
+            "Yb",
+            "Lu",
+            "Ta"
+        ],
+        "mass_map": [
+            6.94, 10.81, 15.999, 26.9815385, 28.085, 
+            30.973761998, 32.06, 35.45, 44.955908, 
+            69.723, 72.63, 74.921595, 78.971, 79.904, 88.90584, 
+            91.224, 114.818, 118.71, 121.76, 126.90447, 162.5, 
+            164.93033, 167.259, 168.93422, 173.045, 174.9668, 180.94788
+        ],
+        "teacher_model":"./frozen_model.pb",
+        "_comment": "all"
+    },
+    "train": {
+        "comment":"Training script for downstream DeePMD model",
+        "type": "dp",
+        "config": {
+            "_impl": "pytorch",
+            "init_model_policy": "no",
+            "_comment": "all"
+        },
+        "template_script": "train.json",
+        "_comment": "all"
+    },
+    
+    "inference":{
+        "max_force":10,
+        "_comment":"force cutoff for generated confs"
+    },
+    "conf_generation": {
+        "type": "lmp",
+        "config": {
+            "command": "lmp -var restart 0",
+            "shuffle_models": false, 
+            "head": null
+        },
+        "init_configurations":
+            {
+            "type": "file",
+            "prefix": "./",
+            "fmt": "vasp/poscar",
+            "files": [
+                    "conf/conf-00/POSCAR"
+                ]},
+            
+        "pert_generation":[
+            {
+            "conf_idx": "default",
+            "atom_pert_distance":0.1,
+            "cell_pert_fraction":0.03,
+            "pert_num": 200
+            }
+            ],    
+        
+        "expl_tasks": [
+                {
+                    "_comment": "group 1, perturb + short MD with DPA pre-trained model",
+                    "conf_idx": [0],
+                    "n_sample":10,
+                    "exploration":{
+                        "type": "lmp-md",
+                        "ensemble": "npt",
+                        "dt":0.005,
+                        "nsteps": 1000,
+                        "temps": [900],
+                        "press":[1,1000,10000],
+                        "trj_freq": 20
+                    },
+                    
+                    "max_sample": 10000
+                }
+                
+        ],
+        "_comment": "all"
+    },
+    "validation":{
+        "_comment":"leave "
+    }
+}
