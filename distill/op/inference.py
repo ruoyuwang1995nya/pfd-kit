@@ -88,7 +88,7 @@ class Inference(OP):
         report={}
         for key, v in res.items():
             report[key]=v.get("dp_test",{})
-            report[key].pop("sys_name")
+            report[key].pop("sys_name",None)
         with open("report.json","w") as fp:
             json.dump(report,fp,indent=4) 
             
