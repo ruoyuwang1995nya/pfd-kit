@@ -1,4 +1,5 @@
 import dpdata
+import json
 import numpy as np
 from pathlib import Path
 from pathlib import (
@@ -41,7 +42,8 @@ class Inference(OP):
             {
                 "labeled_systems": Artifact(List[Path]),
                 "dp_test": BigParameter(List[dict]),
-                "root_labeled_systems": Artifact(Path)
+                "root_labeled_systems": Artifact(Path),
+                "report":Artifact(Path)
             }
         )
 
@@ -69,8 +71,6 @@ class Inference(OP):
          # essential input artifacts
         systems=Path(ip["systems"])
         sys_ls = [path.name for path in systems.iterdir() if path.is_dir()]
-        #systems_op=Path('systems')
-        #systems_op.mkdir(exist_ok=True)
         model_path=Path(ip["model"])
         type_map=ip["type_map"]
         config=ip["inference_config"]
@@ -83,11 +83,21 @@ class Inference(OP):
             res[sys]={
                 task:eval_model.tasks(task,model_path,systems / sys, **config)
                 }
+        
+        
+        report={}
+        for key, v in res.items():
+            report[key]=v.get("dp_test",{})
+            report[key].pop("sys_name")
+        with open("report.json","w") as fp:
+            json.dump(report,fp,indent=4) 
+            
         return OPIO(
             {
                 "labeled_systems":[v.get("inference") for k, v in res.items()],
                 "dp_test":[v.get("dp_test",{}) for k, v in res.items()],
-                "root_labeled_systems": Path(config.get("prefix","systems"))
+                "root_labeled_systems": Path(config.get("prefix","systems")),
+                "report": Path("report.json")
             }
         )
 
@@ -148,12 +158,13 @@ class eval_model():
 
     def evaluate(
         self,
-        dp_test:bool = False
+        dp_test:bool = False,
+        **kwargs
     ): 
         if self.model:
             if dp_test is True and isinstance(self._labeled_data,dpdata.LabeledSystem):
                 res={}
-                new_labeled_data = self._labeled_data.predict(self.model_path) 
+                new_labeled_data = self._labeled_data.predict(self.model_path,**kwargs) 
                 atom_num= self._labeled_data.get_natoms()
                 res["atom_numb"]=atom_num
                 # get energy error
@@ -181,7 +192,7 @@ class eval_model():
                 
             elif self.data:
                 print("Labeling datas...")
-                self._labeled_data=self.data.predict(self.model_path)
+                self._labeled_data=self.data.predict(self.model_path,**kwargs)
         else:
             print("No model loaded!")
             
@@ -227,6 +238,7 @@ class eval_model():
               system: Union[Path,str],
               **config
               ):
+        #label_config= config.pop("label_config",{})
         if task == "inference":
             model_data_obj=cls(
                 model=model,
