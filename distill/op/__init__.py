@@ -10,10 +10,10 @@ from .pert_gen import (
     PertGen, 
 )
 
-from inference import (
+from .inference import (
     Inference
 )
 
-from task_gen import (
+from .task_gen import (
     TaskGen
 )

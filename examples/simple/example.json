@@ -60,9 +60,6 @@
                     "batch_type": "Bohrium",
                     "context_type": "Bohrium",
                     "remote_profile": {
-                        "email": "ruoyuwang1995@gmail.com",
-                        "password": "ai4m@1234",
-                         "program_id": 18739,
                         "input_data": {
                             "job_type": "container",
                             "platform": "ali",
@@ -72,7 +69,7 @@
                 }
             }
         },
-        "run_validation_config": {
+        "inference_config": {
             "template_config": {
                 "image": "registry.dp.tech/dptech/deepmd-kit:2024Q1-d23cf3e",
                 "_comment": "all"
@@ -88,7 +85,7 @@
                         "input_data": {
                             "job_type": "container",
                             "platform": "ali",
-                            "scass_type": "1 * NVIDIA V100_32g"
+                            "scass_type": "1 * NVIDIA A100_80g"
                         }
                     }
                 }

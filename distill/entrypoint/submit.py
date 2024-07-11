@@ -157,6 +157,8 @@ def workflow_dist(
     train_config=config_dict["train"]["config"]
     explore_config=config_dict["conf_generation"]["config"]
     inference_config=config_dict["inference"]
+    dp_test_config=deepcopy(inference_config)
+    dp_test_config["task"]="dp_test"
     
     
     ## prepare artifacts
@@ -195,7 +197,7 @@ def workflow_dist(
             "explore_config": explore_config,
             "inference_config": inference_config,
             "inference_validation_config": inference_config,
-            "dp_test_validation_config": {"task":"dp_test"}
+            "dp_test_validation_config": dp_test_config
             },
         artifacts={
             "init_confs": init_confs,
