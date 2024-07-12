@@ -33,9 +33,6 @@ from dflow.python import (
     PythonOPTemplate,
 )
 
-from distill.superop.prep_run_lmp import PrepRunLmp
-from distill.superop.exploration import ExplorationBlock
-
 
 from dpgen2.utils.step_config import (
     init_executor
