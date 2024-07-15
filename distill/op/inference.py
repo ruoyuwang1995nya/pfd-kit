@@ -29,6 +29,84 @@ class Inference(OP):
     def get_input_sign(cls):
         return OPIOSign(
             {
+                "systems":Artifact(List[Path]),
+                "model":Artifact(Path),
+                "type_map":Parameter(List),
+                "inference_config":BigParameter(dict),
+            }
+        )
+
+    @classmethod
+    def get_output_sign(cls):
+        return OPIOSign(
+            {
+                "labeled_systems": Artifact(List[Path]),
+                "dp_test": BigParameter(List[dict]),
+                "root_labeled_systems": Artifact(Path),
+                "report":Artifact(Path)
+            }
+        )
+
+    @OP.exec_sign_check
+    def execute(
+        self,
+        ip: OPIO,
+    ) -> OPIO:
+        r"""Execute the OP.
+
+        Parameters
+        ----------
+        ip : dict
+            Input dict with components:
+            - `lmp_task_grp` : (`BigParameter(Path)`) Can be pickle loaded as a ExplorationTaskGroup. Definitions for LAMMPS tasks
+
+        Returns
+        -------
+        op : dict
+            Output dict with components:
+            - `dp_test`: result for dp_test
+            - `task_names`: (`List[str]`) The name of tasks. Will be used as the identities of the tasks. The names of different tasks are different.
+            - `task_paths`: (`Artifact(List[Path])`) The parepared working paths of the tasks. Contains all input files needed to start the LAMMPS simulation. The order fo the Paths should be consistent with `op["task_names"]`
+        """
+         # List of system pathes
+        systems=ip["systems"]
+        #sys_ls = [path.name for path in systems.iterdir() if path.is_dir()]
+        model_path=ip["model"]
+        type_map=ip["type_map"]
+        config=ip["inference_config"]
+        if len(type_map)>0:
+            config["type_map"]=type_map
+        
+        task=config.pop("task","inference")
+        res={}
+        for sys in systems:
+            res[sys.name]={
+                task:eval_model.tasks(task,model_path,sys,**config)
+                }
+        report={}
+        for key, v in res.items():
+            report[key]=v.get("dp_test",{})
+            report[key].pop("sys_name",None)
+        with open("report.json","w") as fp:
+            json.dump(report,fp,indent=4) 
+            
+        return OPIO(
+            {
+                "labeled_systems":[v.get("inference") for k, v in res.items()],
+                "dp_test":[v.get("dp_test",{}) for k, v in res.items()],
+                "root_labeled_systems": Path(config.get("prefix","systems")),
+                "report": Path("report.json")
+            }
+        )
+
+class Inference_old(OP):
+    r"""Collect data for direct inference
+    """
+
+    @classmethod
+    def get_input_sign(cls):
+        return OPIOSign(
+            {
                 "systems":Artifact(Path),
                 "model":Artifact(Path),
                 "type_map":Parameter(List),

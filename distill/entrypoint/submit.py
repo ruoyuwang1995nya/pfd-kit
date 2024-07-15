@@ -15,6 +15,7 @@ import distill
 from dflow import (
     ArgoStep,
     Step,
+    Steps,
     Workflow,
     upload_artifact
 )
@@ -26,9 +27,15 @@ from distill.entrypoint.common import (
     global_config_workflow,
 )
 
+from dpgen2.fp import(
+    fp_styles
+    
+)
+
 from dpgen2.superop import (
     PrepRunLmp,
-    PrepRunDPTrain
+    PrepRunDPTrain,
+    PrepRunFp
     )
 
 from dpgen2.op import (
@@ -37,6 +44,7 @@ from dpgen2.op import (
     RunDPTrain
 )
 
+from distill.flow.fine_tune import FineTune
 from distill.op import (
     PertGen,
     TaskGen,
@@ -50,6 +58,9 @@ from distill.flow import Distillation
 
 from distill.constants import default_image
 from dpgen2.utils.step_config import normalize as normalize_step_dict
+from dpgen2.utils import (
+    upload_artifact_and_print_uri
+)
 
 default_config = normalize_step_dict(
     {
@@ -116,6 +127,55 @@ def make_dist_op(
         upload_python_packages=upload_python_packages
     )
     return dist_op
+
+def make_ft_op(
+    fp_style: str = "vasp",
+    pert_gen_step_config: dict = default_config,
+    prep_fp_config: dict = default_config,
+    run_fp_config: dict = default_config,
+    prep_train_config:dict = default_config,
+    run_train_config: dict = default_config,
+    collect_data_step_config:dict= default_config,
+    inference_step_config: dict= default_config,
+    upload_python_packages: Optional[List[os.PathLike]] = None
+):
+    if fp_style in fp_styles.keys():
+        prep_run_fp_op = PrepRunFp(
+            "prep-run-fp",
+            fp_styles[fp_style]["prep"],
+            fp_styles[fp_style]["run"],
+            prep_config=prep_fp_config,
+            run_config=run_fp_config,
+            upload_python_packages=upload_python_packages,
+        )
+    else:
+        raise RuntimeError(f"unknown fp_style {fp_style}")
+
+    finetune_op = PrepRunDPTrain(
+        "finetune",
+        PrepDPTrain,
+        RunDPTrain,
+        prep_config=prep_train_config,
+        run_config=run_train_config,
+        upload_python_packages=upload_python_packages,
+        #finetune=False,
+        valid_data=None,
+    )
+    print(inference_step_config)
+    ft_op= FineTune(
+        name="fine-tune",
+        pert_gen_op=PertGen,
+        prep_run_fp_op=prep_run_fp_op,
+        collect_data_op=CollectData,
+        prep_run_dp_op=finetune_op,
+        inference_op=Inference,
+        pert_gen_step_config=pert_gen_step_config,
+        collect_data_step_config=collect_data_step_config,
+        inference_step_config=inference_step_config,
+        upload_python_packages = upload_python_packages
+        
+    )
+    return ft_op
 
 
 
@@ -209,6 +269,98 @@ def workflow_dist(
     )
     return dist_step
 
+def workflow_finetune(
+    config:Dict
+)-> Step:
+    """
+    Build a workflow from the OP templates of distillation
+    """
+    ## get input config 
+    fp_style = config["fp"]["type"]
+    default_config=config["default_step_config"]
+    prep_train_config=config["step_configs"].get("prep_train_config",default_config)
+    run_train_config=config["step_configs"].get("run_train_config",default_config)
+    prep_fp_config=config["step_configs"].get("perp_fp_config",default_config)
+    run_fp_config=config["step_configs"].get("run_fp_config",default_config)
+    run_collect_data_config = config["step_configs"].get("collect_data_config",default_config)
+    run_pert_gen_config = config["step_configs"].get("pert_gen_config",default_config)
+    run_inference_config= config["step_configs"].get("inference_config",default_config)
+    
+    # uploaded python packages
+    upload_python_packages=[]
+    upload_python_packages.extend(list(dpdata.__path__))
+    upload_python_packages.extend(list(dflow.__path__))
+    upload_python_packages.extend(list(distill.__path__))
+    upload_python_packages.extend(list(dpgen2.__path__))
+    
+    ## task configs
+    config_dict_total=deepcopy(config)
+    type_map=config["inputs"]["type_map"]
+    train_config=config["train"]["config"]
+    #inference_config=config["inference"]
+    #dp_test_config=deepcopy(inference_config)
+    #dp_test_config["task"]="dp_test"
+    collect_data_config={}
+    collect_data_config["test_size"]=config["conf_generation"].get("test_data",0.05)
+    collect_data_config["system_partition"]=config["conf_generation"].get("system_partition",False)
+    collect_data_config["labeled_data"]=True
+    
+    
+    ## prepare artifacts
+    # read training template
+    with open(config["train"]["template_script"],'r') as fp:
+        template_script=json.load(fp)
+    init_confs=upload_artifact(config["conf_generation"]["init_configurations"]["files"])
+    iter_data = upload_artifact([])
+    init_models_paths = config["train"].get("init_models_paths", None)
+    
+    if init_models_paths is not None:
+        init_models = upload_artifact_and_print_uri(init_models_paths, "init_models")
+    else:
+        raise FileNotFoundError("Pre-trained model must exist!")
+    
+    fp_config = {}
+    fp_inputs_config = config["fp"]["inputs_config"]
+    fp_inputs = fp_styles[fp_style]["inputs"](**fp_inputs_config)
+    fp_config["inputs"] = fp_inputs
+    fp_config["run"] = config["fp"]["run_config"]
+    
+    # make distillation op
+    ft_op=make_ft_op(
+        fp_style="vasp",
+        pert_gen_step_config=run_pert_gen_config,
+        prep_fp_config=prep_fp_config,
+        run_fp_config=run_fp_config,
+        prep_train_config=prep_train_config,
+        run_train_config=run_train_config,
+        collect_data_step_config=run_collect_data_config,
+        inference_step_config=run_inference_config,
+        upload_python_packages = upload_python_packages
+    )
+    
+    ft_step= Step(
+        "dp-dist-step",
+        template=ft_op,
+        parameters={
+            "block_id": "test-flow",
+            "type_map": type_map,
+            "config":config_dict_total, # Total input parameter file: to be changed in the future
+            "numb_models": 1,#InputParameter(type=int),
+            "template_script": template_script,
+            "train_config": train_config,
+            "inference_config": {"task":"dp_test"},
+            "fp_config":fp_config,
+            "collect_data_config":collect_data_config
+            },
+        artifacts={
+            "init_models": init_models,
+            "init_confs": init_confs,
+            "iter_data": iter_data,
+        }
+        
+        
+    )
+    return ft_step
 
 def submit_dist(
     wf_config,
@@ -234,6 +386,26 @@ def submit_dist(
     wf.add(dist_step)
     return wf
 
+def submit_ft(
+    wf_config
+):
+    """
+    Major entry point for the whole workflow, only one config dict
+    """
+    # normalize args
+    wf_config = normalize_args(wf_config)
+    print(wf_config)
+
+    global_config_workflow(wf_config)
+    
+    ft_step=workflow_finetune(wf_config)
+    
+    wf = Workflow(
+        name=wf_config["name"],
+        #parallelism=wf_config["parallelism"]
+        )
+    wf.add(ft_step)
+    return wf
 
 
 
