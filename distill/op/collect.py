@@ -30,17 +30,16 @@ from dflow.python import (
 class CollectData(OP):
     r"""Collect data for direct inference
     """
-
     @classmethod
     def get_input_sign(cls):
         return OPIOSign(
             {
-                "systems":Artifact(List[Path],optional=True),
+                "systems":Artifact(List[Path]),
+                "additional_systems": Artifact(List[Path],optional=True),
                 "type_map":Parameter(Union[List[str],None]),
                 "optional_parameters":Parameter(Dict)
             }
         )
-
     @classmethod
     def get_output_sign(cls):
         return OPIOSign(
@@ -91,6 +90,8 @@ class CollectData(OP):
             - `task_paths`: (`Artifact(List[Path])`) The parepared working paths of the tasks. Contains all input files needed to start the LAMMPS simulation. The order fo the Paths should be consistent with `op["task_names"]`
         """
         systems=ip["systems"]
+        if additional_systems := ip.get("additional_systems"):
+            systems.extend(additional_systems)
         type_map=ip["type_map"]
         optional_parameters=ip.get("optional_parameters",{})
         test_size=optional_parameters.pop("test_size",None)

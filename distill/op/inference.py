@@ -1,15 +1,15 @@
 import dpdata
 import json
 import numpy as np
+import glob
+import os
 from pathlib import Path
 from pathlib import (
     Path,
 )
 from typing import (
     List,
-    Dict,
-    Tuple,
-    Union
+    Union,
 )
 
 from dflow.python import (
@@ -41,7 +41,7 @@ class Inference(OP):
         return OPIOSign(
             {
                 "labeled_systems": Artifact(List[Path]),
-                "dp_test": BigParameter(List[dict]),
+                "dp_test": Artifact(List[Path]),#BigParameter(List[dict]),
                 "root_labeled_systems": Artifact(Path),
                 "report":Artifact(Path)
             }
@@ -58,7 +58,6 @@ class Inference(OP):
         ----------
         ip : dict
             Input dict with components:
-            - `lmp_task_grp` : (`BigParameter(Path)`) Can be pickle loaded as a ExplorationTaskGroup. Definitions for LAMMPS tasks
 
         Returns
         -------
@@ -70,7 +69,6 @@ class Inference(OP):
         """
          # List of system pathes
         systems=ip["systems"]
-        #sys_ls = [path.name for path in systems.iterdir() if path.is_dir()]
         model_path=ip["model"]
         type_map=ip["type_map"]
         config=ip["inference_config"]
@@ -81,104 +79,26 @@ class Inference(OP):
         res={}
         for sys in systems:
             res[sys.name]={
-                task:eval_model.tasks(task,model_path,sys,**config)
+                task:eval_model.tasks(task,model_path,sys,name=sys.name,**config)
                 }
+        # details of dp_test    
+        dp_test_detail=[]
         report={}
-        for key, v in res.items():
-            report[key]=v.get("dp_test",{})
-            report[key].pop("sys_name",None)
+        for sys, v in res.items():
+            report[sys]=v.get("dp_test",{})
+            report[sys].pop("sys_name",None)
+            detail_fls = [Path(file) for file in glob.glob(f"{sys}.*") if os.path.isfile(file)]
+            dp_test_detail.extend(detail_fls)
         with open("report.json","w") as fp:
             json.dump(report,fp,indent=4) 
-            
         return OPIO(
             {
                 "labeled_systems":[v.get("inference") for k, v in res.items()],
-                "dp_test":[v.get("dp_test",{}) for k, v in res.items()],
+                "dp_test":dp_test_detail,
                 "root_labeled_systems": Path(config.get("prefix","systems")),
                 "report": Path("report.json")
             }
         )
-
-class Inference_old(OP):
-    r"""Collect data for direct inference
-    """
-
-    @classmethod
-    def get_input_sign(cls):
-        return OPIOSign(
-            {
-                "systems":Artifact(Path),
-                "model":Artifact(Path),
-                "type_map":Parameter(List),
-                "inference_config":BigParameter(dict),
-            }
-        )
-
-    @classmethod
-    def get_output_sign(cls):
-        return OPIOSign(
-            {
-                "labeled_systems": Artifact(List[Path]),
-                "dp_test": BigParameter(List[dict]),
-                "root_labeled_systems": Artifact(Path),
-                "report":Artifact(Path)
-            }
-        )
-
-    @OP.exec_sign_check
-    def execute(
-        self,
-        ip: OPIO,
-    ) -> OPIO:
-        r"""Execute the OP.
-
-        Parameters
-        ----------
-        ip : dict
-            Input dict with components:
-            - `lmp_task_grp` : (`BigParameter(Path)`) Can be pickle loaded as a ExplorationTaskGroup. Definitions for LAMMPS tasks
-
-        Returns
-        -------
-        op : dict
-            Output dict with components:
-            - `dp_test`: result for dp_test
-            - `task_names`: (`List[str]`) The name of tasks. Will be used as the identities of the tasks. The names of different tasks are different.
-            - `task_paths`: (`Artifact(List[Path])`) The parepared working paths of the tasks. Contains all input files needed to start the LAMMPS simulation. The order fo the Paths should be consistent with `op["task_names"]`
-        """
-         # essential input artifacts
-        systems=Path(ip["systems"])
-        sys_ls = [path.name for path in systems.iterdir() if path.is_dir()]
-        model_path=Path(ip["model"])
-        type_map=ip["type_map"]
-        config=ip["inference_config"]
-        if len(type_map)>0:
-            config["type_map"]=type_map
-        
-        task=config.pop("task","inference")
-        res={}
-        for sys in sys_ls:
-            res[sys]={
-                task:eval_model.tasks(task,model_path,systems / sys, **config)
-                }
-        
-        
-        report={}
-        for key, v in res.items():
-            report[key]=v.get("dp_test",{})
-            report[key].pop("sys_name",None)
-        with open("report.json","w") as fp:
-            json.dump(report,fp,indent=4) 
-            
-        return OPIO(
-            {
-                "labeled_systems":[v.get("inference") for k, v in res.items()],
-                "dp_test":[v.get("dp_test",{}) for k, v in res.items()],
-                "root_labeled_systems": Path(config.get("prefix","systems")),
-                "report": Path("report.json")
-            }
-        )
-
 
 class eval_model():
     def __init__(
@@ -237,6 +157,7 @@ class eval_model():
     def evaluate(
         self,
         dp_test:bool = False,
+        name: str = "default",
         **kwargs
     ): 
         if self.model:
@@ -248,14 +169,24 @@ class eval_model():
                 # get energy error
                 new_labeled_e = new_labeled_data.data["energies"].flatten()
                 orig_labeled_e = self._labeled_data.data["energies"].flatten()
+                np.savetxt("%s.energy.txt"%name, 
+                           np.column_stack((orig_labeled_e, new_labeled_e)),
+                           fmt='%.6f')
+                np.savetxt("%s.energy_per_atom.txt"%name, 
+                           np.column_stack((orig_labeled_e/atom_num, 
+                                            new_labeled_e/atom_num)),
+                           fmt='%.6f')
                 res["MAE_energy"]=get_mae(new_labeled_e,orig_labeled_e)
                 res["RMSE_energy"]=get_rmse(new_labeled_e,orig_labeled_e)
                 res["MAE_energy_per_at"]=get_mae(new_labeled_e,orig_labeled_e)/atom_num
                 res["RMSE_energy_per_at"]=get_rmse(new_labeled_e,orig_labeled_e)/atom_num
-                
+
                 # get force error
                 new_labeled_f = new_labeled_data.data["forces"].flatten()
                 orig_labeled_f = self._labeled_data.data["forces"].flatten()
+                np.savetxt("%s.force.txt"%name, 
+                           np.column_stack((orig_labeled_f, new_labeled_f)), 
+                           fmt='%.6f')
                 res["MAE_force"]=get_mae(new_labeled_f,orig_labeled_f)
                 res["RMSE_force"]=get_rmse(new_labeled_f,orig_labeled_f)
                 
@@ -263,6 +194,9 @@ class eval_model():
                 if self._labeled_data.has_virial():
                     new_labeled_v = new_labeled_data.data["virials"].flatten()
                     orig_labeled_v = self._labeled_data.data["virials"].flatten()
+                    np.savetxt("%s.virial_error.txt"%name, 
+                           np.column_stack((orig_labeled_f, new_labeled_f)), 
+                           fmt='%.6f')
                     res["MAE_virial"]=get_mae(new_labeled_v,orig_labeled_v)
                     res["RMSE_virial"]=get_rmse(new_labeled_v,orig_labeled_v)
                 print(res)
@@ -309,6 +243,8 @@ class eval_model():
         data_dict["virials"]=virials[clean_ls]
         
         return dpdata.LabeledSystem(data=data_dict)
+    
+    
     @classmethod
     def tasks(cls,
               task:str,
@@ -339,9 +275,19 @@ class eval_model():
                 labeled_data= system,
                 type_map=config.get("type_map")
                 )
-            test_res=model_data_obj.evaluate(dp_test=True)
+            test_res=model_data_obj.evaluate(dp_test=True,name=system.name)
             test_res.update({"sys_name":system.name})
             return test_res
+        elif task == "filter":
+            model_data_obj=cls(
+                labeled_data= system
+            )
+            sys_prefix=config.get("prefix","systems")
+            out_path=Path(sys_prefix) / system.name
+            out_path.mkdir(parents=True, exist_ok=True)
+            max_force = config.get("max_force",10)
+            model_data_obj.data_filter(max_force=max_force).to("deepmd/npy",out_path)
+            return out_path
 
 
             

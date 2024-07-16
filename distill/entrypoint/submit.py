@@ -297,7 +297,7 @@ def workflow_finetune(
     config_dict_total=deepcopy(config)
     type_map=config["inputs"]["type_map"]
     train_config=config["train"]["config"]
-    #inference_config=config["inference"]
+    inference_config=config["inference"]
     #dp_test_config=deepcopy(inference_config)
     #dp_test_config["task"]="dp_test"
     collect_data_config={}
@@ -348,7 +348,7 @@ def workflow_finetune(
             "numb_models": 1,#InputParameter(type=int),
             "template_script": template_script,
             "train_config": train_config,
-            "inference_config": {"task":"dp_test"},
+            "inference_config": inference_config,#{"task":"dp_test"},
             "fp_config":fp_config,
             "collect_data_config":collect_data_config
             },

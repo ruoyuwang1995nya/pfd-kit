@@ -35,7 +35,6 @@ from dpgen2.utils.step_config import (
     init_executor
 )
 
-
 class ExplorationBlock(Steps):
     def __init__(
         self,
@@ -60,11 +59,9 @@ class ExplorationBlock(Steps):
             "additional_systems": InputArtifact(optional=True),
         }
         self._output_parameters = {
-            #"expl_infer_report": OutputParameter(),
         }
         self._output_artifacts = {
             "expl_systems": OutputArtifact()
-            #"labeled_systems": OutputArtifact(),
         }
 
         super().__init__(
@@ -192,41 +189,19 @@ def _block_cl(
             **collect_data_template_config
         ),
         parameters={
-            "type_map": block_steps.inputs.parameters["type_map"]
+            "type_map": block_steps.inputs.parameters["type_map"],
+            "optional_parameters":{"labeled_data":False}
         },
         artifacts={
-            "pert_sys": block_steps.inputs.artifacts["additional_systems"],
-            "trajs":prep_run_lmp.outputs.artifacts["trajs"]
+            "systems": prep_run_lmp.outputs.artifacts["trajs"],
+            "additional_systems":block_steps.inputs.artifacts["additional_systems"]
         },
         key="--".join(
             ["%s" %block_steps.inputs.parameters["block_id"], "collect-data"]
         ),
         executor=collect_data_executor,
         **collect_data_step_config
-        
     )
     block_steps.add(collect_data)
-    
-    #inference = Step(
-    #    "direct-inference",
-    #    template=PythonOPTemplate(
-    #        inference_op,
-    #        python_packages=upload_python_packages,
-    #        **infer_step_config
-    #    ),
-    #    parameters={
-    #        "inference_config": block_steps.inputs.parameters["inference_config"]
-    #    },
-    #    artifacts={
-    #        "systems": collect_data.outputs.artifacts["systems"],
-    #        "model":block_steps.inputs.artifacts["models"][0]
-    #    },
-    #    key="--".join(
-    #        ["%s" %block_steps.inputs.parameters["block_id"], "direct-inference"]
-    #    )
-    #)
-    #block_steps.add(inference)    
-    
     block_steps.outputs.artifacts["expl_systems"]._from = collect_data.outputs.artifacts["systems"]
-    
     return block_steps

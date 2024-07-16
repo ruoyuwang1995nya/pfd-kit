@@ -220,8 +220,52 @@ def _fine_tune_cl(
     )
     ft_steps.add(collect_data)
     
-    # fine-tune
+    # training set filtering
+    check_force_train = Step(
+        name+ "-data-train-check",
+        template=PythonOPTemplate(
+            inference_op,
+            python_packages=upload_python_packages,
+            **inference_template_config
+        ),
+        parameters={
+            "inference_config": ft_steps.inputs.parameters["inference_config"],
+            "type_map": ft_steps.inputs.parameters["type_map"]
+        },
+        artifacts={
+            "systems": collect_data.outputs.artifacts["systems"],
+            "model":ft_steps.inputs.artifacts["init_models"][0]
+        },
+        key="--".join(
+            ["%s" %ft_steps.inputs.parameters["block_id"], "validation"]
+        ),
+        executor=inference_executor
+    )
     
+    check_force_test = Step(
+        name+ "-data-test-check",
+        template=PythonOPTemplate(
+            inference_op,
+            python_packages=upload_python_packages,
+            **inference_template_config
+        ),
+        parameters={
+            "inference_config": ft_steps.inputs.parameters["inference_config"],
+            "type_map": ft_steps.inputs.parameters["type_map"]
+        },
+        artifacts={
+            "systems": collect_data.outputs.artifacts["test_systems"],
+            "model":ft_steps.inputs.artifacts["init_models"][0]
+        },
+        key="--".join(
+            ["%s" %ft_steps.inputs.parameters["block_id"], "validation"]
+        ),
+        executor=inference_executor
+    )
+    ft_steps.add([check_force_train,check_force_test])
+    
+    
+    # fine-tune
     finetune_optional_parameter = {
         "mixed_type": False,#config["inputs"]["mixed_type"],
         "finetune_mode": "finetune",
@@ -258,7 +302,7 @@ def _fine_tune_cl(
             **inference_template_config
         ),
         parameters={
-            "inference_config": ft_steps.inputs.parameters["inference_config"],
+            "inference_config": {"task":"dp_test"},#ft_steps.inputs.parameters["inference_config"],
             "type_map": ft_steps.inputs.parameters["type_map"]
         },
         artifacts={
@@ -270,7 +314,29 @@ def _fine_tune_cl(
         ),
         executor=inference_executor
     )
-    ft_steps.add(validation)  
+    
+    # training set
+    validation_training_set = Step(
+        name+ "-dp-test-training-set",
+        template=PythonOPTemplate(
+            inference_op,
+            python_packages=upload_python_packages,
+            **inference_template_config
+        ),
+        parameters={
+            "inference_config": {"task":"dp_test"},   #ft_steps.inputs.parameters["inference_config"],
+            "type_map": ft_steps.inputs.parameters["type_map"]
+        },
+        artifacts={
+            "systems": collect_data.outputs.artifacts["systems"],
+            "model":prep_run_ft.outputs.artifacts["models"][0]
+        },
+        key="--".join(
+            ["%s" %ft_steps.inputs.parameters["block_id"], "validation"]
+        ),
+        executor=inference_executor
+    )
+    ft_steps.add([validation,validation_training_set])  
     
     ft_steps.outputs.artifacts[
         "fine_tuned_model"
