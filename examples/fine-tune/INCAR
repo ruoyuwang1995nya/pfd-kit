@@ -1,0 +1,41 @@
+Global Parameters
+ISTART =  1            (Read existing wavefunction, if there)
+ISPIN  =  1            (Non-Spin polarised DFT)
+# ICHARG =  11         (Non-self-consistent: GGA/LDA band structures)
+# LREAL  = .FALSE.       (Projection operators: automatic)
+ENCUT  =  600          (Cut-off energy for plane wave basis set, in eV)
+# PREC   =  Accurate   (Precision level: Normal or Accurate, set Accurate when perform structure lattice relaxation calculation)
+LWAVE  = .FALSE.        (Write WAVECAR or not)
+LCHARG = .FALSE.        (Write CHGCAR or not)
+# ADDGRID= .FALSE.        (Increase grid, helps GGA convergence)
+# LVTOT  = .TRUE.      (Write total electrostatic potential into LOCPOT or not)
+# LVHAR  = .TRUE.      (Write ionic + Hartree electrostatic potential into LOCPOT or not)
+# NELECT =             (No. of electrons: charged cells, be careful)
+# LPLANE = .TRUE.      (Real space distribution, supercells)
+# NWRITE = 2           (Medium-level output)
+# KPAR   = 2           (Divides k-grid into separate groups)
+# NGXF    = 300        (FFT grid mesh density for nice charge/potential plots)
+# NGYF    = 300        (FFT grid mesh density for nice charge/potential plots)
+# NGZF    = 300        (FFT grid mesh density for nice charge/potential plots)
+ 
+Electronic Relaxation
+ISMEAR =  0            (Gaussian smearing, metals:1)
+SIGMA  =  0.05         (Smearing value in eV, metals:0.2)
+NELM   =  50           (Max electronic SCF steps)
+NELMIN =  6            (Min electronic SCF steps)
+EDIFF  =  1E-06        (SCF energy convergence, in eV)
+GGA  =  PS             (PBEsol exchange-correlation)
+ 
+IBRION =  0           (Algorithm: 0-MD, 1-Quasi-New, 2-CG)
+ISIF = 3
+POTIM = 5
+MDALGO = 3
+NSW = 10
+TEBEG = 900
+
+KSPACING = 0.3
+KGAMMA=.FALSE. 
+ISYM = 0            (Symmetry: 0=none, 2=GGA, 3=hybrids)
+
+NCORE = 4
+
