@@ -14,12 +14,16 @@
 ## 1. Overview
 Inspired by the DPGEN concurrent learning scheme, DP-distill provides automated workflow for fine-tune and distillation of large pre-trained model. 
 
-Currently, only the distillation workflow has been implemented, and the fine-tune workflow is in development. With DP-distill kit, a standard DeePMD model can be generated from a pre-trained/fine-tuned platform model by model distillation. Compared to training from scratch using the standard DPGEN process, a DeePMD model of comparable accuracy can be obtained with almost an order of magnitude less GPU resources and negligible CPU cost, provided that a well-converged DPA-2 platform model is availiable.   
+Currently, the prototype of fine-tune and distillation workflows have been implemented, though both may be subject to significant changes. Figure 1 presents the basic fine-tune workflow. The fine-tune datasets are generated from short AIMD simulation starting from randomly perturbed structures. Snapshots with excessive atomic forces are removed from the training and validation sets.
+<div>
+    <img src="./docs/images/fine-tune.png" alt="Fig1" style="zoom: 35%;">
+    <p style='font-size:1.0rem; font-weight:none'>Figure 1. Fine-tune workflow.</p>
+</div>
 
-Below is a schematic showing the basic distillation workflow.
+A standard DeePMD model can also be generated from a pre-trained/fine-tuned platform model through distillation. The generated DeePMD model achieves comparable accuracy with almost an order of magnitude less GPU resources and negligible CPU cost compared with standard DPGEN pipeline, provided that a well-converged DPA-2 platform model is availiable. Figure 2 shows the schematic of the distillation workflow.
  <div>
-    <img src="./docs/images/distillation.png" alt="Fig1" style="zoom: 35%;">
-    <p style='font-size:1.0rem; font-weight:none'>Figure 1. Distillation workflow.</p>
+    <img src="./docs/images/distillation.png" alt="Fig2" style="zoom: 35%;">
+    <p style='font-size:1.0rem; font-weight:none'>Figure 2. Distillation workflow.</p>
 </div>
 
 ## 2. Installation
