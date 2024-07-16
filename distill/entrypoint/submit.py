@@ -215,6 +215,7 @@ def workflow_dist(
     config_dict_total=deepcopy(config_dict)
     type_map=config_dict["inputs"]["type_map"]
     train_config=config_dict["train"]["config"]
+    numb_models=config_dict["train"].get("numb_models",1)
     explore_config=config_dict["conf_generation"]["config"]
     inference_config=config_dict["inference"]
     dp_test_config=deepcopy(inference_config)
@@ -251,7 +252,7 @@ def workflow_dist(
             "block_id": "test-flow",
             "type_map": type_map,
             "config":config_dict_total, # Total input parameter file: to be changed in the future
-            "numb_models": 1,#InputParameter(type=int),
+            "numb_models": numb_models,
             "template_script": template_script,
             "train_config": train_config,
             "explore_config": explore_config,
@@ -373,12 +374,8 @@ def submit_dist(
     """
     # normalize args
     wf_config = normalize_args(wf_config)
-    print(wf_config)
-
     global_config_workflow(wf_config)
-    
     dist_step=workflow_dist(wf_config)
-    
     wf = Workflow(
         name=wf_config["name"],
         #parallelism=wf_config["parallelism"]
@@ -394,10 +391,7 @@ def submit_ft(
     """
     # normalize args
     wf_config = normalize_args(wf_config)
-    print(wf_config)
-
     global_config_workflow(wf_config)
-    
     ft_step=workflow_finetune(wf_config)
     
     wf = Workflow(

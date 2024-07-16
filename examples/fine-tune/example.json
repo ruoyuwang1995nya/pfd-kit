@@ -130,6 +130,7 @@
         },
         "template_script": "train.json",
         "init_models_paths":"./model.ckpt.pt",
+        "numb_models":4,
         "_comment": "the initial pre-trained model at 'init_models_paths'"
     },
     "fp": {

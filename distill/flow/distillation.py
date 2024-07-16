@@ -207,7 +207,7 @@ def _dist_cl(
         parameters={
             "block_id": dist_steps.inputs.parameters["block_id"],
             "train_config":dist_steps.inputs.parameters["train_config"],
-            "numb_models":1,
+            "numb_models":dist_steps.inputs.parameters["numb_models"],
             "template_script": dist_steps.inputs.parameters["template_script"]
         },
         artifacts={
