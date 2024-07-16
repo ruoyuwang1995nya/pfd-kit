@@ -91,9 +91,11 @@ class Inference(OP):
             dp_test_detail.extend(detail_fls)
         with open("report.json","w") as fp:
             json.dump(report,fp,indent=4) 
+            
+        labeled_system_key = task if task != "dp_test" else "inference"
         return OPIO(
             {
-                "labeled_systems":[v.get("inference") for k, v in res.items()],
+                "labeled_systems":[v.get(labeled_system_key) for k, v in res.items()],
                 "dp_test":dp_test_detail,
                 "root_labeled_systems": Path(config.get("prefix","systems")),
                 "report": Path("report.json")

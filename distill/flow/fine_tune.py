@@ -237,7 +237,7 @@ def _fine_tune_cl(
             "model":ft_steps.inputs.artifacts["init_models"][0]
         },
         key="--".join(
-            ["%s" %ft_steps.inputs.parameters["block_id"], "validation"]
+            ["%s" %ft_steps.inputs.parameters["block_id"], "filter-train"]
         ),
         executor=inference_executor
     )
@@ -258,7 +258,7 @@ def _fine_tune_cl(
             "model":ft_steps.inputs.artifacts["init_models"][0]
         },
         key="--".join(
-            ["%s" %ft_steps.inputs.parameters["block_id"], "validation"]
+            ["%s" %ft_steps.inputs.parameters["block_id"], "filter-test"]
         ),
         executor=inference_executor
     )
@@ -283,7 +283,7 @@ def _fine_tune_cl(
         },
         artifacts={
             "init_models": ft_steps.inputs.artifacts["init_models"],
-            "init_data": collect_data.outputs.artifacts["systems"],
+            "init_data": check_force_train.outputs.artifacts["labeled_systems"],
             "iter_data": ft_steps.inputs.artifacts["iter_data"],
             
         },
@@ -306,11 +306,11 @@ def _fine_tune_cl(
             "type_map": ft_steps.inputs.parameters["type_map"]
         },
         artifacts={
-            "systems": collect_data.outputs.artifacts["test_systems"],
+            "systems": check_force_test.outputs.artifacts["labeled_systems"],
             "model":prep_run_ft.outputs.artifacts["models"][0]
         },
         key="--".join(
-            ["%s" %ft_steps.inputs.parameters["block_id"], "validation"]
+            ["%s" %ft_steps.inputs.parameters["block_id"], "validation-test"]
         ),
         executor=inference_executor
     )
@@ -328,11 +328,11 @@ def _fine_tune_cl(
             "type_map": ft_steps.inputs.parameters["type_map"]
         },
         artifacts={
-            "systems": collect_data.outputs.artifacts["systems"],
+            "systems": check_force_train.outputs.artifacts["labeled_systems"],
             "model":prep_run_ft.outputs.artifacts["models"][0]
         },
         key="--".join(
-            ["%s" %ft_steps.inputs.parameters["block_id"], "validation"]
+            ["%s" %ft_steps.inputs.parameters["block_id"], "validation-train"]
         ),
         executor=inference_executor
     )
