@@ -57,6 +57,7 @@ class PertGen(OP):
         return OPIOSign(
             {
                 "pert_sys": Artifact(List[Path]),
+                "confs": Artifact(List[Path]) # multi system
             }
         )
 
@@ -92,6 +93,7 @@ class PertGen(OP):
         # get workdir
         wk_dir=os.getcwd()
         conf_paths=[]
+        sys_paths=[]
         for ii in range(len(init_confs)):
             # create task directory
             name = "conf.%06d"%ii
@@ -115,10 +117,11 @@ class PertGen(OP):
             )
             pert_sys.to("deepmd/npy","data")
             os.chdir(wk_dir)
-            conf_paths.append(conf_path / "data")  
-            print(conf_paths)
+            sys_paths.append(conf_path / "data")  
+            conf_paths.append(conf_path)
         return OPIO(
             {
-                "pert_sys":conf_paths
+                "pert_sys":sys_paths,
+                "confs":conf_paths
             }
         )

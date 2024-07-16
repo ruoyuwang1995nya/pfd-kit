@@ -71,10 +71,12 @@ class Distillation(Steps):
             "validation_data": InputArtifact(optional=True)
         }
         self._output_parameters ={
-            "dp_test":OutputParameter()
+            #"dp_test":OutputParameter()
         }
         self._output_artifacts = {
-            "distill_model": OutputArtifact()
+            "distill_model": OutputArtifact(),
+            "dp_test_report": OutputArtifact(),
+            "dp_test_detail_files": OutputArtifact()
         }
         super().__init__(
             name=name,
@@ -269,7 +271,7 @@ def _dist_cl(
             "type_map": dist_steps.inputs.parameters["type_map"]
         },
         artifacts={
-            "systems": inference_validation.outputs.artifacts["root_labeled_systems"],
+            "systems": inference_validation.outputs.artifacts["labeled_systems"],
             "model":dist_steps.inputs.artifacts["teacher_model"][0]
         },
         key="--".join(
@@ -282,7 +284,10 @@ def _dist_cl(
     dist_steps.outputs.artifacts[
         "distill_model"
         ]._from = prep_run_dp.outputs.artifacts["models"][0]
-    dist_steps.outputs.parameters[
-        "dp_test"
-        ].value_from_parameter = dp_test_validation.outputs.parameters["dp_test"]
+    dist_steps.outputs.artifacts[
+        "dp_test_report"
+        ]._from = dp_test_validation.outputs.artifacts["report"]
+    dist_steps.outputs.artifacts[
+        "dp_test_detail_files"
+        ]._from = dp_test_validation.outputs.artifacts["dp_test"]
     return dist_steps    
