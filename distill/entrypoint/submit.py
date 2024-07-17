@@ -366,7 +366,7 @@ def workflow_finetune(
 def submit_dist(
     wf_config,
     reuse_step: Optional[List[ArgoStep]] = None,
-    replace_scheduler: bool = False,
+    #replace_scheduler: bool = False,
     no_submission: bool = False,
 ):  
     """
@@ -381,10 +381,15 @@ def submit_dist(
         #parallelism=wf_config["parallelism"]
         )
     wf.add(dist_step)
+    
+    if not no_submission:
+        wf.submit(reuse_step=reuse_step)
     return wf
 
 def submit_ft(
-    wf_config
+    wf_config,
+    reuse_step: Optional[List[ArgoStep]] = None,
+    no_submission: bool = False,
 ):
     """
     Major entry point for the whole workflow, only one config dict
@@ -399,6 +404,8 @@ def submit_ft(
         #parallelism=wf_config["parallelism"]
         )
     wf.add(ft_step)
+    if not no_submission:
+        wf.submit(reuse_step=reuse_step)
     return wf
 
 
