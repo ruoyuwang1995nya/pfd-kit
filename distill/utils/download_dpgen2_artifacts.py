@@ -76,7 +76,10 @@ op_download_setting = {
     .add_input("confs")
     .add_output("logs")
     .add_output("labeled_data"),
-    "collect-data": DownloadDefinition().add_output("iter_data"),
+    "collect-data": DownloadDefinition()
+    .add_input("systems")
+    .add_output("systems")
+    .add_output("test_systems"),
 }
 
 

@@ -214,7 +214,9 @@ def _fine_tune_cl(
         artifacts={
             "systems": prep_run_fp.outputs.artifacts["labeled_data"],
         },
-        key=step_keys["collect-data"],
+        key="--".join(
+            ["%s" % ft_steps.inputs.parameters["block_id"], "collect-data"]
+        ),
         executor=collect_data_executor,
         **collect_data_step_config,
     )

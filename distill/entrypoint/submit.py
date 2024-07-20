@@ -249,7 +249,7 @@ def workflow_dist(
         "dp-dist-step",
         template=dist_op,
         parameters={
-            "block_id": "test-flow",
+            "block_id": "dist",
             "type_map": type_map,
             "config":config_dict_total, # Total input parameter file: to be changed in the future
             "numb_models": numb_models,
