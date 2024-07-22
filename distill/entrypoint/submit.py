@@ -12,6 +12,7 @@ import dflow
 import dpgen2
 import distill
 import re
+import fpop
 
 from dflow import (
     ArgoStep,
@@ -298,6 +299,7 @@ def workflow_finetune(
     upload_python_packages.extend(list(dflow.__path__))
     upload_python_packages.extend(list(distill.__path__))
     upload_python_packages.extend(list(dpgen2.__path__))
+    upload_python_packages.extend(list(fpop.__path__))
     
     ## task configs
     config_dict_total=deepcopy(config)
@@ -327,13 +329,14 @@ def workflow_finetune(
     
     fp_config = {}
     fp_inputs_config = config["fp"]["inputs_config"]
+    fp_type = config["fp"]["type"]
     fp_inputs = fp_styles[fp_style]["inputs"](**fp_inputs_config)
     fp_config["inputs"] = fp_inputs
     fp_config["run"] = config["fp"]["run_config"]
     
     # make distillation op
     ft_op=make_ft_op(
-        fp_style="vasp",
+        fp_style=fp_type,
         pert_gen_step_config=run_pert_gen_config,
         prep_fp_config=prep_fp_config,
         run_fp_config=run_fp_config,
