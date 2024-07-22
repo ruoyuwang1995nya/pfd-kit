@@ -32,6 +32,7 @@ from .download import (
 from .submit import (
     submit_dist,
     submit_ft,
+    resubmit_workflow
 )
 
 from .common import (
@@ -58,40 +59,54 @@ def main_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(title="Valid subcommands", dest="command")
 
     ##########################################
-    # distillation
-    parser_dist = subparsers.add_parser(
-        "dist",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        help="Execute distillation workflow",
-    )
-    
-    parser_dist.add_argument(
-        "CONFIG", help="the config file in json format defining the workflow."
-    )
-
-    
-    #########################################
-    # fine-tune
-    parser_ft = subparsers.add_parser(
-        "finetune",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        help="Execute fine-tune workflow",
-    )
-
-    
-    parser_ft.add_argument(
-        "CONFIG", help="the config file in json format defining the workflow."
-    )
-    #########################################
     # submit
     parser_run = subparsers.add_parser(
         "submit",
-        help="Submit DPGEN2 workflow",
+        help="Submit workflows",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser_run.add_argument(
         "CONFIG", help="the config file in json format defining the workflow."
     )
+    parser_run.add_argument(
+        "-t",
+        "--task",
+        choices=["dist", "finetune"],
+        help="Specify the task to be executed.",
+    )
+    
+    ##########################################
+    # resubmit
+    parser_resubmit =subparsers.add_parser(
+        "resubmit",
+        help="Submit workflows",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser_resubmit.add_argument(
+        "CONFIG", help="the config file in json format defining the workflow."
+    )
+    parser_resubmit.add_argument(
+        "-l",
+        "--list",
+        action="store_true",
+        help="list the Steps of the existing workflow.",
+    )
+    parser_resubmit.add_argument(
+        "-u",
+        "--reuse",
+        type=str,
+        nargs="+",
+        default=None,
+        help="specify which Steps to reuse.",
+    )
+    parser_resubmit.add_argument(
+        "-f",
+        "--fold",
+        action="store_true",
+        help="if set then super OPs are folded to be reused in the new workflow",
+    )
+    
+    
     ##########################################
     # download
     parser_download = subparsers.add_parser(
@@ -184,20 +199,31 @@ def main():
     logging.basicConfig(level=logging.INFO)
 
     args = parse_args()
-    if args.command == "dist":
-        print("Running dist workflow")
-        print(args.CONFIG)
-        with open(args.CONFIG) as fp:
-            config = json.load(fp)
+    if args.command == "submit":
+        print("Submitting workflow")
+        if args.task == "dist":
+            with open(args.CONFIG) as fp:
+                config = json.load(fp)
             submit_dist(
-            config,
-        )
-            
-    elif args.command == "finetune":
-        with open(args.CONFIG) as fp:
-            config = json.load(fp)
+                config,
+                )
+        elif args.task == "finetune":
+            with open(args.CONFIG) as fp:
+                config = json.load(fp)
             submit_ft(
                 config,
+                )
+    elif args.command == "resubmit":
+        with open(args.CONFIG) as fp:
+            config = json.load(fp)
+        wfid = args.ID
+        resubmit_workflow(
+                wf_config=config,
+                wfid=wfid,
+                list_steps=args.list,
+                reuse=args.reuse,
+                fold=args.fold,
+                flow_type=args.task
             )
             
     elif args.command == "download":

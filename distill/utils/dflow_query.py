@@ -40,6 +40,7 @@ def matched_step_key(
                 or re.match(f"finetune--{jj}-[0-9]*", kk)
                 or re.match(f"finetune--{jj}", kk)
                 or re.match(f"init--{jj}", kk)
+                or re.match(f"dist--{jj}",kk)
             ):
                 ret.append(kk)
                 continue
@@ -119,15 +120,16 @@ def find_slice_ranges(
     status = "not-found"
     for idx, ii in enumerate(keys):
         if status == "not-found":
-            if re.match(f"iter-[0-9]*--{sliced_subkey}-[0-9]*", ii) or re.match(
-                f"finetune--{sliced_subkey}-[0-9]*", ii
-            ):
+            if re.match(f"iter-[0-9]*--{sliced_subkey}-[0-9]*", ii) \
+                or re.match(f"finetune--{sliced_subkey}-[0-9]*", ii) \
+                    or re.match(f"dist--{sliced_subkey}-[0-9]*",ii):
                 status = "found"
                 tmp_range.append(idx)
         elif status == "found":
             if not (
                 re.match(f"iter-[0-9]*--{sliced_subkey}-[0-9]*", ii)
                 or re.match(f"finetune--{sliced_subkey}-[0-9]*", ii)
+                or re.match(f"dist--{sliced_subkey}-[0-9]*",ii)
             ):
                 status = "not-found"
                 tmp_range.append(idx)
