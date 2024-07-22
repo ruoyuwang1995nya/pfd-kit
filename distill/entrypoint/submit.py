@@ -520,7 +520,8 @@ def resubmit_workflow(
     list_steps=False,
     reuse=None,
     fold=False,
-    flow_type="dist"
+    flow_type="dist",
+    **kwargs
 ):
     wf_config = normalize_args(wf_config)
 
@@ -556,22 +557,27 @@ def resubmit_workflow(
             if v != [k] and k in folded_keys and set(v) == set(folded_keys[k]):
                 reused_folded_keys[k] = [k]
         reused_keys = sum(reused_folded_keys.values(), [])
+        print(reused_keys)
     reuse_step = old_wf.query_step(key=reused_keys)
     # For reused steps whose startedAt are identical, sort them by key
     reuse_step.sort(key=lambda x: "%s-%s" % (x.startedAt, x.key))
 
     if flow_type == "dist":
-        wf = submit_dist(
+        return submit_dist(
             wf_config,
             reuse_step=reuse_step,
+            **kwargs
         )
     elif flow_type == "finetune":
-        wf = submit_ft(
+        return  submit_ft(
             wf_config,
-            reuse_step=reuse_step
+            reuse_step=reuse_step,
+            **kwargs
+            
         )
 
-    return wf
+    else:
+        raise NotImplementedError("%d has not been implemented!"%(flow_type))
 
 
 if __name__ == '__main__':

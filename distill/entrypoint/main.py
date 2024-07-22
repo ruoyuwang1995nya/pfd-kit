@@ -86,6 +86,15 @@ def main_parser() -> argparse.ArgumentParser:
         "CONFIG", help="the config file in json format defining the workflow."
     )
     parser_resubmit.add_argument(
+        "ID",help="the ID of existing workflow"
+        )
+    parser_resubmit.add_argument(
+        "-t",
+        "--task",
+        choices=["dist", "finetune"],
+        help="Specify the task to be executed.",
+    )
+    parser_resubmit.add_argument(
         "-l",
         "--list",
         action="store_true",
@@ -97,7 +106,8 @@ def main_parser() -> argparse.ArgumentParser:
         type=str,
         nargs="+",
         default=None,
-        help="specify which Steps to reuse.",
+        help="specify which Steps to reuse. e.g., 0-41,\
+            the first to the 41st steps.",
     )
     parser_resubmit.add_argument(
         "-f",

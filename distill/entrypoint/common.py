@@ -52,6 +52,7 @@ def expand_idx(in_list) -> List[int]:
         if isinstance(ii, int):
             ret.append(ii)
         elif isinstance(ii, str):
+            # e.g., 0-41:1
             step_str = ii.split(":")
             if len(step_str) > 1:
                 step = int(step_str[1])
