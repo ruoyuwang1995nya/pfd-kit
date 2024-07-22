@@ -109,7 +109,7 @@ class PertGen(OP):
             atom_pert_style=pert_param.get("atom_pert_style","normal")
             fmt=gen_config["init_configurations"]["fmt"]
             print(atom_pert_distance)
-            pert_sys=dpdata.System(init_confs[ii],fmt=fmt).perturb(
+            pert_sys=dpdata.System(str(init_confs[ii]),fmt=fmt).perturb(
                     pert_num=pert_num,
                     cell_pert_fraction=cell_pert_fraction,
                     atom_pert_distance=atom_pert_distance,
