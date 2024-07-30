@@ -60,6 +60,14 @@ op_download_setting = {
     .add_output("models")
     .add_output("logs")
     .add_output("lcurves"),
+    "prep-run-dp": DownloadDefinition()
+    .add_input("init_models")
+    .add_input("init_data")
+    .add_input("iter_data")
+    .add_output("scripts")
+    .add_output("models")
+    .add_output("logs")
+    .add_output("lcurves"),
     "prep-run-explore": DownloadDefinition()
     .add_output("logs")
     .add_output("trajs")
@@ -68,7 +76,10 @@ op_download_setting = {
     .add_input("confs")
     .add_output("logs")
     .add_output("labeled_data"),
-    "collect-data": DownloadDefinition().add_output("iter_data"),
+    "collect-data": DownloadDefinition()
+    .add_input("systems")
+    .add_output("systems")
+    .add_output("test_systems"),
 }
 
 

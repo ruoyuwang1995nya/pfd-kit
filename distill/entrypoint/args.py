@@ -95,7 +95,7 @@ def dp_train_args():
             default=RunDPTrain.normalize_config({}),
             doc=doc_numb_models,
         ),
-        Argument("numb_models", int, optional=True, default=4, doc=doc_numb_models),
+        Argument("numb_models", int, optional=True, default=1, doc=doc_numb_models),
         Argument(
             "template_script", [List[str], str], optional=False, doc=doc_template_script
         ),

@@ -32,5 +32,10 @@ setuptools.setup(
         "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.8'
+    python_requires='>=3.8',
+    entry_points={
+        'console_scripts': [
+            'dp-dist = distill.entrypoint.main:main',
+        ],
+    },
 )
