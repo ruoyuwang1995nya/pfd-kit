@@ -22,14 +22,6 @@ from dflow.python import (
     Parameter
 )
 
-from dpgen2.constants import (
-    lmp_task_pattern,
-)
-from dpgen2.exploration.task import (
-    BaseExplorationTaskGroup,
-    ExplorationTaskGroup,
-)
-
 
 class PertGen(OP):
     r"""Perturb the input configurations
@@ -83,7 +75,6 @@ class PertGen(OP):
             - `task_paths`: (`Artifact(List[Path])`) The parepared working paths of the tasks. Contains all input files needed to start the LAMMPS simulation. The order fo the Paths should be consistent with `op["task_names"]`
         """
         init_confs=ip["init_confs"]
-        #print(init_confs)
         gen_config=ip["config"]["conf_generation"]
         
         pert_configs=gen_config["pert_generation"]
@@ -99,7 +90,6 @@ class PertGen(OP):
             name = "conf.%06d"%ii
             conf_path= Path(wk_dir) / name
             conf_path.mkdir(exist_ok=True)           
-              
             # get pert config 
             os.chdir(conf_path)
             pert_param=pert_configs[pert_ls[ii]]
@@ -109,15 +99,20 @@ class PertGen(OP):
             atom_pert_style=pert_param.get("atom_pert_style","normal")
             fmt=gen_config["init_configurations"]["fmt"]
             print(atom_pert_distance)
-            pert_sys=dpdata.System(str(init_confs[ii]),fmt=fmt).perturb(
+            orig_sys=dpdata.System(str(init_confs[ii]),fmt=fmt)
+            pert_sys=orig_sys.perturb(
                     pert_num=pert_num,
                     cell_pert_fraction=cell_pert_fraction,
                     atom_pert_distance=atom_pert_distance,
                     atom_pert_style=atom_pert_style,
             )
-            pert_sys.to("deepmd/npy","data")
+            orig_sys.to("deepmd/npy","orig")
+            pert_sys.to("deepmd/npy","pert")
             os.chdir(wk_dir)
-            sys_paths.append(conf_path / "data")  
+            if_orig = pert_param.get("orig",False)
+            if if_orig is True:
+                sys_paths.append(conf_path/ "orig")
+            sys_paths.append(conf_path / "pert")  
             conf_paths.append(conf_path)
         return OPIO(
             {
