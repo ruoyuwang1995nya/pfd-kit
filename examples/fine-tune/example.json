@@ -173,6 +173,29 @@
             }
             ],
         "test_data":0.1,
-        "system_partition": true
+        "system_partition": true,
+
+        "expl_tasks": {
+            "md":{
+                "task_groups":[
+                {
+                    "_comment": "group 1, perturb + short MD with DPA pre-trained model",
+                    "conf_idx": [0],
+                    "n_sample":10,
+                    "exploration":{
+                        "type": "lmp-md",
+                        "ensemble": "npt",
+                        "dt":0.005,
+                        "nsteps": 100,
+                        "temps": [900],
+                        "press":[1],
+                        "trj_freq": 20
+                    },
+                    "max_sample": 10000}],
+                "max_iter":1
+                },
+            "aimd":{}
+                },
+        "_comment": "all"
     }
 }

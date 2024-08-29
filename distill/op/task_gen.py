@@ -53,7 +53,9 @@ class TaskGen(OP):
             {
                 #"lmp_task_grp": BigParameter(BaseExplorationTaskGroup),
                 "systems":Artifact(List[Path]),
-                "config":BigParameter(dict) # this should be the generation config for each group
+                "type_map": Parameter(List[str]),
+                "mass_map": Parameter(List[float]),
+                "expl_tasks":Parameter(List[dict]) # this should be the generation config for each group
             }
         )
 
@@ -89,9 +91,9 @@ class TaskGen(OP):
         """
         # perturbed systems
         systems=ip["systems"]
-        expl_tasks=ip["config"]["conf_generation"]["expl_tasks"]
-        type_map=ip["config"]["inputs"]["type_map"]
-        mass_map=ip["config"]["inputs"]["mass_map"]
+        expl_tasks=ip["expl_tasks"]
+        type_map=ip["type_map"]
+        mass_map=ip["mass_map"]
         expl_grp=BaseExplorationTaskGroup()
         for task in expl_tasks:
             task_grp=gen_expl_grp(
