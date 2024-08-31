@@ -380,8 +380,18 @@ def workflow_finetune(
     with open(config["train"]["template_script"],'r') as fp:
         template_script=json.load(fp)
     init_confs=upload_artifact(config["conf_generation"]["init_configurations"]["files"])
-    #explore_model = upload_artifact([config["conf_generation"]["exploration"]["md"]["model"]])
-    init_data = upload_artifact([])
+
+    # init_data    
+    if config["inputs"]["init_data_uri"] is not None:
+        init_data = get_artifact_from_uri(config["inputs"]["init_data_uri"])
+    elif config["inputs"]["init_data_sys"] is not None:
+        init_data_prefix = config["inputs"]["init_data_prefix"]
+        init_data = config["inputs"]["init_data_sys"]
+        init_data = get_systems_from_data(init_data, init_data_prefix)
+        init_data = upload_artifact_and_print_uri(init_data, "init_data")
+    else:
+        init_data = upload_artifact([])
+    iter_data = upload_artifact([])
     init_models_paths = config["train"].get("init_models_paths", None)
     if config["train"].get("init_models_url") is not None:
         print("Using uploaded model at: ",config["train"].get("init_models_url"))
@@ -446,6 +456,7 @@ def workflow_finetune(
             "init_confs": init_confs,
             "expl_models": init_models,
             "init_data": init_data,
+            "iter_data": iter_data
         }
     )
     return ft_step

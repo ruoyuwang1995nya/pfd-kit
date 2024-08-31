@@ -44,7 +44,11 @@ from dpgen2.superop import (
 )
 from traitlets import Bool
 
-from distill.op.collect import CollectData
+from distill.op import (
+    EvalConv,
+    NextLoop,
+    IterCounter
+)
 
 class ExplFinetuneBlock(Steps):
     def __init__(
@@ -72,7 +76,7 @@ class ExplFinetuneBlock(Steps):
             "fp_config":InputParameter(),
             "collect_data_config":InputParameter(),
             "dp_test_validation_config": InputParameter(),
-            
+            "converge_config": InputParameter(value={})
         }
         self._input_artifacts = {
             "systems": InputArtifact(), # starting systems for model deviation
@@ -82,6 +86,7 @@ class ExplFinetuneBlock(Steps):
             "iter_data": InputArtifact(optional=True), # datas collected during previous exploration
         }
         self._output_parameters ={
+            "converged":OutputParameter()
         }
         self._output_artifacts = {
             "ft_model": OutputArtifact(),
@@ -156,7 +161,8 @@ class ExplFinetuneLoop(Steps):
             "train_config": InputParameter(),
             "explore_config": InputParameter(),
             "dp_test_validation_config": InputParameter(),
-            "max_iter": InputParameter(value=1)
+            "max_iter": InputParameter(value=1),
+            "converge_config": InputParameter(value={})
         }
         self._input_artifacts = {
             "systems": InputArtifact(), # starting systems for model deviation
@@ -236,29 +242,29 @@ def _expl_ft_blk(
     inference_executor = init_executor(inference_step_config.pop("executor"))
     
     
-    if skip_training is True:
-        expl_model=steps.inputs.artifacts["current_model"]
-    else:
-        prep_run_ft = Step(
-            name + "-prep-run-dp-train",
-            template=prep_run_train_op,
-            parameters={
-            "block_id": steps.inputs.parameters["block_id"],
-            "train_config": steps.inputs.parameters["train_config"],
-            "numb_models": steps.inputs.parameters["numb_models"],
-            "template_script": steps.inputs.parameters["template_script"],
-        },
-            artifacts={
-            "init_models": steps.inputs.artifacts["init_model"],
-            "init_data": steps.inputs.artifacts["init_data"],
-            "iter_data": steps.inputs.artifacts["iter_data"],
-        },
-            key="--".join(
-                ["%s" %steps.inputs.parameters["block_id"], "prep-run-train"]
-            ),
-        )
-        steps.add(prep_run_ft)
-        expl_model=steps.inputs.artifacts["current_model"]
+    #if skip_training is True:
+    #    expl_model=steps.inputs.artifacts["current_model"]
+    #else:
+    #    prep_run_ft = Step(
+    #        name + "-prep-run-dp-train",
+    #        template=prep_run_train_op,
+    #        parameters={
+    #        "block_id": steps.inputs.parameters["block_id"],
+    #        "train_config": steps.inputs.parameters["train_config"],
+    #        "numb_models": steps.inputs.parameters["numb_models"],
+    #        "template_script": steps.inputs.parameters["template_script"],
+    #    },
+    #        artifacts={
+    #        "init_models": steps.inputs.artifacts["init_model"],
+    #        "init_data": steps.inputs.artifacts["init_data"],
+    #        "iter_data": steps.inputs.artifacts["iter_data"],
+    #    },
+    #        key="--".join(
+    #            ["%s" %steps.inputs.parameters["block_id"], "prep-run-train"]
+    #        ),
+    #    )
+    #    steps.add(prep_run_ft)
+    #    expl_model=steps.inputs.artifacts["current_model"]
         
     md_expl = Step(
         name+"-md-expl",
@@ -273,7 +279,7 @@ def _expl_ft_blk(
         artifacts={
             "systems": steps.inputs.artifacts["systems"],
             "additional_systems" : steps.inputs.artifacts["systems"],
-            "models": expl_model#steps.inputs.artifacts["current_model"], 
+            "models": steps.inputs.artifacts["current_model"], 
             },
         key="--".join(
                 ["%s" %steps.inputs.parameters["block_id"], "md-expl"]
@@ -299,7 +305,7 @@ def _expl_ft_blk(
     steps.add(prep_run_fp)
     
     collect_data = Step(
-        name=name + "-collect-data",
+        name=name + "-data-collect",
         template= PythonOPTemplate(
             collect_data_op,
             python_packages=upload_python_packages,
@@ -335,7 +341,7 @@ def _expl_ft_blk(
         },
         artifacts={
             "systems": collect_data.outputs.artifacts["systems"],
-            "model":expl_model[0] #prep_run_ft.outputs.artifacts["models"][0]
+            "model": steps.inputs.artifacts["current_model"]  #expl_model[0] #prep_run_ft.outputs.artifacts["models"][0]
         },
         key="--".join(
             ["%s" %steps.inputs.parameters["block_id"], "validation-test"]
@@ -344,13 +350,52 @@ def _expl_ft_blk(
     )
     steps.add(dp_test)
     
-    if skip_training is True:
-        steps.outputs.artifacts["ft_model"]._from= steps.inputs.artifacts["init_model"]
-    else:
-        steps.outputs.artifacts["ft_model"]._from=prep_run_ft.outputs.artifacts["models"]
-    steps.outputs.artifacts[
-        "iter_data"
-        ]._from = collect_data.outputs.artifacts["multi_systems"]
+    evaluate=Step(
+        name="evaluate-converge", 
+        template=PythonOPTemplate(
+            EvalConv,
+            python_packages=upload_python_packages,
+            **collect_data_template_config,
+            ), 
+        parameters={
+            "config": steps.inputs.parameters["converge_config"]
+            },
+        key="--".join(
+                ["%s"%steps.inputs.parameters["block_id"], 'evaluate-converge' ]
+                ),
+        **collect_data_step_config
+    )
+    steps.add(evaluate)
+    prep_run_ft = Step(
+            name + "-prep-run-dp-train",
+            template=prep_run_train_op,
+            parameters={
+            "block_id": steps.inputs.parameters["block_id"],
+            "train_config": steps.inputs.parameters["train_config"],
+            "numb_models": steps.inputs.parameters["numb_models"],
+            "template_script": steps.inputs.parameters["template_script"],
+            "run_optional_parameter":{
+                "mixed_type": False,
+                "finetune_mode": "finetune"}},
+            artifacts={
+            "init_models": steps.inputs.artifacts["init_model"],
+            "init_data": steps.inputs.artifacts["init_data"],
+            "iter_data": collect_data.outputs.artifacts["multi_systems"]#steps.inputs.artifacts["iter_data"],
+        },
+            key="--".join(
+                ["%s" %steps.inputs.parameters["block_id"], "prep-run-train"]
+            ),
+            when ="%s == false"% evaluate.outputs.parameters["converged"]
+        )
+    
+    steps.add(prep_run_ft)
+    steps.outputs.artifacts["ft_model"].from_expression = if_expression(
+        _if=evaluate.outputs.parameters["converged"],
+        _then=steps.inputs.artifacts["init_model"],
+        _else=prep_run_ft.outputs.artifacts["models"])
+    
+    steps.outputs.parameters["converged"].value_from_parameter = evaluate.outputs.parameters["converged"]
+    steps.outputs.artifacts["iter_data"]._from = collect_data.outputs.artifacts["multi_systems"]
     steps.outputs.artifacts[
         "dp_test_report"
         ]._from = dp_test.outputs.artifacts["report"]
@@ -366,31 +411,24 @@ def _loop(
     collect_data_op: Type[OP],
     collect_data_step_config:dict,
     inference_step_config: dict,
+    util_step_config: dict = {},
     upload_python_packages: Optional[List[os.PathLike]] = None,
     ):
     # we just need a counter which supplies the iteration
-    blk_counter_op = ShellOPTemplate(
-            name='counter',
-            image="alpine:3.15",
-            script="echo 'This is iter {{inputs.parameters.blk_id}}' && "
-                    "printf '%03d' $(({{inputs.parameters.blk_id}}+1)) 2>&1 | tee /tmp/blk_id.txt && "
-                    "printf '%d' $(({{inputs.parameters.blk_id}}+1)) 2>&1 | tee /tmp/counter.txt"
-                    )
-    blk_counter_op.inputs.parameters = {"blk_id": InputParameter()}
-    blk_counter_op.outputs.parameters = {
-        "blk_id": OutputParameter(value_from_path="/tmp/blk_id.txt"),
-        "counter": OutputParameter(value_from_path="/tmp/counter.txt")
-        }
     blk_counter=Step(
         name="iter-counter", 
-        template=blk_counter_op, 
+        template=PythonOPTemplate(
+            IterCounter,
+            image="registry.dp.tech/dptech/ubuntu:22.04-py3.10",
+            python_packages=upload_python_packages
+            ),
         parameters={
-                 "blk_id": loop.inputs.parameters["block_id"]},
+                 "iter_numb": loop.inputs.parameters["block_id"]},
         key="--".join(
                 ["%s" % "iter-end","%s"%loop.inputs.parameters["block_id"] ]
-                )
-    )
+                ))
     loop.add(blk_counter)
+    
     expl_ft_blk_op=ExplFinetuneBlock(
             name="expl-ft",
             md_expl_op=md_expl_op,
@@ -408,7 +446,7 @@ def _loop(
         name=name+'-exploration-finetune',
         template=expl_ft_blk_op,
         parameters={
-            "block_id": "iter-%s"% blk_counter.outputs.parameters["blk_id"],
+            "block_id": "iter-%s"% blk_counter.outputs.parameters["iter_id"],
             "type_map": loop.inputs.parameters["type_map"],
             "mass_map":loop.inputs.parameters["mass_map"],
             "expl_tasks":loop.inputs.parameters["expl_tasks"], # Total input parameter file: to be changed in the future
@@ -418,7 +456,7 @@ def _loop(
             "explore_config": loop.inputs.parameters["explore_config"],
             "fp_config":loop.inputs.parameters["fp_config"],
             "collect_data_config":{"labeled_data":True,
-                                    "multi_sys_name": blk_counter.outputs.parameters["blk_id"]},
+                                    "multi_sys_name": blk_counter.outputs.parameters["iter_id"]},
             "dp_test_validation_config": loop.inputs.parameters["dp_test_validation_config"]
             },
         artifacts={
@@ -430,20 +468,31 @@ def _loop(
         },
         
         key="--".join(
-                ["iter-%s"%blk_counter.outputs.parameters["blk_id"], "expl-ft-loop" ]
+                ["iter-%s"%blk_counter.outputs.parameters["iter_id"], "expl-ft-loop" ]
                 )
         
     )
     loop.add(expl_ft_blk)
     
     # a evaluation step: to be added
-    
-    
-    
-    
+    next_loop=Step(
+        name="next-loop", 
+        template=PythonOPTemplate(
+            NextLoop,
+            image="registry.dp.tech/dptech/ubuntu:22.04-py3.10",
+            python_packages=upload_python_packages
+            ), 
+        parameters={
+            "converged":expl_ft_blk.outputs.parameters["converged"],
+            "iter_numb": blk_counter.outputs.parameters["next_iter_numb"],
+            "max_iter": loop.inputs.parameters["max_iter"]},
+        key="--".join(
+                ["iter-%s"%blk_counter.outputs.parameters["iter_id"], "next-loop" ]
+                ))
+    loop.add(next_loop)
     # next iteration
     next_parameters={
-            "block_id": "iter-%s"% blk_counter.outputs.parameters["blk_id"],
+            "block_id": blk_counter.outputs.parameters["next_iter_numb"],
             "type_map": loop.inputs.parameters["type_map"],
             "mass_map":loop.inputs.parameters["mass_map"],
             "expl_tasks":loop.inputs.parameters["expl_tasks"], # Total input parameter file: to be changed in the future
@@ -465,12 +514,11 @@ def _loop(
             "iter_data": expl_ft_blk.outputs.artifacts["iter_data"],
             "init_data": loop.inputs.artifacts["init_data"],
         },        
-        when="%s < %s"%(
-            blk_counter.outputs.parameters["counter"],
-            loop.inputs.parameters["max_iter"]
+        when="%s == false"%(
+            next_loop.outputs.parameters["converged"],
         ),
         key="--".join(
-                ["iter-%s" % blk_counter.outputs.parameters["blk_id"] ,"expl-ft-loop" ]
+                ["iter-%s" % blk_counter.outputs.parameters["next_iter_id"] ,"expl-ft-loop" ]
                 )
     )
     loop.add(next_step)
