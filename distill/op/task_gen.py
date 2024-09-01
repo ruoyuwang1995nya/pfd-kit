@@ -96,6 +96,7 @@ class TaskGen(OP):
         mass_map=ip["mass_map"]
         expl_grp=BaseExplorationTaskGroup()
         for task in expl_tasks:
+            print(task)
             task_grp=gen_expl_grp(
                 systems,
                 type_map,
@@ -122,13 +123,11 @@ def gen_expl_grp(
         sys=dpdata.System(systems[idx],fmt='deepmd/npy',type_map=type_map)
         conf=[from_system_data(sys,f_idx=ii) for ii in range(sys.get_nframes())]
         task["exploration"]["model_name_pattern"]=pytorch_model_name_pattern
-        
         task_grp_tmp=make_lmp_task_group_from_config(
                     numb_models=1,
                     mass_map=mass_map,
-                    config=task["exploration"]
+                    config=task["exploration"].copy()
                         )
-   
         task_grp_tmp.set_conf(
                     conf_list=conf,
                     n_sample=task.get("n_sample",None),

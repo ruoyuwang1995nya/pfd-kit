@@ -106,12 +106,15 @@ class PertGen(OP):
                     atom_pert_distance=atom_pert_distance,
                     atom_pert_style=atom_pert_style,
             )
-            orig_sys.to("deepmd/npy","orig")
-            pert_sys.to("deepmd/npy","pert")
-            os.chdir(wk_dir)
             if_orig = pert_param.get("orig",False)
             if if_orig is True:
-                sys_paths.append(conf_path/ "orig")
+                pert_sys.append(orig_sys)
+            #orig_sys.to("deepmd/npy","orig")
+            pert_sys.to("deepmd/npy","pert")
+            os.chdir(wk_dir)
+            #if_orig = pert_param.get("orig",False)
+            #if if_orig is True:
+            #    sys_paths.append(conf_path/ "orig")
             sys_paths.append(conf_path / "pert")  
             conf_paths.append(conf_path)
         return OPIO(
