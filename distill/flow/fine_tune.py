@@ -264,7 +264,7 @@ def _fine_tune_cl(
                 "mixed_type": False,
                 "finetune_mode": "finetune"}},
             artifacts={
-            "init_models": ft_steps.inputs.artifacts["init_model"],
+            "init_models": ft_steps.inputs.artifacts["init_models"],
             "init_data": ft_steps.inputs.artifacts["init_data"],
             "iter_data": collect_data.outputs.artifacts["multi_systems"]#steps.inputs.artifacts["iter_data"],
         },
