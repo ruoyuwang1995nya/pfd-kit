@@ -209,6 +209,7 @@ def _fine_tune_cl(
     
     if skip_aimd is True: 
         loop_iter_data=ft_steps.inputs.artifacts.get("iter_data")
+        expl_models=ft_steps.inputs.artifacts.get("expl_models")
     else:
         prep_run_fp = Step(
             name=name + "-prep-run-fp",
@@ -271,6 +272,7 @@ def _fine_tune_cl(
             key="--".join(
                 ["aimd-init-ft", "prep-run-train"]))
         ft_steps.add(prep_run_ft)
+        expl_models=prep_run_ft.outputs.artifacts.get("models")
         
     ############################
     # MD exploration and finetune
@@ -292,7 +294,7 @@ def _fine_tune_cl(
                 },
             artifacts={
                 "systems": pert_gen.outputs.artifacts["pert_sys"], # starting systems for model deviation
-                "current_model" : ft_steps.inputs.artifacts["expl_models"],
+                "current_model" : expl_models,#ft_steps.inputs.artifacts["expl_models"],
                 "init_model": ft_steps.inputs.artifacts["init_models"], # starting point for finetune
                 "init_data": ft_steps.inputs.artifacts["init_data"], # initial data for model finetune
                 "iter_data": loop_iter_data #ft_steps.inputs.artifacts["iter_data"],
