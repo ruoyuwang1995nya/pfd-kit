@@ -153,6 +153,7 @@ def make_ft_op(
     collect_data_step_config:dict= default_config,
     inference_step_config: dict= default_config,
     upload_python_packages: Optional[List[os.PathLike]] = None,
+    init_training: bool =True,
     skip_aimd: bool = True
 ):
     ## initiate fp op
@@ -225,6 +226,7 @@ def make_ft_op(
         collect_data_step_config=collect_data_step_config,
         inference_step_config=inference_step_config,
         upload_python_packages = upload_python_packages,
+        init_training=init_training,
         skip_aimd=skip_aimd
     )
     return ft_op
@@ -362,6 +364,7 @@ def workflow_finetune(
     explore_config=config["conf_generation"]["exploration"]["md"]["config"]
     max_iter=config["conf_generation"]["exploration"]["md"].get("max_iter",1)
     expl_tasks=config["conf_generation"]["exploration"]["md"]["task_groups"]
+    init_training=config["conf_generation"]["exploration"].get("init_training",False)
     skip_aimd=config["conf_generation"]["exploration"].get("skip_aimd",True)
     if skip_aimd is True:
         print("AIMD is exploration skipped!")
@@ -428,6 +431,7 @@ def workflow_finetune(
         collect_data_step_config=run_collect_data_config,
         inference_step_config=run_inference_config,
         upload_python_packages = upload_python_packages,
+        init_training=init_training,
         skip_aimd=skip_aimd
     )
     

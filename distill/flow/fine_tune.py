@@ -76,6 +76,7 @@ class FineTune(Steps):
         collect_data_step_config:dict,
         inference_step_config: dict,
         upload_python_packages: Optional[List[os.PathLike]] = None,
+        init_training = False,
         skip_aimd: bool = True
     ):
         self._input_parameters ={
@@ -142,6 +143,7 @@ class FineTune(Steps):
             collect_data_config=collect_data_step_config,
             inference_config=inference_step_config,
             upload_python_packages=upload_python_packages,
+            init_training=init_training,
             skip_aimd=skip_aimd
         )
         
@@ -176,6 +178,7 @@ def _fine_tune_cl(
     collect_data_config: dict,
     inference_config: dict,
     upload_python_packages: Optional[List[os.PathLike]] = None,
+    init_training: bool = True,
     skip_aimd: bool = True
 ):
     pert_gen_step_config = deepcopy(pert_gen_step_config)
@@ -207,57 +210,48 @@ def _fine_tune_cl(
     )
     ft_steps.add(pert_gen)
     
-    if skip_aimd is True: 
-        loop_iter_data=ft_steps.inputs.artifacts.get("iter_data")
-        expl_models=ft_steps.inputs.artifacts.get("expl_models")
-    else:
-        prep_run_fp = Step(
-            name=name + "-prep-run-fp",
-            template=prep_run_fp_op,
-            parameters={
-                "block_id": ft_steps.inputs.parameters["block_id"],
-                "fp_config": ft_steps.inputs.parameters["aimd_config"],
-                "type_map": ft_steps.inputs.parameters["type_map"],
-        },
-            artifacts={
-                "confs": pert_gen.outputs.artifacts["confs"],
-        },
-            key="--".join(
-                ["aimd-expl", "prep-run-fp"]
-        ),
-    )
-        ft_steps.add(prep_run_fp)
-    # Collect AIMD result
-        collect_data = Step(
-            name=name + "-collect-aimd",
-            template=PythonOPTemplate(
-            collect_data_op,
-            #output_artifact_archive={"iter_data": None},
-            python_packages=upload_python_packages,
-            **collect_data_template_config,
-            ),
-            parameters={
-            "optional_parameters": ft_steps.inputs.parameters["collect_data_config"],
-            "type_map": ft_steps.inputs.parameters["type_map"],
-            },
-            artifacts={
-                "systems": prep_run_fp.outputs.artifacts["labeled_data"],
-            },
-            key="--".join(
-                ["aimd-expl", "collect-data"]
-            ),
-            executor=collect_data_executor,
-            **collect_data_step_config,
-        )
-        ft_steps.add(collect_data)
-        loop_iter_data=collect_data.outputs.artifacts["multi_systems"]
+    if init_training is True:
+        # if skip AIMD exploration
+        if skip_aimd is True: 
+            loop_iter_data=ft_steps.inputs.artifacts.get("iter_data")
+        # if execute AIMD exploration    
+        else:
+            prep_run_fp = Step(
+                name=name + "-prep-run-fp",
+                template=prep_run_fp_op,
+                parameters={
+                    "block_id": ft_steps.inputs.parameters["block_id"],
+                    "fp_config": ft_steps.inputs.parameters["aimd_config"],
+                    "type_map": ft_steps.inputs.parameters["type_map"]},
+                artifacts={
+                    "confs": pert_gen.outputs.artifacts["confs"]},
+                key="--".join(
+                    ["aimd-expl", "prep-run-fp"]))
+            ft_steps.add(prep_run_fp)
+            collect_data = Step(
+                name=name + "-collect-aimd",
+                template=PythonOPTemplate(
+                    collect_data_op,
+                    python_packages=upload_python_packages,
+                    **collect_data_template_config),
+                parameters={
+                    "optional_parameters": ft_steps.inputs.parameters["collect_data_config"],
+                    "type_map": ft_steps.inputs.parameters["type_map"]},
+                artifacts={
+                    "systems": prep_run_fp.outputs.artifacts["labeled_data"]},
+                key="--".join(
+                    ["aimd-expl", "collect-data"]),
+                executor=collect_data_executor,
+                **collect_data_step_config)
+            ft_steps.add(collect_data)
+            loop_iter_data=collect_data.outputs.artifacts["multi_systems"]
         
-        # train the model
+        # init model training
         prep_run_ft = Step(
             name + "-prep-run-dp-train",
             template=prep_run_dp_train_op,
             parameters={
-            "block_id": "aimd-init-ft",
+            "block_id": "init-training",
             "train_config": ft_steps.inputs.parameters["train_config"],
             "numb_models": ft_steps.inputs.parameters["numb_models"],
             "template_script": ft_steps.inputs.parameters["template_script"],
@@ -267,16 +261,18 @@ def _fine_tune_cl(
             artifacts={
             "init_models": ft_steps.inputs.artifacts["init_models"],
             "init_data": ft_steps.inputs.artifacts["init_data"],
-            "iter_data": collect_data.outputs.artifacts["multi_systems"]#steps.inputs.artifacts["iter_data"],
+            "iter_data": loop_iter_data#collect_data.outputs.artifacts["multi_systems"]#steps.inputs.artifacts["iter_data"],
         },
             key="--".join(
                 ["aimd-init-ft", "prep-run-train"]))
         ft_steps.add(prep_run_ft)
         expl_models=prep_run_ft.outputs.artifacts.get("models")
-        
-    ############################
-    # MD exploration and finetune
-    #############################
+    # if skip initial model training
+    else:
+        loop_iter_data=ft_steps.inputs.artifacts.get("iter_data")
+        expl_models=ft_steps.inputs.artifacts.get("expl_models")
+
+
     loop= Step(
         name = "ft-loop",
         template=expl_finetune_loop_op,
