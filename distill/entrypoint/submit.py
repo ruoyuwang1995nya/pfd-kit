@@ -361,16 +361,14 @@ def workflow_finetune(
         
     train_config=config["train"]["config"]
     numb_models=config["train"].get("numb_models",1)
-    explore_config=config["conf_generation"]["exploration"]["md"]["config"]
-    max_iter=config["conf_generation"]["exploration"]["md"].get("max_iter",1)
-    expl_tasks=config["conf_generation"]["exploration"]["md"]["task_groups"]
-    init_training=config["conf_generation"]["exploration"].get("init_training",False)
-    skip_aimd=config["conf_generation"]["exploration"].get("skip_aimd",True)
+    explore_config=config["exploration"]["md"]["config"]
+    max_iter=config["exploration"]["md"].get("max_iter",1)
+    converge_config=config["exploration"]["converge_config"]
+    expl_stages=config["exploration"]["md"]["stages"]
+    init_training=config["exploration"].get("init_training",False)
+    skip_aimd=config["exploration"].get("skip_aimd",True)
     if skip_aimd is True:
         print("AIMD is exploration skipped!")
-    inference_config=config["inference"]
-    dp_test_config=deepcopy(inference_config)
-    dp_test_config["task"]="dp_test"
         
     collect_data_config={}
     collect_data_config["test_size"]=config["conf_generation"].get("test_data",0.05)
@@ -444,16 +442,15 @@ def workflow_finetune(
             "mass_map": mass_map,
             "config":config_dict_total, # Total input parameter file: to be changed in the future
             "numb_models": numb_models,
-            "expl_tasks": expl_tasks,
+            "expl_stages": expl_stages,
+            "converge_config": converge_config,
             "max_iter": max_iter,
             "explore_config":explore_config,
             "template_script": template_script,
             "train_config": train_config,
-            "inference_config": inference_config,#{"task":"dp_test"},
             "fp_config":fp_config,
             "aimd_config":aimd_config,
             "collect_data_config":collect_data_config,
-            
             },
         artifacts={
             "init_models": init_models,

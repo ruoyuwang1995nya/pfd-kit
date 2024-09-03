@@ -86,18 +86,18 @@ class FineTune(Steps):
             "config":InputParameter(), # Total input parameter file: to be changed in the future
             # md exploration 
             "numb_models": InputParameter(type=int),
-            "expl_tasks": InputParameter(),
+            "expl_stages": InputParameter(),
             "max_iter": InputParameter(),
             "explore_config": InputParameter(),
             # training
             "template_script": InputParameter(),
             "train_config": InputParameter(),
-            "inference_config": InputParameter(),
             # fp calculation for labeling
             "fp_config":InputParameter(),
             # fp exploration
             "aimd_config": InputParameter(),
-            "collect_data_config":InputParameter()
+            "collect_data_config":InputParameter(),
+            "converge_config":InputParameter()
         }
         self._input_artifacts = {
             "init_confs": InputArtifact(),
@@ -141,7 +141,6 @@ class FineTune(Steps):
             expl_finetune_loop_op=expl_finetune_loop_op,
             pert_gen_step_config=pert_gen_step_config,
             collect_data_config=collect_data_step_config,
-            inference_config=inference_step_config,
             upload_python_packages=upload_python_packages,
             init_training=init_training,
             skip_aimd=skip_aimd
@@ -176,7 +175,6 @@ def _fine_tune_cl(
     inference_op: Type[OP],
     pert_gen_step_config: dict,
     collect_data_config: dict,
-    inference_config: dict,
     upload_python_packages: Optional[List[os.PathLike]] = None,
     init_training: bool = True,
     skip_aimd: bool = True
@@ -280,13 +278,14 @@ def _fine_tune_cl(
                 "fp_config": ft_steps.inputs.parameters["fp_config"],
                 "type_map": ft_steps.inputs.parameters["type_map"],
                 "mass_map": ft_steps.inputs.parameters["mass_map"],
-                "expl_tasks":ft_steps.inputs.parameters["expl_tasks"],
+                "expl_stages":ft_steps.inputs.parameters["expl_stages"],
                 "numb_models": ft_steps.inputs.parameters["numb_models"],
                 "template_script": ft_steps.inputs.parameters["template_script"], 
                 "train_config": ft_steps.inputs.parameters["train_config"],
                 "explore_config": ft_steps.inputs.parameters["explore_config"],
                 "dp_test_validation_config": {},
                 "max_iter":ft_steps.inputs.parameters["max_iter"],
+                "converge_config": ft_steps.inputs.parameters["converge_config"]
                 },
             artifacts={
                 "systems": pert_gen.outputs.artifacts["pert_sys"], # starting systems for model deviation
@@ -298,6 +297,9 @@ def _fine_tune_cl(
             key="--".join(
                 ["%s" % "test", "-fp"]))
     ft_steps.add(loop)
+    
+    
+    
     
     ft_steps.outputs.artifacts[
         "fine_tuned_model"

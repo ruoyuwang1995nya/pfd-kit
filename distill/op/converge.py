@@ -25,6 +25,10 @@ from dflow.python import (
     OPIOSign,
     Parameter
 )
+from distill.exploration.converge import (
+    ConvTypes
+)
+
 
 class EvalConv(OP):
     def __init__(self):
@@ -34,25 +38,35 @@ class EvalConv(OP):
     def get_input_sign(cls):
         return OPIOSign({
             'converged': Parameter(bool, default=False),
-            'config': Parameter(dict,default={})
-        })
+            'config': Parameter(dict,default={}),
+            'systems': Artifact(List[Path],optional=True),
+            'test_res': BigParameter(List[Dict])})
 
     @classmethod
     def get_output_sign(cls):
         return OPIOSign({
-            'converged': Parameter(bool, default=False),
-        })
+            'converged': Parameter(bool, default=False)})
 
     @OP.exec_sign_check
     def execute(
             self,
             ip: OPIO,
     ) -> OPIO:
+        # implement 
+        config=ip["config"]
+        conv_type=config.pop("type")
+        if conv_type in ConvTypes:
+            conv=ConvTypes[conv_type]()
+        else:
+            raise NotImplementedError("%s is not implemented!"%conv_type)
+        converged=conv.check_conv(
+            ip["test_res"],
+            config)
         return OPIO(
-            {
-                'converged':ip['converged']
-            }
-        )
+            {'converged':converged})
+    
+    
+    
         
 class NextLoop(OP):
     def __init__(self):
@@ -63,13 +77,17 @@ class NextLoop(OP):
         return OPIOSign({
             'converged': Parameter(bool, default=False),
             'iter_numb': Parameter(int,default=0),
-            'max_iter': Parameter(int,default=1)
+            'max_iter': Parameter(int,default=1),
+            "idx_stage": Parameter(int,default=0),
+            "stages": Parameter(List[List[dict]]),
         })
 
     @classmethod
     def get_output_sign(cls):
         return OPIOSign({
+            'stage_converged': Parameter(bool, default=False),
             'converged': Parameter(bool, default=False),
+            "idx_stage": Parameter(int)
         })
 
     @OP.exec_sign_check
@@ -77,11 +95,20 @@ class NextLoop(OP):
             self,
             ip: OPIO,
     ) -> OPIO:
-        if ip['converged'] is True or ip['iter_numb'] > ip['max_iter']:
-            return OPIO(
-                {'converged':True})
-        else:
-            return OPIO()
+        numb_stages=len(ip["stages"])
+        op={"converged":False,
+            "stage_converged":False,
+            "idx_stage":ip["idx_stage"]}
+        if ip['iter_numb'] > ip['max_iter']:
+            op['converged']=True
+            op['stage_converged']=True
+        elif ip['converged'] is True and ip["idx_stage"]+1 >= numb_stages:
+            op['converged']=True
+            op['stage_converged']=True
+        elif ip['converged'] is True and ip["idx_stage"]+1 < numb_stages:
+            op['stage_converged']=True,
+            op['idx_stage']=ip["idx_stage"]+1
+        return OPIO(op)
         
         
 class IterCounter(OP):
@@ -91,7 +118,7 @@ class IterCounter(OP):
     @classmethod
     def get_input_sign(cls):
         return OPIOSign({
-            'iter_numb': Parameter(int,default=0)
+            'iter_numb': Parameter(int,default=0),
         })
     @classmethod
     def get_output_sign(cls):
