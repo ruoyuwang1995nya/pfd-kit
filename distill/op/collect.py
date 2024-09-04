@@ -36,6 +36,7 @@ class CollectData(OP):
             {
                 "systems":Artifact(List[Path]),
                 "additional_systems": Artifact(List[Path],optional=True),
+                "additional_multi_systems": Artifact(List[Path],optional=True),
                 "type_map":Parameter(Union[List[str],None]),
                 "optional_parameters":Parameter(Dict)
             }
@@ -45,6 +46,7 @@ class CollectData(OP):
         return OPIOSign(
             {
                 "systems": Artifact(List[Path]),
+                "multi_systems": Artifact(List[Path]),
                 "test_systems": Artifact(List[Path],optional=True),
                 
             }
@@ -89,13 +91,24 @@ class CollectData(OP):
             - `task_names`: (`List[str]`) The name of tasks. Will be used as the identities of the tasks. The names of different tasks are different.
             - `task_paths`: (`Artifact(List[Path])`) The parepared working paths of the tasks. Contains all input files needed to start the LAMMPS simulation. The order fo the Paths should be consistent with `op["task_names"]`
         """
+        # List of systems
         systems=ip["systems"]
         if additional_systems := ip.get("additional_systems"):
             systems.extend(additional_systems)
+        # List of multi_systems
+        if ip.get("additional_multi_system"):
+            multi_system=ip.get("additional_multi_system")
+            print("Multi_sys is", multi_system)
+        else:
+            multi_system=[]
+        # Collects various types of data     
         type_map=ip["type_map"]
         optional_parameters=ip.get("optional_parameters",{})
         test_size=optional_parameters.pop("test_size",None)
         system_partition=optional_parameters.pop("system_partition",False)
+        multi_sys_name=optional_parameters.pop("multi_sys_name","multi_system")
+        print(optional_parameters)
+        print(multi_sys_name)
         
         if system_partition is True and test_size:
             systems, test_systems,test_sys_idx =get_system_partition(systems,test_size=test_size)
@@ -110,12 +123,15 @@ class CollectData(OP):
             multi_sys=get_multi_sys(systems,type_map,**optional_parameters)
             test_sys=dpdata.MultiSystems()
 
-        multi_sys.to('deepmd/npy','systems')
-        test_sys.to('deepmd/npy','test_systems')
+        multi_sys.to('deepmd/npy',multi_sys_name)
+        test_sys.to('deepmd/npy','multi_system_test')
+        #print([path for path in Path("systems").iterdir() if path.is_dir()])
+        multi_system.append(Path(multi_sys_name))
         return OPIO(
             {
-                "systems":[path for path in Path("systems").iterdir() if path.is_dir()],
-                "test_systems": [path for path in Path("test_systems").iterdir() if path.is_dir()] if Path("test_systems").is_dir() else []
+                "multi_systems": multi_system,
+                "systems":[path for path in Path(multi_sys_name).iterdir() if path.is_dir()],
+                "test_systems": [path for path in Path("multi_system_test").iterdir() if path.is_dir()] if Path("test_systems").is_dir() else []
             }
         )
 

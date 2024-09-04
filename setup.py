@@ -25,7 +25,8 @@ setuptools.setup(
 	     'fpop',
 	     'dpgui',
          'cp2kdata',
-         'dpgen2'
+         'dpgen2',
+         'periodictable'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",

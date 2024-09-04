@@ -48,10 +48,10 @@ class ExplorationBlock(Steps):
     ):
         self._input_parameters = {
             "block_id": InputParameter(),
-            "config":InputParameter(), # Total input parameter file: to be changed in the future
+            "expl_tasks":InputParameter(), 
             "explore_config": InputParameter(),
             "type_map":InputParameter(),
-            
+            "mass_map":InputParameter(),
         }
         self._input_artifacts = {
             "systems": InputArtifact(),
@@ -149,7 +149,9 @@ def _block_cl(
             **gen_lmp_template_config
         ),
         parameters={
-            "config": block_steps.inputs.parameters["config"],
+            "expl_tasks": block_steps.inputs.parameters["expl_tasks"],
+            "type_map": block_steps.inputs.parameters["type_map"],
+            "mass_map": block_steps.inputs.parameters["mass_map"]
         },
         artifacts={
             "systems": block_steps.inputs.artifacts["systems"],

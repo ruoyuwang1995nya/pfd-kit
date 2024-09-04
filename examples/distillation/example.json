@@ -1,9 +1,9 @@
 {
-    "name":"fine-tune",
+    "name":"distill-test",
     "bohrium_config": {
         "username": "urname",
         "password": "urpassword",
-        "project_id": 12345,
+        "project_id": 123456,
         "_comment": "all"
     },
     "default_step_config": {
@@ -42,16 +42,26 @@
                         "input_data": {
                             "job_type": "container",
                             "platform": "ali",
-                            "scass_type": "1 * NVIDIA V100_32g"
-                        }
-                    }
-                }
-            }
-        },
-        "inference_config": { 
+                            "scass_type": "1 * NVIDIA V100_32g"}}}}},
+        "run_explore_config": {
             "template_config": {
                 "image": "registry.dp.tech/dptech/deepmd-kit:2024Q1-d23cf3e"
             },
+            "continue_on_success_ratio": 0.8,
+            "executor": {
+                "type": "dispatcher",
+                "image_pull_policy": "IfNotPresent",
+                "machine_dict": {
+                    "batch_type": "Bohrium",
+                    "context_type": "Bohrium",
+                    "remote_profile": {
+                        "input_data": {
+                            "job_type": "container",
+                            "platform": "ali",
+                            "scass_type": "1 * NVIDIA V100_32g"}}}}},
+        "inference_config": {
+            "template_config": {
+                "image": "registry.dp.tech/dptech/deepmd-kit:2024Q1-d23cf3e"},
             "executor": {
                 "type": "dispatcher",
                 "retry_on_submission_error": 10,
@@ -63,35 +73,8 @@
                         "input_data": {
                             "job_type": "container",
                             "platform": "ali",
-                            "scass_type": "1 * NVIDIA A100_80g"
-                        }
-                    }
-                }
-            }
-        },
-        "run_fp_config": {
-            "template_config": {
-                "image": "registry.dp.tech/dptech/vasp:5.4.4",
-                "retry_on_transient_error": 1
-            },
-            "continue_on_failed":true,
-            "continue_on_success_ratio": 0.9,
-            "executor": {
-                "type": "dispatcher",
-                "image_pull_policy": "IfNotPresent",
-                "machine_dict": {
-                    "batch_type": "Bohrium",
-                    "context_type": "Bohrium",
-                    "remote_profile": {
-                        "input_data": {
-                            "job_type": "container",
-                            "platform": "ali",
-                            "scass_type": "c32_m64_cpu"
-                        }
-                    }
-                }
-            }
-        }
+                            "scass_type": "1 * NVIDIA V100_32g"}}}}},
+        "_comment": "all"
     },
     "upload_python_packages": [
         "/opt/mamba/envs/openlam/lib/python3.12/site-packages/dpgen2",
@@ -109,51 +92,40 @@
             "P",
             "S",
             "Cl",
+            "Sc",
             "Ga",
             "Ge",
             "As",
+            "Se",
             "Br",
+            "Y",
+            "Zr",
+            "In",
             "Sn",
             "Sb",
-            "I"
+            "I",
+            "Dy",
+            "Ho",
+            "Er",
+            "Tm",
+            "Yb",
+            "Lu",
+            "Ta"
         ],
-        "_comment": "replace with your own type map"
-    },
-    "train": {
-        "comment":"Training script for downstream DeePMD model",
-        "type": "dp",
-        "config": {
-            "impl": "pytorch",
-            "init_model_policy": "no",
-            "init_model_with_finetune":true,
-            "_comment": "all"
-        },
-        "template_script": "train.json",
-        "init_models_paths":"./model.ckpt.pt",
-        "numb_models":4,
-        "_comment": "the initial pre-trained model at 'init_models_paths'"
-    },
-    "fp": {
-        "type": "vasp",
-        "task_max": 50,
-        "run_config": {
-            "command": "source /opt/intel/oneapi/setvars.sh && mpirun -np 32 vasp_std | tee log"
-        },
-        "inputs_config": {
-            "incar": "INCAR",
-            "kspacing": 0.3,
-            "pp_files": {
-                "Li": "POTCAR_Li",
-                "B": "POTCAR_B",
-                "S": "POTCAR_S"
-            }
-        },
+        "teacher_model":"./frozen_model.pb",
         "_comment": "all"
     },
+    "train": {
+        "_comment":"Training script for downstream DeePMD model",
+        "type": "dp",
+        "config": {
+            "_impl": "pytorch",
+            "init_model_policy": "no",
+            "_comment": "all"},
+        "template_script": "train.json"},
     "inference":{
-        "task":"filter",
-        "max_force":10
-    },
+        "max_force":10,
+        "_comment":"force cutoff for generated confs"},
     "conf_generation": {
         "init_configurations":
             {
@@ -161,18 +133,35 @@
             "prefix": "./",
             "fmt": "vasp/poscar",
             "files": [
-                    "POSCAR"
-                ]},
+                    "conf/conf-00/POSCAR"]},
             
         "pert_generation":[
-            {
-            "conf_idx": "default",
-            "atom_pert_distance":0.2,
+            {"conf_idx": "default",
+            "atom_pert_distance":0.1,
             "cell_pert_fraction":0.03,
-            "pert_num": 20
-            }
-            ],
-        "test_data":0.1,
-        "system_partition": true
+            "pert_num": 200}],    
+        "_comment": "all"},
+    "exploration":{
+        "type": "lmp",
+        "config": {
+            "command": "lmp -var restart 0",
+            "shuffle_models": false, 
+            "head": null},
+            "tasks": [
+                {
+                    "_comment": "group 1, perturb + short MD with DPA pre-trained model",
+                    "conf_idx": [0],
+                    "n_sample":10,
+                    "exploration":{
+                        "type": "lmp-md",
+                        "ensemble": "npt",
+                        "dt":0.005,
+                        "nsteps": 100,
+                        "temps": [900],
+                        "press":[1,1000,10000],
+                        "trj_freq": 20},
+                    "max_sample": 10000}]},
+    "validation":{
+        "_comment":"leave "
     }
 }

@@ -38,8 +38,6 @@ from dpgen2.utils.step_config import (
     init_executor
 )
 
-
-
 class Distillation(Steps):
     def __init__(
         self,
@@ -55,7 +53,9 @@ class Distillation(Steps):
         self._input_parameters ={
             "block_id": InputParameter(),
             "type_map": InputParameter(),
-            "config":InputParameter(), # Total input parameter file: to be changed in the future
+            "mass_map": InputParameter(),
+            "expl_tasks":InputParameter(),
+            "pert_config":InputParameter(), # Total input parameter file: to be changed in the future
             "numb_models": InputParameter(type=int),
             "template_script": InputParameter(),
             "train_config": InputParameter(),
@@ -67,7 +67,8 @@ class Distillation(Steps):
         self._input_artifacts = {
             "init_confs": InputArtifact(),
             "teacher_model" : InputArtifact(),
-            "iter_data": InputArtifact(), # empty list
+            "init_data": InputArtifact(optional=True),
+            "iter_data": InputArtifact(optional=True), # empty list
             "validation_data": InputArtifact(optional=True)
         }
         self._output_parameters ={
@@ -147,14 +148,11 @@ def _dist_cl(
             **pert_gen_template_config
         ),
         parameters={
-            "config": dist_steps.inputs.parameters["config"]
-        },
+            "config": dist_steps.inputs.parameters["pert_config"]},
         artifacts={
-            "init_confs":dist_steps.inputs.artifacts["init_confs"]
-        },
+            "init_confs":dist_steps.inputs.artifacts["init_confs"]},
         key="--".join(
-            ["%s" %dist_steps.inputs.parameters["block_id"], "pert-gen"]
-        ),
+            ["%s" %dist_steps.inputs.parameters["block_id"], "pert-gen"]),
         executor=pert_gen_executor,
         **pert_gen_step_config
     )
@@ -165,10 +163,10 @@ def _dist_cl(
         template=expl_block_op,
         parameters={
             "block_id": dist_steps.inputs.parameters["block_id"],
-            "config": dist_steps.inputs.parameters["config"],
+            "expl_tasks": dist_steps.inputs.parameters["expl_tasks"],
             "explore_config": dist_steps.inputs.parameters["explore_config"],
-            "type_map": dist_steps.inputs.parameters["type_map"], 
-        },
+            "type_map": dist_steps.inputs.parameters["type_map"],
+            "mass_map": dist_steps.inputs.parameters["mass_map"]},
         artifacts={
             "systems": pert_gen.outputs.artifacts["pert_sys"],
             "additional_systems" : pert_gen.outputs.artifacts["pert_sys"],
@@ -211,8 +209,9 @@ def _dist_cl(
             "template_script": dist_steps.inputs.parameters["template_script"]
         },
         artifacts={
-            "init_data":inference.outputs.artifacts["labeled_systems"],
-            "iter_data":dist_steps.inputs.artifacts["iter_data"]
+            "init_data":dist_steps.inputs.artifacts["init_data"],
+            "iter_data":inference.outputs.artifacts["root_labeled_systems"],
+            
         },
         key="--".join(["%s" %dist_steps.inputs.parameters["block_id"], "prep-run-dp"]),
     )
@@ -222,11 +221,11 @@ def _dist_cl(
         name+"-validation",
         template=expl_block_op,
         parameters={
-            "block_id": dist_steps.inputs.parameters["block_id"]+"val",
-            "config": dist_steps.inputs.parameters["config"],
+            "block_id": dist_steps.inputs.parameters["block_id"],
+            "expl_tasks": dist_steps.inputs.parameters["expl_tasks"],
             "explore_config": dist_steps.inputs.parameters["explore_config"],
-            "type_map": dist_steps.inputs.parameters["type_map"], 
-        },
+            "type_map": dist_steps.inputs.parameters["type_map"],
+            "mass_map": dist_steps.inputs.parameters["mass_map"]},
         artifacts={
             "systems": pert_gen.outputs.artifacts["pert_sys"],
             "additional_systems" : dist_steps.inputs.artifacts["validation_data"],

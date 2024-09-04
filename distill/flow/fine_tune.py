@@ -26,6 +26,7 @@ from dflow import (
     Outputs,
     Step,
     Steps,
+    ShellOPTemplate
 )
 from dflow.python import (
     OP,
@@ -41,10 +42,24 @@ from dpgen2.fp import (
     PrepFpOpAbacus
 )
 
-from dpgen2.superop import (
-    PrepRunFp
+from dpgen2.op import (
+        PrepLmp,
+        PrepDPTrain,
+        RunDPTrain
 )
-
+from dpgen2.superop import (
+        PrepRunLmp,
+        PrepRunDPTrain,
+        PrepRunFp
+    )
+from regex import D
+from distill.op import (
+    RunLmp
+)
+from distill.superop import (
+    ExplFinetuneLoop,
+    ExplFinetuneBlock
+)
 
 class FineTune(Steps):
     def __init__(
@@ -53,33 +68,47 @@ class FineTune(Steps):
         pert_gen_op: Type[OP],
         prep_run_fp_op: OPTemplate,
         collect_data_op:Type[OP],
-        prep_run_dp_op: OPTemplate,
+        prep_run_dp_train_op: OPTemplate,
+        md_expl_op: OPTemplate,
+        expl_finetune_loop_op:OPTemplate,
         inference_op: Type[OP],
-        #collect_data_config: dict, # for partition of traj
         pert_gen_step_config: dict,
         collect_data_step_config:dict,
         inference_step_config: dict,
-        upload_python_packages: Optional[List[os.PathLike]] = None
+        upload_python_packages: Optional[List[os.PathLike]] = None,
+        init_training = False,
+        skip_aimd: bool = True
     ):
         self._input_parameters ={
             "block_id": InputParameter(),
             "type_map": InputParameter(),
-            "config":InputParameter(), # Total input parameter file: to be changed in the future
+            "mass_map": InputParameter(),
+            "pert_config":InputParameter(), # Total input parameter file: to be changed in the future
+            # md exploration 
             "numb_models": InputParameter(type=int),
+            "expl_stages": InputParameter(),
+            "max_iter": InputParameter(),
+            "explore_config": InputParameter(),
+            # training
             "template_script": InputParameter(),
             "train_config": InputParameter(),
-            "inference_config": InputParameter(),
+            # fp calculation for labeling
             "fp_config":InputParameter(),
-            "collect_data_config":InputParameter()
+            # fp exploration
+            "aimd_config": InputParameter(),
+            "collect_data_config":InputParameter(),
+            "converge_config":InputParameter()
         }
         self._input_artifacts = {
             "init_confs": InputArtifact(),
+            "expl_models": InputArtifact(optional=True),
             "init_models": InputArtifact(),
-            "iter_data": InputArtifact(), # empty list
+            "iter_data": InputArtifact(optional=True),
+            "init_data": InputArtifact(optional=True),
             "validation_data": InputArtifact(optional=True)
         }
         self._output_parameters ={
-            #"fine_tune_report":OutputParameter()
+            
         }
         self._output_artifacts = {
             "fine_tuned_model": OutputArtifact(),
@@ -103,16 +132,18 @@ class FineTune(Steps):
             self,
             self._keys,
             name,
-            pert_gen_op,
-            prep_run_fp_op,
-            prep_run_dp_op,
-            collect_data_op,
-            inference_op,
-            #collect_data_config,
-            pert_gen_step_config,
-            collect_data_step_config,
-            inference_step_config,
-            upload_python_packages=upload_python_packages
+            pert_gen_op=pert_gen_op,
+            prep_run_fp_op=prep_run_fp_op,
+            prep_run_dp_train_op=prep_run_dp_train_op,
+            collect_data_op=collect_data_op,
+            inference_op=inference_op,
+            md_expl_op=md_expl_op,
+            expl_finetune_loop_op=expl_finetune_loop_op,
+            pert_gen_step_config=pert_gen_step_config,
+            collect_data_config=collect_data_step_config,
+            upload_python_packages=upload_python_packages,
+            init_training=init_training,
+            skip_aimd=skip_aimd
         )
         
     @property
@@ -130,7 +161,7 @@ class FineTune(Steps):
     @property
     def output_artifacts(self):
         return self._output_artifacts
-        
+
 def _fine_tune_cl(
     ft_steps,
     step_keys: Dict[str, Any],
@@ -138,23 +169,21 @@ def _fine_tune_cl(
     pert_gen_op: Type[OP],
     prep_run_fp_op: OPTemplate,
     prep_run_dp_train_op: OPTemplate,
+    md_expl_op: OPTemplate,
+    expl_finetune_loop_op: OPTemplate,
     collect_data_op: Type[OP],
     inference_op: Type[OP],
-    #collect_data_config:dict,
     pert_gen_step_config: dict,
-    collect_data_step_config: dict,
-    inference_step_config: dict,
-    upload_python_packages: Optional[List[os.PathLike]] = None
+    collect_data_config: dict,
+    upload_python_packages: Optional[List[os.PathLike]] = None,
+    init_training: bool = True,
+    skip_aimd: bool = True
 ):
     pert_gen_step_config = deepcopy(pert_gen_step_config)
     pert_gen_template_config = pert_gen_step_config.pop("template_config")
     pert_gen_executor = init_executor(pert_gen_step_config.pop("executor"))
     
-    inference_step_config = deepcopy(inference_step_config)
-    inference_template_config = inference_step_config.pop("template_config")
-    inference_executor = init_executor(inference_step_config.pop("executor"))
-    
-    collect_data_step_config = deepcopy(collect_data_step_config)
+    collect_data_step_config = deepcopy(collect_data_config)
     collect_data_template_config = collect_data_step_config.pop("template_config")
     collect_data_executor = init_executor(collect_data_step_config.pop("executor"))
     
@@ -166,7 +195,7 @@ def _fine_tune_cl(
             **pert_gen_template_config
         ),
         parameters={
-            "config": ft_steps.inputs.parameters["config"]
+            "config": ft_steps.inputs.parameters["pert_config"]
         },
         artifacts={
             "init_confs":ft_steps.inputs.artifacts["init_confs"]
@@ -179,172 +208,99 @@ def _fine_tune_cl(
     )
     ft_steps.add(pert_gen)
     
-    # AIMD simulation
-    prep_run_fp = Step(
-        name=name + "-prep-run-fp",
-        template=prep_run_fp_op,
-        parameters={
-            "block_id": ft_steps.inputs.parameters["block_id"],
-            "fp_config": ft_steps.inputs.parameters["fp_config"],
-            "type_map": ft_steps.inputs.parameters["type_map"],
-        },
-        artifacts={
-            "confs": pert_gen.outputs.artifacts["confs"],
-        },
-        key="--".join(
-            ["%s" % ft_steps.inputs.parameters["block_id"], "prep-run-fp"]
-        ),
-    )
-    ft_steps.add(prep_run_fp)
-    
-    
-    # Collect AIMD result
-    collect_data = Step(
-        name=name + "-collect-data",
-        template=PythonOPTemplate(
-            collect_data_op,
-            #output_artifact_archive={"iter_data": None},
-            python_packages=upload_python_packages,
-            **collect_data_template_config,
-        ),
-        parameters={
-            "optional_parameters": ft_steps.inputs.parameters["collect_data_config"],
-            "type_map": ft_steps.inputs.parameters["type_map"],
-        },
-        artifacts={
-            "systems": prep_run_fp.outputs.artifacts["labeled_data"],
-        },
-        key="--".join(
-            ["%s" % ft_steps.inputs.parameters["block_id"], "collect-data"]
-        ),
-        executor=collect_data_executor,
-        **collect_data_step_config,
-    )
-    ft_steps.add(collect_data)
-    
-    # training set filtering
-    check_force_train = Step(
-        name+ "-data-train-check",
-        template=PythonOPTemplate(
-            inference_op,
-            python_packages=upload_python_packages,
-            **inference_template_config
-        ),
-        parameters={
-            "inference_config": ft_steps.inputs.parameters["inference_config"],
-            "type_map": ft_steps.inputs.parameters["type_map"]
-        },
-        artifacts={
-            "systems": collect_data.outputs.artifacts["systems"],
-            "model":ft_steps.inputs.artifacts["init_models"][0]
-        },
-        key="--".join(
-            ["%s" %ft_steps.inputs.parameters["block_id"], "filter-train"]
-        ),
-        executor=inference_executor
-    )
-    
-    check_force_test = Step(
-        name+ "-data-test-check",
-        template=PythonOPTemplate(
-            inference_op,
-            python_packages=upload_python_packages,
-            **inference_template_config
-        ),
-        parameters={
-            "inference_config": ft_steps.inputs.parameters["inference_config"],
-            "type_map": ft_steps.inputs.parameters["type_map"]
-        },
-        artifacts={
-            "systems": collect_data.outputs.artifacts["test_systems"],
-            "model":ft_steps.inputs.artifacts["init_models"][0]
-        },
-        key="--".join(
-            ["%s" %ft_steps.inputs.parameters["block_id"], "filter-test"]
-        ),
-        executor=inference_executor
-    )
-    ft_steps.add([check_force_train,check_force_test])
-    
-    
-    # fine-tune
-    finetune_optional_parameter = {
-        "mixed_type": False,#config["inputs"]["mixed_type"],
-        "finetune_mode": "finetune",
-    }
-    
-    prep_run_ft = Step(
-        name + "-prep-run-dp-train",
-        template=prep_run_dp_train_op,
-        parameters={
-            "block_id": ft_steps.inputs.parameters["block_id"],
+    if init_training is True:
+        # if skip AIMD exploration
+        if skip_aimd is True: 
+            loop_iter_data=ft_steps.inputs.artifacts.get("iter_data")
+        # if execute AIMD exploration    
+        else:
+            prep_run_fp = Step(
+                name=name + "-prep-run-fp",
+                template=prep_run_fp_op,
+                parameters={
+                    "block_id": ft_steps.inputs.parameters["block_id"],
+                    "fp_config": ft_steps.inputs.parameters["aimd_config"],
+                    "type_map": ft_steps.inputs.parameters["type_map"]},
+                artifacts={
+                    "confs": pert_gen.outputs.artifacts["confs"]},
+                key="--".join(
+                    ["aimd-expl", "prep-run-fp"]))
+            ft_steps.add(prep_run_fp)
+            collect_data = Step(
+                name=name + "-collect-aimd",
+                template=PythonOPTemplate(
+                    collect_data_op,
+                    python_packages=upload_python_packages,
+                    **collect_data_template_config),
+                parameters={
+                    "optional_parameters": ft_steps.inputs.parameters["collect_data_config"],
+                    "type_map": ft_steps.inputs.parameters["type_map"]},
+                artifacts={
+                    "systems": prep_run_fp.outputs.artifacts["labeled_data"]},
+                key="--".join(
+                    ["aimd-expl", "collect-data"]),
+                executor=collect_data_executor,
+                **collect_data_step_config)
+            ft_steps.add(collect_data)
+            loop_iter_data=collect_data.outputs.artifacts["multi_systems"]
+        
+        # init model training
+        prep_run_ft = Step(
+            name + "-prep-run-dp-train",
+            template=prep_run_dp_train_op,
+            parameters={
+            "block_id": "init-training",
             "train_config": ft_steps.inputs.parameters["train_config"],
             "numb_models": ft_steps.inputs.parameters["numb_models"],
             "template_script": ft_steps.inputs.parameters["template_script"],
-            "run_optional_parameter": finetune_optional_parameter
-        },
-        artifacts={
+            "run_optional_parameter":{
+                "mixed_type": False,
+                "finetune_mode": "finetune"}},
+            artifacts={
             "init_models": ft_steps.inputs.artifacts["init_models"],
-            "init_data": check_force_train.outputs.artifacts["labeled_systems"],
-            "iter_data": ft_steps.inputs.artifacts["iter_data"],
-            
+            "init_data": ft_steps.inputs.artifacts["init_data"],
+            "iter_data": loop_iter_data#collect_data.outputs.artifacts["multi_systems"]#steps.inputs.artifacts["iter_data"],
         },
-        key="--".join(
-            ["%s" % ft_steps.inputs.parameters["block_id"], "prep-run-train"]
-        ),
-    )
-    ft_steps.add(prep_run_ft)
-    
-    # validation
-    validation = Step(
-        name+ "-dp-test-validation",
-        template=PythonOPTemplate(
-            inference_op,
-            python_packages=upload_python_packages,
-            **inference_template_config
-        ),
+            key="--".join(
+                ["aimd-init-ft", "prep-run-train"]))
+        ft_steps.add(prep_run_ft)
+        expl_models=prep_run_ft.outputs.artifacts.get("models")
+    # if skip initial model training
+    else:
+        loop_iter_data=ft_steps.inputs.artifacts.get("iter_data")
+        expl_models=ft_steps.inputs.artifacts.get("expl_models")
+
+    loop= Step(
+        name = "ft-loop",
+        template=expl_finetune_loop_op,
         parameters={
-            "inference_config": {"task":"dp_test"},#ft_steps.inputs.parameters["inference_config"],
-            "type_map": ft_steps.inputs.parameters["type_map"]
-        },
-        artifacts={
-            "systems": check_force_test.outputs.artifacts["labeled_systems"],
-            "model":prep_run_ft.outputs.artifacts["models"][0]
-        },
-        key="--".join(
-            ["%s" %ft_steps.inputs.parameters["block_id"], "validation-test"]
-        ),
-        executor=inference_executor
-    )
-    
-    # training set
-    validation_training_set = Step(
-        name+ "-dp-test-training-set",
-        template=PythonOPTemplate(
-            inference_op,
-            python_packages=upload_python_packages,
-            **inference_template_config
-        ),
-        parameters={
-            "inference_config": {"task":"dp_test"},   #ft_steps.inputs.parameters["inference_config"],
-            "type_map": ft_steps.inputs.parameters["type_map"]
-        },
-        artifacts={
-            "systems": check_force_train.outputs.artifacts["labeled_systems"],
-            "model":prep_run_ft.outputs.artifacts["models"][0]
-        },
-        key="--".join(
-            ["%s" %ft_steps.inputs.parameters["block_id"], "validation-train"]
-        ),
-        executor=inference_executor
-    )
-    ft_steps.add([validation,validation_training_set])  
-    
+                "fp_config": ft_steps.inputs.parameters["fp_config"],
+                "type_map": ft_steps.inputs.parameters["type_map"],
+                "mass_map": ft_steps.inputs.parameters["mass_map"],
+                "expl_stages":ft_steps.inputs.parameters["expl_stages"],
+                "numb_models": ft_steps.inputs.parameters["numb_models"],
+                "template_script": ft_steps.inputs.parameters["template_script"], 
+                "train_config": ft_steps.inputs.parameters["train_config"],
+                "explore_config": ft_steps.inputs.parameters["explore_config"],
+                "dp_test_validation_config": {},
+                "max_iter":ft_steps.inputs.parameters["max_iter"],
+                "converge_config": ft_steps.inputs.parameters["converge_config"]
+                },
+            artifacts={
+                "systems": pert_gen.outputs.artifacts["pert_sys"], # starting systems for model deviation
+                "current_model" : expl_models,#ft_steps.inputs.artifacts["expl_models"],
+                "init_model": ft_steps.inputs.artifacts["init_models"], # starting point for finetune
+                "init_data": ft_steps.inputs.artifacts["init_data"], # initial data for model finetune
+                "iter_data": loop_iter_data #ft_steps.inputs.artifacts["iter_data"],
+                },
+            key="--".join(
+                ["%s" % "test", "-fp"]))
+    ft_steps.add(loop)
     ft_steps.outputs.artifacts[
         "fine_tuned_model"
-        ]._from = prep_run_ft.outputs.artifacts["models"][0]
+        ]._from = loop.outputs.artifacts["ft_model"][0]
     ft_steps.outputs.artifacts[
         "fine_tune_report"
-        ]._from = validation.outputs.artifacts["report"]
+        ]._from = loop.outputs.artifacts["iter_data"]
     
 
