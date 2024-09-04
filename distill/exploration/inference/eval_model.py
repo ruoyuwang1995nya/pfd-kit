@@ -7,7 +7,7 @@ from pathlib import Path
 class EvalModel(ABC):
     def __init__(
         self,
-        model:Path|str,
+        model: Path|str,
         data: Path|str,
         **kwargs):
         self._data=None

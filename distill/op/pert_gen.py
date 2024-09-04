@@ -75,7 +75,7 @@ class PertGen(OP):
             - `task_paths`: (`Artifact(List[Path])`) The parepared working paths of the tasks. Contains all input files needed to start the LAMMPS simulation. The order fo the Paths should be consistent with `op["task_names"]`
         """
         init_confs=ip["init_confs"]
-        gen_config=ip["config"]["conf_generation"]
+        gen_config=ip["config"]#["conf_generation"]
         
         pert_configs=gen_config["pert_generation"]
         if pert_configs[0]["conf_idx"]=="default":

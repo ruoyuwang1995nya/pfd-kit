@@ -3,7 +3,7 @@
     "bohrium_config": {
         "username": "urname",
         "password": "urpassword",
-        "project_id": 12345,
+        "project_id": 123456,
         "_comment": "all"
     },
     "default_step_config": {
@@ -42,12 +42,7 @@
                         "input_data": {
                             "job_type": "container",
                             "platform": "ali",
-                            "scass_type": "1 * NVIDIA V100_32g"
-                        }
-                    }
-                }
-            }
-        },
+                            "scass_type": "1 * NVIDIA V100_32g"}}}}},
         "run_explore_config": {
             "template_config": {
                 "image": "registry.dp.tech/dptech/deepmd-kit:2024Q1-d23cf3e"
@@ -63,20 +58,13 @@
                         "input_data": {
                             "job_type": "container",
                             "platform": "ali",
-                            "scass_type": "1 * NVIDIA V100_32g"
-                        }
-                    }
-                }
-            }
-        },
+                            "scass_type": "1 * NVIDIA V100_32g"}}}}},
         "inference_config": {
             "template_config": {
-                "image": "registry.dp.tech/dptech/deepmd-kit:2024Q1-d23cf3e",
-                "_comment": "all"
-            },
-            "continue_on_success_ratio": 0.8,
+                "image": "registry.dp.tech/dptech/deepmd-kit:2024Q1-d23cf3e"},
             "executor": {
                 "type": "dispatcher",
+                "retry_on_submission_error": 10,
                 "image_pull_policy": "IfNotPresent",
                 "machine_dict": {
                     "batch_type": "Bohrium",
@@ -85,13 +73,7 @@
                         "input_data": {
                             "job_type": "container",
                             "platform": "ali",
-                            "scass_type": "1 * NVIDIA A100_80g"
-                        }
-                    }
-                }
-            },
-            "_comment": "all"
-        },
+                            "scass_type": "1 * NVIDIA V100_32g"}}}}},
         "_comment": "all"
     },
     "upload_python_packages": [
@@ -130,58 +112,42 @@
             "Lu",
             "Ta"
         ],
-        "mass_map": [
-            6.94, 10.81, 15.999, 26.9815385, 28.085, 
-            30.973761998, 32.06, 35.45, 44.955908, 
-            69.723, 72.63, 74.921595, 78.971, 79.904, 88.90584, 
-            91.224, 114.818, 118.71, 121.76, 126.90447, 162.5, 
-            164.93033, 167.259, 168.93422, 173.045, 174.9668, 180.94788
-        ],
         "teacher_model":"./frozen_model.pb",
         "_comment": "all"
     },
     "train": {
-        "comment":"Training script for downstream DeePMD model",
+        "_comment":"Training script for downstream DeePMD model",
         "type": "dp",
         "config": {
             "_impl": "pytorch",
             "init_model_policy": "no",
-            "_comment": "all"
-        },
-        "template_script": "train.json",
-        "_comment": "all"
-    },
-    
+            "_comment": "all"},
+        "template_script": "train.json"},
     "inference":{
         "max_force":10,
-        "_comment":"force cutoff for generated confs"
-    },
+        "_comment":"force cutoff for generated confs"},
     "conf_generation": {
-        "type": "lmp",
-        "config": {
-            "command": "lmp -var restart 0",
-            "shuffle_models": false, 
-            "head": null
-        },
         "init_configurations":
             {
             "type": "file",
             "prefix": "./",
             "fmt": "vasp/poscar",
             "files": [
-                    "conf/conf-00/POSCAR"
-                ]},
+                    "conf/conf-00/POSCAR"]},
             
         "pert_generation":[
-            {
-            "conf_idx": "default",
+            {"conf_idx": "default",
             "atom_pert_distance":0.1,
             "cell_pert_fraction":0.03,
-            "pert_num": 200
-            }
-            ],    
-        
-        "expl_tasks": [
+            "pert_num": 200}],    
+        "_comment": "all"},
+    "exploration":{
+        "type": "lmp",
+        "config": {
+            "command": "lmp -var restart 0",
+            "shuffle_models": false, 
+            "head": null},
+            "tasks": [
                 {
                     "_comment": "group 1, perturb + short MD with DPA pre-trained model",
                     "conf_idx": [0],
@@ -190,18 +156,11 @@
                         "type": "lmp-md",
                         "ensemble": "npt",
                         "dt":0.005,
-                        "nsteps": 1000,
+                        "nsteps": 100,
                         "temps": [900],
                         "press":[1,1000,10000],
-                        "trj_freq": 20
-                    },
-                    
-                    "max_sample": 10000
-                }
-                
-        ],
-        "_comment": "all"
-    },
+                        "trj_freq": 20},
+                    "max_sample": 10000}]},
     "validation":{
         "_comment":"leave "
     }

@@ -242,21 +242,21 @@ def get_systems_from_data(data, data_prefix=None):
 
 
 def workflow_dist(
-    config_dict:Dict,
+    config:Dict,
 )-> Step:
     """
     Build a workflow from the OP templates of distillation
     """
     ## get input config 
-    default_step_config=config_dict["default_step_config"]
-    prep_train_step_config=config_dict["step_configs"].get("prep_train_config",default_step_config)
-    run_train_step_config=config_dict["step_configs"].get("run_train_config",default_step_config)
-    prep_lmp_step_config = config_dict["step_configs"].get("prep_explore_config",default_step_config)
-    run_lmp_step_config = config_dict["step_configs"].get("run_explore_config",default_step_config)
-    gen_lmp_step_config = config_dict["step_configs"].get("gen_lmp_config",default_step_config)
-    collect_data_step_config = config_dict["step_configs"].get("collect_data_config",default_step_config)
-    pert_gen_step_config = config_dict["step_configs"].get("pert_gen_config",default_step_config)
-    inference_step_config= config_dict["step_configs"].get("inference_config",default_step_config)
+    default_step_config=config["default_step_config"]
+    prep_train_step_config=config["step_configs"].get("prep_train_config",default_step_config)
+    run_train_step_config=config["step_configs"].get("run_train_config",default_step_config)
+    prep_lmp_step_config = config["step_configs"].get("prep_explore_config",default_step_config)
+    run_lmp_step_config = config["step_configs"].get("run_explore_config",default_step_config)
+    gen_lmp_step_config = config["step_configs"].get("gen_lmp_config",default_step_config)
+    collect_data_step_config = config["step_configs"].get("collect_data_config",default_step_config)
+    pert_gen_step_config = config["step_configs"].get("pert_gen_config",default_step_config)
+    inference_step_config= config["step_configs"].get("inference_config",default_step_config)
     
     # uploaded python packages
     upload_python_packages=[]
@@ -266,25 +266,35 @@ def workflow_dist(
     upload_python_packages.extend(list(dpgen2.__path__))
     
     ## task configs
-    config_dict_total=deepcopy(config_dict)
-    type_map=config_dict["inputs"]["type_map"]
-    train_config=config_dict["train"]["config"]
-    numb_models=config_dict["train"].get("numb_models",1)
-    explore_config=config_dict["conf_generation"]["config"]
-    inference_config=config_dict["inference"]
+    type_map=config["inputs"]["type_map"]
+    if config["inputs"].get("mass_map") is not None:
+        mass_map=config["inputs"]["mass_map"]
+    else:
+        mass_map=[getattr(elements,ii).mass for ii in type_map]
+    pert_config=config["conf_generation"]
+    train_config=config["train"]["config"]
+    numb_models=config["train"].get("numb_models",1)
+    explore_config=config["exploration"]["config"]
+    expl_tasks=config["exploration"]["tasks"]
+    inference_config=config["inference"]
     dp_test_config=deepcopy(inference_config)
     dp_test_config["task"]="dp_test"
     
-    
     ## prepare artifacts
     # read training template
-    with open(config_dict["train"]["template_script"],'r') as fp:
+    with open(config["train"]["template_script"],'r') as fp:
         template_script=json.load(fp)
-    init_confs=upload_artifact(config_dict["conf_generation"]["init_configurations"]["files"])
-    teacher_model = upload_artifact([config_dict["inputs"]["teacher_model"]])
-    iter_data = upload_artifact([])
-
-    
+    init_confs=upload_artifact(config["conf_generation"]["init_configurations"]["files"])
+    teacher_model = upload_artifact([config["inputs"]["teacher_model"]])
+    if config["inputs"]["init_data_uri"] is not None:
+        init_data = get_artifact_from_uri(config["inputs"]["init_data_uri"])
+    elif config["inputs"]["init_data_sys"] is not None:
+        init_data_prefix = config["inputs"]["init_data_prefix"]
+        init_data = config["inputs"]["init_data_sys"]
+        init_data = get_systems_from_data(init_data, init_data_prefix)
+        init_data = upload_artifact_and_print_uri(init_data, "init_data")
+    else:
+        init_data = upload_artifact([])
     # make distillation op
     dist_op=make_dist_op(
         prep_lmp_step_config,
@@ -305,7 +315,9 @@ def workflow_dist(
         parameters={
             "block_id": "dist",
             "type_map": type_map,
-            "config":config_dict_total, # Total input parameter file: to be changed in the future
+            "mass_map": mass_map,
+            "pert_config":pert_config,
+            "expl_tasks":expl_tasks,
             "numb_models": numb_models,
             "template_script": template_script,
             "train_config": train_config,
@@ -317,11 +329,8 @@ def workflow_dist(
         artifacts={
             "init_confs": init_confs,
             "teacher_model" : teacher_model,
-            "iter_data": iter_data,
-            #"validation_data": InputArtifact(optional=True)
-        }
-        
-    )
+            "init_data": init_data,
+            })
     return dist_step
 
 def workflow_finetune(
@@ -352,7 +361,6 @@ def workflow_finetune(
     upload_python_packages.extend(list(fpop.__path__))
     
     ## task configs
-    config_dict_total=deepcopy(config)
     type_map=config["inputs"]["type_map"]
     if config["inputs"].get("mass_map") is not None:
         mass_map=config["inputs"]["mass_map"]
@@ -361,6 +369,7 @@ def workflow_finetune(
         
     train_config=config["train"]["config"]
     numb_models=config["train"].get("numb_models",1)
+    pert_config=config["conf_generation"]
     explore_config=config["exploration"]["md"]["config"]
     max_iter=config["exploration"]["md"].get("max_iter",1)
     converge_config=config["exploration"]["converge_config"]
@@ -374,7 +383,6 @@ def workflow_finetune(
     collect_data_config["test_size"]=config["conf_generation"].get("test_data",0.05)
     collect_data_config["system_partition"]=config["conf_generation"].get("system_partition",False)
     collect_data_config["labeled_data"]=True
-    
     
     ## prepare artifacts
     # read training template
@@ -440,7 +448,7 @@ def workflow_finetune(
             "block_id": "finetune",
             "type_map": type_map,
             "mass_map": mass_map,
-            "config":config_dict_total, # Total input parameter file: to be changed in the future
+            "pert_config":pert_config, # Total input parameter file: to be changed in the future
             "numb_models": numb_models,
             "expl_stages": expl_stages,
             "converge_config": converge_config,
@@ -465,9 +473,7 @@ def workflow_finetune(
 def submit_dist(
     wf_config,
     reuse_step: Optional[List[ArgoStep]] = None,
-    #replace_scheduler: bool = False,
-    no_submission: bool = False,
-):  
+    no_submission: bool = False):  
     """
     Major entry point for the whole workflow, only one config dict
     """

@@ -83,7 +83,7 @@ class FineTune(Steps):
             "block_id": InputParameter(),
             "type_map": InputParameter(),
             "mass_map": InputParameter(),
-            "config":InputParameter(), # Total input parameter file: to be changed in the future
+            "pert_config":InputParameter(), # Total input parameter file: to be changed in the future
             # md exploration 
             "numb_models": InputParameter(type=int),
             "expl_stages": InputParameter(),
@@ -195,7 +195,7 @@ def _fine_tune_cl(
             **pert_gen_template_config
         ),
         parameters={
-            "config": ft_steps.inputs.parameters["config"]
+            "config": ft_steps.inputs.parameters["pert_config"]
         },
         artifacts={
             "init_confs":ft_steps.inputs.artifacts["init_confs"]
@@ -270,7 +270,6 @@ def _fine_tune_cl(
         loop_iter_data=ft_steps.inputs.artifacts.get("iter_data")
         expl_models=ft_steps.inputs.artifacts.get("expl_models")
 
-
     loop= Step(
         name = "ft-loop",
         template=expl_finetune_loop_op,
@@ -297,10 +296,6 @@ def _fine_tune_cl(
             key="--".join(
                 ["%s" % "test", "-fp"]))
     ft_steps.add(loop)
-    
-    
-    
-    
     ft_steps.outputs.artifacts[
         "fine_tuned_model"
         ]._from = loop.outputs.artifacts["ft_model"][0]
