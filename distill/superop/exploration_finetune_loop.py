@@ -282,7 +282,7 @@ def _expl_ft_blk(
             "models":steps.inputs.artifacts["current_model"]
         },
         key="--".join(
-            ["%s" %steps.inputs.parameters["block_id"], "prep-run-lmp"]
+            ["%s" %steps.inputs.parameters["block_id"], "prep-run-explore"]
         )
     )
     steps.add(prep_run_explore)
