@@ -43,6 +43,7 @@ from dpgen2.superop import (
 
 from dpgen2.op import (
     PrepLmp,
+    RunLmp,
     PrepDPTrain,
     RunDPTrain
 )
@@ -53,7 +54,6 @@ from distill.op import (
     TaskGen,
     CollectData,
     Inference,
-    RunLmp,
     SelectConfs,
     ModelTestOP
 )
