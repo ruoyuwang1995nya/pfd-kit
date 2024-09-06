@@ -28,4 +28,8 @@ from .model_test import (
     ModelTestOP
 )
 
+from .select_confs import (
+    SelectConfs
+)
+
 from .stage import StageScheduler

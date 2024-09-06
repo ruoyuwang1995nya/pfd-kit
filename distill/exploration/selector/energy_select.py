@@ -1,7 +1,7 @@
-from .conf_selector import ConfSelect
+from .conf_selector import ConfSelector
 from pathlib import Path
 import dpdata
-class EnergySelect(ConfSelect):
+class EnergySelect(ConfSelector):
     def select(
         self,
         system:Path|str,

@@ -39,11 +39,6 @@ from dpgen2.utils.step_config import (
     init_executor
 )
 
-from dpgen2.superop import (
-    PrepRunFp
-)
-from traitlets import Bool
-
 from distill.op import (
     EvalConv,
     NextLoop,
@@ -56,15 +51,18 @@ class ExplFinetuneBlock(Steps):
     def __init__(
         self,
         name:str,
-        md_expl_op: OPTemplate,
+        gen_task_op: Type[OP],
+        prep_run_explore_op:OPTemplate,
         prep_run_fp_op: OPTemplate,
         collect_data_op:Type[OP],
+        select_confs_op:Type[OP],
         prep_run_train_op: OPTemplate,
         inference_op: Type[OP],
         collect_data_step_config:dict,
         inference_step_config: dict,
+        select_confs_step_config:dict,
+        gen_task_step_config: dict,
         upload_python_packages: Optional[List[os.PathLike]] = None,
-        skip_training: bool = False 
     ):
         self._input_parameters = {
             "block_id": InputParameter(),
@@ -78,6 +76,7 @@ class ExplFinetuneBlock(Steps):
             "fp_config":InputParameter(),
             "collect_data_config":InputParameter(),
             "dp_test_validation_config": InputParameter(),
+            "conf_selector": InputParameter(),
             "converge_config": InputParameter(value={})
         }
         self._input_artifacts = {
@@ -109,16 +108,20 @@ class ExplFinetuneBlock(Steps):
         )
         self=_expl_ft_blk(
             self,
-            name,
-            md_expl_op,
-            prep_run_fp_op,
-            prep_run_train_op,
-            inference_op,
-            collect_data_op,
-            collect_data_step_config,
-            inference_step_config,
+            name=name,
+            gen_task_op=gen_task_op,
+            prep_run_explore_op=prep_run_explore_op,
+            prep_run_fp_op=prep_run_fp_op,
+            prep_run_train_op=prep_run_train_op,
+            select_confs_op=select_confs_op,
+            inference_op=inference_op,
+            collect_data_op=collect_data_op,
+            # 
+            collect_data_step_config=collect_data_step_config,
+            inference_step_config=inference_step_config,
+            select_confs_step_config=select_confs_step_config,
+            gen_task_step_config=gen_task_step_config,
             upload_python_packages=upload_python_packages,
-            skip_training=skip_training
         )
     @property
     def input_parameters(self):
@@ -136,18 +139,11 @@ class ExplFinetuneBlock(Steps):
     def output_artifacts(self):
         return self._output_artifacts
 
-
 class ExplFinetuneLoop(Steps):
     def __init__(
         self,
         name:str,
-        md_expl_op: OPTemplate,
-        prep_run_fp_op: OPTemplate,
-        collect_data_op:Type[OP],
-        prep_run_train_op: OPTemplate,
-        inference_op: Type[OP],
-        collect_data_step_config:dict,
-        inference_step_config: dict,
+        expl_ft_blk_op: OPTemplate,
         upload_python_packages: Optional[List[os.PathLike]] = None,
         
     ):        
@@ -157,6 +153,7 @@ class ExplFinetuneLoop(Steps):
             "mass_map": InputParameter(),
             #"init_expl_model": InputParameter(type=bool),
             "expl_stages":InputParameter(), # Total input parameter file: to be changed in the future
+            "conf_selector":InputParameter(),
             "fp_config":InputParameter(),
             "numb_models": InputParameter(type=int),
             "template_script": InputParameter(), 
@@ -198,13 +195,7 @@ class ExplFinetuneLoop(Steps):
         self=_loop(
             self,
             name=name,
-            md_expl_op=md_expl_op,
-            prep_run_fp_op=prep_run_fp_op,
-            prep_run_train_op=prep_run_train_op,
-            inference_op=inference_op,
-            collect_data_op=collect_data_op,
-            collect_data_step_config=collect_data_step_config,
-            inference_step_config=inference_step_config,
+            expl_ft_blk_op=expl_ft_blk_op,
             upload_python_packages=upload_python_packages,
         )
     @property
@@ -226,45 +217,105 @@ class ExplFinetuneLoop(Steps):
 def _expl_ft_blk(
     steps,
     name:str,
-    md_expl_op: OPTemplate,
+    gen_task_op: Type[OP],
+    prep_run_explore_op:OPTemplate,
     prep_run_fp_op:OPTemplate,
     prep_run_train_op: OPTemplate,
+    select_confs_op: Type[OP],
     inference_op: Type[OP],
     collect_data_op: Type[OP],
+    gen_task_step_config:dict,
+    select_confs_step_config: dict,
     collect_data_step_config:dict,
     inference_step_config: dict,
     upload_python_packages: Optional[List[os.PathLike]] = None,
-    skip_training : bool =True
 ):
     collect_data_step_config = deepcopy(collect_data_step_config)
     collect_data_template_config = collect_data_step_config.pop("template_config")
     collect_data_executor = init_executor(collect_data_step_config.pop("executor"))
-    #skip_training=steps.inputs.parameters["skip_training"]
     
     inference_step_config = deepcopy(inference_step_config)
     inference_template_config = inference_step_config.pop("template_config")
     inference_executor = init_executor(inference_step_config.pop("executor"))
     
-    md_expl = Step(
-        name+"-md-expl",
-        template=md_expl_op,
+    gen_task_step_config = deepcopy(gen_task_step_config)
+    gen_task_template_config = gen_task_step_config.pop("template_config")
+    gen_task_executor = init_executor(gen_task_step_config.pop("executor"))
+    
+    select_confs_step_config = deepcopy(select_confs_step_config)
+    select_confs_template_config = select_confs_step_config.pop("template_config")
+    select_confs_executor = init_executor(select_confs_step_config.pop("executor"))
+    
+    gen_lmp_tasks = Step(
+        name + "gen-lmp-tasks",
+        template=PythonOPTemplate(
+            gen_task_op,
+            python_packages=upload_python_packages,
+            **gen_task_template_config
+        ),
         parameters={
-            "block_id": steps.inputs.parameters["block_id"],
             "expl_tasks": steps.inputs.parameters["expl_tasks"],
-            "explore_config": steps.inputs.parameters["explore_config"],
             "type_map": steps.inputs.parameters["type_map"],
-            "mass_map": steps.inputs.parameters["mass_map"],
+            "mass_map": steps.inputs.parameters["mass_map"]
         },
         artifacts={
             "systems": steps.inputs.artifacts["systems"],
-            "additional_systems" : steps.inputs.artifacts["systems"],
-            "models": steps.inputs.artifacts["current_model"], 
-            },
+        },
         key="--".join(
-                ["%s" %steps.inputs.parameters["block_id"], "md-expl"]
-            ),
+            ["%s" %steps.inputs.parameters["block_id"], "gen-task"]
+        ),
+        executor=gen_task_executor,
+        **gen_task_step_config)
+    
+    steps.add(gen_lmp_tasks)
+    
+    prep_run_explore = Step(
+        name+"prep-run-explore",
+        template=prep_run_explore_op,
+        parameters={
+            "block_id": steps.inputs.parameters["block_id"],
+            "explore_config":steps.inputs.parameters["explore_config"],
+            "type_map": steps.inputs.parameters["type_map"],
+            "expl_task_grp": gen_lmp_tasks.outputs.parameters["lmp_task_grp"],
+        },
+        artifacts={
+            "models":steps.inputs.artifacts["current_model"]
+        },
+        key="--".join(
+            ["%s" %steps.inputs.parameters["block_id"], "prep-run-lmp"]
+        )
     )
-    steps.add(md_expl)
+    steps.add(prep_run_explore)
+    
+    # select reasonable configurations
+    select_confs = Step(
+        name=name + "-select-confs",
+        template=PythonOPTemplate(
+            select_confs_op,
+            output_artifact_archive={"confs": None},
+            python_packages=upload_python_packages,
+            **select_confs_template_config,
+        ),
+        parameters={
+            "conf_selector": steps.inputs.parameters["conf_selector"],
+            "type_map": steps.inputs.parameters["type_map"],
+        },
+        artifacts={
+            "trajs": prep_run_explore.outputs.artifacts["trajs"],
+            #"model_devis": prep_run_explore.outputs.artifacts["model_devis"],
+            #"optional_outputs": prep_run_explore.outputs.artifacts["optional_outputs"]
+            #if "optional_outputs" in prep_run_explore.outputs.artifacts
+            #else None,
+        },
+        key="--".join(
+            ["%s" % steps.inputs.parameters["block_id"], "select-confs"]
+        ),
+        executor=select_confs_executor,
+        **select_confs_step_config,
+    )
+    steps.add(select_confs)
+    
+    
     ## fp calculation
     prep_run_fp = Step(
         name=name + "-prep-run-fp",
@@ -275,7 +326,7 @@ def _expl_ft_blk(
             "type_map": steps.inputs.parameters["type_map"],
         },
         artifacts={
-            "confs": md_expl.outputs.artifacts["expl_systems"],
+            "confs": select_confs.outputs.artifacts["confs"],
         },
         key="--".join(
             ["%s" % steps.inputs.parameters["block_id"], "prep-run-fp"]
@@ -310,7 +361,7 @@ def _expl_ft_blk(
     dp_test = Step(
         name+ "-dp-test",
         template=PythonOPTemplate(
-            ModelTestOP,
+            inference_op,
             python_packages=upload_python_packages,
             **inference_template_config
         ),
@@ -383,14 +434,7 @@ def _expl_ft_blk(
 def _loop(
     loop, # the loop Steps
     name:str,
-    md_expl_op: OPTemplate,
-    prep_run_fp_op:OPTemplate,
-    prep_run_train_op: OPTemplate,
-    inference_op: Type[OP],
-    collect_data_op: Type[OP],
-    collect_data_step_config:dict,
-    inference_step_config: dict,
-    util_step_config: dict = {},
+    expl_ft_blk_op: OPTemplate,
     upload_python_packages: Optional[List[os.PathLike]] = None,
     ):
     # we just need a counter which supplies the iteration
@@ -425,19 +469,6 @@ def _loop(
                 ))
     loop.add(stage_scheduler)
     
-    expl_ft_blk_op=ExplFinetuneBlock(
-            name="expl-ft",
-            md_expl_op=md_expl_op,
-            prep_run_fp_op=prep_run_fp_op,
-            collect_data_op=collect_data_op,
-            prep_run_train_op=prep_run_train_op,
-            inference_op=inference_op,
-            collect_data_step_config=collect_data_step_config,
-            inference_step_config=inference_step_config,
-            upload_python_packages=upload_python_packages,
-            skip_training=False,
-                )
-    
     expl_ft_blk= Step(
         name=name+'-exploration-finetune',
         template=expl_ft_blk_op,
@@ -448,6 +479,7 @@ def _loop(
             #"expl_tasks":loop.inputs.parameters["expl_tasks"],
             "expl_tasks":stage_scheduler.outputs.parameters["tasks"],
             "converge_config":loop.inputs.parameters["converge_config"],
+            "conf_selector":loop.inputs.parameters["conf_selector"],
             # Total input parameter file: to be changed in the future
             "numb_models": loop.inputs.parameters["numb_models"],
             "template_script": loop.inputs.parameters["template_script"], 
@@ -497,6 +529,7 @@ def _loop(
             "type_map": loop.inputs.parameters["type_map"],
             "mass_map":loop.inputs.parameters["mass_map"],
             "expl_stages":loop.inputs.parameters["expl_stages"], # Total input parameter file: to be changed in the future
+            "conf_selector":loop.inputs.parameters["conf_selector"],
             "idx_stage": next_loop.outputs.parameters["idx_stage"],
             "converge_config":loop.inputs.parameters["converge_config"], # Total input parameter file: to be changed in the future
             "numb_models": loop.inputs.parameters["numb_models"],
