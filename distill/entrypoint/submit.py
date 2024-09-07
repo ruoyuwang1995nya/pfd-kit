@@ -361,6 +361,7 @@ def workflow_finetune(
     prep_fp_config=config["step_configs"].get("perp_fp_config",default_config)
     run_fp_config=config["step_configs"].get("run_fp_config",default_config)
     run_collect_data_config = config["step_configs"].get("collect_data_config",default_config)
+    run_select_confs_config = config["step_configs"].get("select_confs_config",default_config)
     run_pert_gen_config = config["step_configs"].get("pert_gen_config",default_config)
     run_inference_config= config["step_configs"].get("inference_config",default_config)
     prep_lmp_config = config["step_configs"].get("prep_explore_config",default_config)
@@ -439,6 +440,7 @@ def workflow_finetune(
     fp_inputs = fp_styles[fp_style]["inputs"](**fp_inputs_config)
     fp_config["inputs"] = fp_inputs
     fp_config["run"] = config["fp"]["run_config"]
+    fp_config["extra_output_files"]=config["fp"].get("extra_output_files",[])
     
     aimd_config = {}
     aimd_inputs_config = config["aimd"]["inputs_config"]
@@ -458,6 +460,7 @@ def workflow_finetune(
         prep_lmp_config=prep_lmp_config,
         run_lmp_config=run_lmp_config,
         collect_data_step_config=run_collect_data_config,
+        select_confs_step_config=run_select_confs_config,
         inference_step_config=run_inference_config,
         upload_python_packages = upload_python_packages,
         init_training=init_training,
