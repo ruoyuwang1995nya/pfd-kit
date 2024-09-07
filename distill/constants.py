@@ -28,5 +28,5 @@ calypso_check_opt_file = "calypso_check_opt.py"
 calypso_opt_log_name = "opt.log"
 calypso_traj_log_name = "traj.traj"
 
-default_image = "registry.dp.tech/dptech/deepmd-kit:2024Q1-d23cf3e"
+default_image = "registry.dp.tech/dptech/deepmd-kit:v3.0.0a1-2024Q1"
 default_host = "127.0.0.1:2746"

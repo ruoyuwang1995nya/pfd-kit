@@ -15,7 +15,7 @@ from .common import (
     global_config_workflow,
 )
 
-from distill.utils.download_dpgen2_artifacts import (
+from distill.utils.download_distill_artifacts import (
     download_dpgen2_artifacts,
     download_dpgen2_artifacts_by_def,
 )

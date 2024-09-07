@@ -271,6 +271,9 @@
         "converge_config":{
                             "type":"energy_rmse",
                             "RMSE":0.1},
+        "filter":[{
+            "type":"distance"},
+        {"type":"box_skewness"}],
         "md":{
             "type": "lmp",
             "config": {

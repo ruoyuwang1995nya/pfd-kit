@@ -213,7 +213,7 @@ def _dist_cl(
             "iter_data":inference.outputs.artifacts["root_labeled_systems"],
             
         },
-        key="--".join(["%s" %dist_steps.inputs.parameters["block_id"], "prep-run-dp"]),
+        key="--".join(["%s" %dist_steps.inputs.parameters["block_id"], "prep-run-train"]),
     )
     dist_steps.add(prep_run_dp)
     
