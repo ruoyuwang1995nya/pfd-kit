@@ -278,7 +278,6 @@ def workflow_dist(
     upload_python_packages.extend(list(dflow.__path__))
     upload_python_packages.extend(list(distill.__path__))
     upload_python_packages.extend(list(dpgen2.__path__))
-    print(upload_python_packages)
     ## task configs
     type_map=config["inputs"]["type_map"]
     if config["inputs"].get("mass_map") is not None:
@@ -377,7 +376,6 @@ def workflow_finetune(
     upload_python_packages.extend(list(dpgen2.__path__))
     upload_python_packages.extend(list(fpop.__path__))
     upload_python_packages.extend(list(ase.__path__))
-    print(upload_python_packages)
     ## task configs
     type_map=config["inputs"]["type_map"]
     if config["inputs"].get("mass_map") is not None:
