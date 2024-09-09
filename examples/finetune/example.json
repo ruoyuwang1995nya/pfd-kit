@@ -1,9 +1,9 @@
 {
-    "name":"finetune",
+    "name":"test-interface",
     "bohrium_config": {
         "username": "urname",
         "password": "123456",
-        "project_id": 12345,
+        "project_id": 123456,
         "_comment": "all"
     },
     "default_step_config": {
@@ -92,6 +92,27 @@
                 }
             }
         },
+        "select_confs_config": { 
+            "template_config": {
+                "image": "registry.dp.tech/dptech/deepmd-kit:v3.0.0a1-2024Q1"
+            },
+            "executor": {
+                "type": "dispatcher",
+                "retry_on_submission_error": 10,
+                "image_pull_policy": "IfNotPresent",
+                "machine_dict": {
+                    "batch_type": "Bohrium",
+                    "context_type": "Bohrium",
+                    "remote_profile": {
+                        "input_data": {
+                            "job_type": "container",
+                            "platform": "ali",
+                            "scass_type": "c2_m16_cpu"
+                        }
+                    }
+                }
+            }
+        },
         "inference_config": { 
             "template_config": {
                 "image": "registry.dp.tech/dptech/deepmd-kit:2024Q1-d23cf3e"
@@ -115,10 +136,7 @@
         }
     },
     "upload_python_packages": [
-        "/opt/mamba/envs/openlam/lib/python3.12/site-packages/dpgen2",
-        "/opt/mamba/envs/openlam/lib/python3.12/site-packages/dpdata",
-        "/opt/mamba/envs/openlam/lib/python3.12/site-packages/fpop"
-
+        "/opt/mamba/envs/openlam/lib/python3.12/site-packages/ase"
     ],
     "inputs": {
         "type_map": [
@@ -241,9 +259,6 @@
             "Ts",
             "Og"
         ],
-        "init_data_sys":[
-            "./Li20P4S24Ge2"
-        ],
         "_comment": "you can set 'init_data_sys' or 'init_data_url'"
     },
     "conf_generation": {
@@ -269,11 +284,11 @@
         "skip_aimd":false,
         "max_iter":2,
         "converge_config":{
-                            "type":"energy_rmse",
-                            "RMSE":0.1},
+            "type":"energy_rmse",
+            "RMSE":0.01},
         "filter":[{
-            "type":"distance"},
-        {"type":"box_skewness"}],
+            "type":"distance"
+        }],
         "md":{
             "type": "lmp",
             "config": {
@@ -281,23 +296,47 @@
                 "shuffle_models": false, 
                 "head": null},
             "stages":[[
-                {
-                    "_comment": "group 1 stage 1 of finetune-exploration",
+                {   "_comment": "group 1 stage 1 of finetune-exploration",
                     "conf_idx": [0],
-                    "n_sample":2,
+                    "n_sample":3,
                     "exploration":{
                         "type": "lmp-md",
                         "ensemble": "npt",
                         "dt":0.005,
-                        "nsteps": 40,
-                        "temps": [900],
+                        "nsteps": 2000,
+                        "temps": [500],
                         "press":[1],
-                        "trj_freq": 20},
+                        "trj_freq": 200},
                     "max_sample": 10000
                     }]]}},
+    "aimd":{
+            "type": "fpop_abacus",
+            "task_max": 5,
+            "extra_output_files:":[],
+            "run_config": {
+                            "command": "OMP_NUM_THREADS=4 mpirun -np 8 abacus | tee log"
+                            },
+            "inputs_config": {
+                "input_file": "INPUT.md",
+                    "pp_files": {
+                    "Li": "./pp/Li_ONCV_PBE-1.0.upf",
+                    "S":"./pp/S_ONCV_PBE-1.0.upf",
+                    "Ge": "./pp/Ge_ONCV_PBE-1.0.upf",
+                    "P": "./pp/P_ONCV_PBE-1.0.upf"
+                    },
+                "orb_files":{
+                    "Li": "./orb/Li_gga_9au_100Ry_6s2p.orb",
+                    "S":"./orb/S_gga_9au_100Ry_3s3p2d.orb",
+                    "Ge": "./orb/Ge_gga_9au_100Ry_3s3p3d2f.orb",
+                    "P": "./orb/P_gga_9au_100Ry_3s3p2d.orb"
+                                    }
+                },
+                "_comment": "fp parameters for AIMD calculation"
+                            },
     "fp": {
         "type": "fpop_abacus",
         "task_max": 50,
+        "extra_output_files:":[],
         "run_config": {
             "command": "OMP_NUM_THREADS=4 mpirun -np 8 abacus | tee log"
         },
@@ -318,29 +357,6 @@
         },
         "_comment": "fp parameters for calculation"
     },
-    "aimd":{
-            "type": "fpop_abacus",
-            "task_max": 50,
-            "run_config": {
-                "command": "OMP_NUM_THREADS=4 mpirun -np 8 abacus | tee log"
-                },
-            "inputs_config": {
-                        "input_file": "INPUT.scf",
-                        "pp_files": {
-                            "Li": "./pp/Li_ONCV_PBE-1.0.upf",
-                            "S":"./pp/S_ONCV_PBE-1.0.upf",
-                            "Ge": "./pp/Ge_ONCV_PBE-1.0.upf",
-                            "P": "./pp/P_ONCV_PBE-1.0.upf"
-                        },
-                        "orb_files":{
-                            "Li": "./orb/Li_gga_9au_100Ry_6s2p.orb",
-                            "S":"./orb/S_gga_9au_100Ry_3s3p2d.orb",
-                            "Ge": "./orb/Ge_gga_9au_100Ry_3s3p3d2f.orb",
-                            "P": "./orb/P_gga_9au_100Ry_3s3p2d.orb"
-                        }
-                    },
-                    "_comment": "fp parameters for AIMD calculation"
-                },
     "train": {
         "comment":"Training script for downstream DeePMD model",
         "type": "dp",
@@ -351,7 +367,7 @@
             "_comment": "all"
         },
         "template_script": "train.json",
-        "init_models_url":"oss://13756/18739/store/upload/bc88f4a6-68e0-4450-84e3-c19c2930744c/tmpyt77_qpv.tgz",
+        "init_models_paths":["OpenLAM_2.1.0_27heads_2024Q1.pt"],
         "numb_models":1,
         "_comment": "the initial pre-trained model at 'init_models_paths'"
     }

@@ -1,8 +1,7 @@
 {
-    "_comment": "replace with your own model parameters",
     "model": {
         "type_map": [
-             "H",
+            "H",
             "He",
             "Li",
             "Be",
@@ -123,7 +122,7 @@
         ],
         "descriptor": {
             "type": "dpa2",
-            "tebd_dim": 8,
+            "tebd_dim": 256,
             "repinit_rcut": 9.0,
             "repinit_rcut_smth": 8.0,
             "repinit_nsel": 120,
@@ -161,15 +160,17 @@
                 240,
                 240
             ],
+            "activation_function": "tanh",
             "resnet_dt": true,
             "seed": 1,
             "_comment": " that's all"
-        }
+        },
+        "_comment": "that's all"
     },
     "learning_rate": {
         "type": "exp",
-        "decay_steps": 200,
-        "start_lr": 0.0001,
+        "decay_steps": 10,
+        "start_lr": 0.0002,
         "stop_lr": 3.51e-08,
         "_comment": "that's all"
     },
@@ -179,8 +180,8 @@
         "limit_pref_e": 1,
         "start_pref_f": 1000,
         "limit_pref_f": 1,
-        "start_pref_v": 0.2,
-        "limit_pref_v": 1.0,
+        "start_pref_v": 0,
+        "limit_pref_v": 0,
         "_comment": " that's all"
     },
     "training": {
@@ -190,19 +191,12 @@
             "batch_size": "auto",
             "_comment": "that's all"
         },
-        "validation_data": {
-            "systems": [
-            ],
-            "batch_size": "auto",
-            "_comment": "that's all"
-        },
-        "numb_steps": 20000,
+        "numb_steps": 10000,
         "warmup_steps": 0,
         "gradient_max_norm": 5.0,
         "seed": 10,
         "disp_file": "lcurve.out",
         "disp_freq": 100,
-        "save_freq": 100,
-        "_comment": "that's all"
+        "save_freq": 100
     }
 }
