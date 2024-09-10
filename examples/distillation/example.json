@@ -2,7 +2,7 @@
     "name":"distill-test",
     "bohrium_config": {
         "username": "urname",
-        "password": "urpassword",
+        "password": "123456",
         "project_id": 123456,
         "_comment": "all"
     },
@@ -112,7 +112,7 @@
             "Lu",
             "Ta"
         ],
-        "teacher_model":"./frozen_model.pb",
+        "teacher_model":"./lgps_ft.ckpt.pt",
         "_comment": "all"
     },
     "train": {
@@ -133,7 +133,7 @@
             "prefix": "./",
             "fmt": "vasp/poscar",
             "files": [
-                    "conf/conf-00/POSCAR"]},
+                    "LGPS.vasp"]},
             
         "pert_generation":[
             {"conf_idx": "default",
@@ -157,8 +157,8 @@
                         "ensemble": "npt",
                         "dt":0.005,
                         "nsteps": 100,
-                        "temps": [900],
-                        "press":[1,1000,10000],
+                        "temps": [500],
+                        "press":[1],
                         "trj_freq": 20},
                     "max_sample": 10000}]},
     "validation":{

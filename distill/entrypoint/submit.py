@@ -13,6 +13,7 @@ import dpgen2
 import distill
 import re
 import fpop
+import ase
 
 from dflow import (
     ArgoStep,
@@ -277,7 +278,6 @@ def workflow_dist(
     upload_python_packages.extend(list(dflow.__path__))
     upload_python_packages.extend(list(distill.__path__))
     upload_python_packages.extend(list(dpgen2.__path__))
-    print(upload_python_packages)
     ## task configs
     type_map=config["inputs"]["type_map"]
     if config["inputs"].get("mass_map") is not None:
@@ -375,7 +375,7 @@ def workflow_finetune(
     upload_python_packages.extend(list(distill.__path__))
     upload_python_packages.extend(list(dpgen2.__path__))
     upload_python_packages.extend(list(fpop.__path__))
-    print(upload_python_packages)
+    upload_python_packages.extend(list(ase.__path__))
     ## task configs
     type_map=config["inputs"]["type_map"]
     if config["inputs"].get("mass_map") is not None:
@@ -448,6 +448,8 @@ def workflow_finetune(
     aimd_inputs = fp_styles[aimd_style]["inputs"](**aimd_inputs_config)
     aimd_config["inputs"] = aimd_inputs
     aimd_config["run"] = config["aimd"]["run_config"]
+    aimd_config["extra_output_files"]=config["aimd"].get("extra_output_files",[])
+    
     
     # make distillation op
     ft_op=make_ft_op(
