@@ -37,10 +37,11 @@ def matched_step_key(
             if (
                 re.match(f"iter-[0-9]*--{jj}-[0-9]*", kk)
                 or re.match(f"iter-[0-9]*--{jj}", kk)
-                or re.match(f"finetune--{jj}-[0-9]*", kk)
-                or re.match(f"finetune--{jj}", kk)
+                #or re.match(f"finetune--{jj}-[0-9]*", kk)
+                #or re.match(f"finetune--{jj}", kk)
                 or re.match(f"init--{jj}", kk)
-                or re.match(f"dist--{jj}",kk)
+                or re.match(f"init--{jj}-[0-9]*", kk)
+                #or re.match(f"dist--{jj}",kk)
             ):
                 ret.append(kk)
                 continue

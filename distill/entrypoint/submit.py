@@ -628,6 +628,7 @@ def get_resubmit_keys(
     wf,
 ):
     all_step_keys = successful_step_keys(wf)
+    
     step_keys = [
         "prep-run-train",
         "prep-train",
@@ -669,9 +670,7 @@ def resubmit_workflow(
     **kwargs
 ):
     wf_config = normalize_args(wf_config)
-
     global_config_workflow(wf_config)
-
     old_wf = Workflow(id=wfid)
     folded_keys = get_resubmit_keys(old_wf)
     all_step_keys = sum(folded_keys.values(), [])
