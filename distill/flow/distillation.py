@@ -147,7 +147,7 @@ def _dist_cl(
         artifacts={
             "init_confs":steps.inputs.artifacts["init_confs"]},
         key="--".join(
-            ["%s" %steps.inputs.parameters["block_id"], "pert-gen"]),
+            ["init", "pert-gen"]),
         executor=pert_gen_executor,
         **pert_gen_step_config
     )

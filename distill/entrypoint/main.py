@@ -125,19 +125,6 @@ def main_parser() -> argparse.ArgumentParser:
         description=(
             textwrap.dedent(
                 """
-            Typically there are three ways of using the command
-
-            1. list all supported steps and their input/output artifacts
-            $ dpgen2 download CONFIG ID -l
-
-            2. donwload all the input/output of all the steps.
-            $ dpgen2 download CONFIG ID
-
-            3. donwload specified input/output artifacts of certain steps. For example
-            $ dpgen2 download CONFIG ID -i 0-8 8 9 -d prep-run-train/input/init_data prep-run-explore/output/trajs
-
-            The command will download the init_data of prep-run-train's input and trajs of the prep-run-explore's output from iterations 0 to 9 (by -i 0-8 8 9).
-            The supported step and the names of input/output can be checked by the -l flag.
             """
             )
         ),

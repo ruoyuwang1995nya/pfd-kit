@@ -193,7 +193,7 @@ def _fine_tune_cl(
             "init_confs":ft_steps.inputs.artifacts["init_confs"]
         },
         key="--".join(
-            ["%s" %ft_steps.inputs.parameters["block_id"], "pert-gen"]
+            ["init", "pert-gen"]
         ),
         executor=pert_gen_executor,
         **pert_gen_step_config
@@ -216,7 +216,7 @@ def _fine_tune_cl(
                 artifacts={
                     "confs": pert_gen.outputs.artifacts["confs"]},
                 key="--".join(
-                    ["aimd-expl", "prep-run-fp"]))
+                    ["init", "prep-run-fp"]))
             ft_steps.add(prep_run_fp)
             collect_data = Step(
                 name=name + "-collect-aimd",
@@ -254,7 +254,7 @@ def _fine_tune_cl(
             "iter_data": loop_iter_data#collect_data.outputs.artifacts["multi_systems"]#steps.inputs.artifacts["iter_data"],
         },
             key="--".join(
-                ["aimd-init-ft", "prep-run-train"]))
+                ["init", "prep-run-train"]))
         ft_steps.add(prep_run_ft)
         expl_models=prep_run_ft.outputs.artifacts.get("models")
     # if skip initial model training
