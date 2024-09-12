@@ -124,14 +124,15 @@ class CollectData(OP):
             test_sys=dpdata.MultiSystems()
 
         multi_sys.to('deepmd/npy',multi_sys_name)
-        test_sys.to('deepmd/npy','multi_system_test')
+        test_multi_sys_name="%s_test"%multi_sys_name
+        test_sys.to('deepmd/npy',test_multi_sys_name)
         #print([path for path in Path("systems").iterdir() if path.is_dir()])
         multi_system.append(Path(multi_sys_name))
         return OPIO(
             {
                 "multi_systems": multi_system,
                 "systems":[path for path in Path(multi_sys_name).iterdir() if path.is_dir()],
-                "test_systems": [path for path in Path("multi_system_test").iterdir() if path.is_dir()] if Path("test_systems").is_dir() else []
+                "test_systems": [path for path in Path(test_multi_sys_name).iterdir() if path.is_dir()] if Path(test_multi_sys_name).is_dir() else []
             }
         )
 
