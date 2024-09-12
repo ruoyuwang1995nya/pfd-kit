@@ -2,8 +2,8 @@
     "name":"distill-test",
     "bohrium_config": {
         "username": "urname",
-        "password": "urpassword",
-        "project_id": 12345,
+        "password": "123456",
+        "project_id": 123456,
         "_comment": "all"
     },
     "default_step_config": {
@@ -42,12 +42,7 @@
                         "input_data": {
                             "job_type": "container",
                             "platform": "ali",
-                            "scass_type": "1 * NVIDIA V100_32g"
-                        }
-                    }
-                }
-            }
-        },
+                            "scass_type": "1 * NVIDIA V100_32g"}}}}},
         "run_explore_config": {
             "template_config": {
                 "image": "registry.dp.tech/dptech/deepmd-kit:2024Q1-d23cf3e"
@@ -63,20 +58,13 @@
                         "input_data": {
                             "job_type": "container",
                             "platform": "ali",
-                            "scass_type": "1 * NVIDIA V100_32g"
-                        }
-                    }
-                }
-            }
-        },
+                            "scass_type": "1 * NVIDIA V100_32g"}}}}},
         "inference_config": {
             "template_config": {
-                "image": "registry.dp.tech/dptech/deepmd-kit:2024Q1-d23cf3e",
-                "_comment": "all"
-            },
-            "continue_on_success_ratio": 0.8,
+                "image": "registry.dp.tech/dptech/deepmd-kit:2024Q1-d23cf3e"},
             "executor": {
                 "type": "dispatcher",
+                "retry_on_submission_error": 10,
                 "image_pull_policy": "IfNotPresent",
                 "machine_dict": {
                     "batch_type": "Bohrium",
@@ -85,13 +73,7 @@
                         "input_data": {
                             "job_type": "container",
                             "platform": "ali",
-                            "scass_type": "1 * NVIDIA A100_80g"
-                        }
-                    }
-                }
-            },
-            "_comment": "all"
-        },
+                            "scass_type": "c12_m92_1 * NVIDIA V100"}}}}},
         "_comment": "all"
     },
     "upload_python_packages": [
@@ -102,107 +84,181 @@
     ],
     "inputs": {
         "type_map": [
+            "H",
+            "He",
             "Li",
+            "Be",
             "B",
+            "C",
+            "N",
             "O",
+            "F",
+            "Ne",
+            "Na",
+            "Mg",
             "Al",
             "Si",
             "P",
             "S",
             "Cl",
+            "Ar",
+            "K",
+            "Ca",
             "Sc",
+            "Ti",
+            "V",
+            "Cr",
+            "Mn",
+            "Fe",
+            "Co",
+            "Ni",
+            "Cu",
+            "Zn",
             "Ga",
             "Ge",
             "As",
             "Se",
             "Br",
+            "Kr",
+            "Rb",
+            "Sr",
             "Y",
             "Zr",
+            "Nb",
+            "Mo",
+            "Tc",
+            "Ru",
+            "Rh",
+            "Pd",
+            "Ag",
+            "Cd",
             "In",
             "Sn",
             "Sb",
+            "Te",
             "I",
+            "Xe",
+            "Cs",
+            "Ba",
+            "La",
+            "Ce",
+            "Pr",
+            "Nd",
+            "Pm",
+            "Sm",
+            "Eu",
+            "Gd",
+            "Tb",
             "Dy",
             "Ho",
             "Er",
             "Tm",
             "Yb",
             "Lu",
-            "Ta"
+            "Hf",
+            "Ta",
+            "W",
+            "Re",
+            "Os",
+            "Ir",
+            "Pt",
+            "Au",
+            "Hg",
+            "Tl",
+            "Pb",
+            "Bi",
+            "Po",
+            "At",
+            "Rn",
+            "Fr",
+            "Ra",
+            "Ac",
+            "Th",
+            "Pa",
+            "U",
+            "Np",
+            "Pu",
+            "Am",
+            "Cm",
+            "Bk",
+            "Cf",
+            "Es",
+            "Fm",
+            "Md",
+            "No",
+            "Lr",
+            "Rf",
+            "Db",
+            "Sg",
+            "Bh",
+            "Hs",
+            "Mt",
+            "Ds",
+            "Rg",
+            "Cn",
+            "Nh",
+            "Fl",
+            "Mc",
+            "Lv",
+            "Ts",
+            "Og"
         ],
-        "mass_map": [
-            6.94, 10.81, 15.999, 26.9815385, 28.085, 
-            30.973761998, 32.06, 35.45, 44.955908, 
-            69.723, 72.63, 74.921595, 78.971, 79.904, 88.90584, 
-            91.224, 114.818, 118.71, 121.76, 126.90447, 162.5, 
-            164.93033, 167.259, 168.93422, 173.045, 174.9668, 180.94788
-        ],
-        "teacher_model":"./frozen_model.pb",
+        "teacher_model":"./lgps_ft.ckpt.pt",
         "_comment": "all"
     },
     "train": {
-        "comment":"Training script for downstream DeePMD model",
+        "_comment":"Training setting for Distilled DeePMD model",
         "type": "dp",
         "config": {
             "_impl": "pytorch",
             "init_model_policy": "no",
-            "_comment": "all"
-        },
-        "template_script": "train.json",
-        "_comment": "all"
-    },
-    
+            "_comment": "all"},
+        "template_script": "train.json"},
     "inference":{
         "max_force":10,
-        "_comment":"force cutoff for generated confs"
-    },
+        "_comment":"force cutoff for generated confs"},
     "conf_generation": {
-        "type": "lmp",
-        "config": {
-            "command": "lmp -var restart 0",
-            "shuffle_models": false, 
-            "head": null
-        },
         "init_configurations":
             {
             "type": "file",
             "prefix": "./",
             "fmt": "vasp/poscar",
             "files": [
-                    "conf/conf-00/POSCAR"
-                ]},
-            
+                    "LGPS.vasp"]},
         "pert_generation":[
-            {
-            "conf_idx": "default",
+            {"conf_idx": "default",
             "atom_pert_distance":0.1,
             "cell_pert_fraction":0.03,
-            "pert_num": 200
-            }
-            ],    
+            "pert_num": 200}],    
+        "_comment": "all"},
+
+    "exploration":{
+        "type": "lmp",
+        "config": {
+            "command": "lmp -var restart 0",
+            "shuffle_models": false, 
+            "head": null},
+        "stages":[
+            [{ "_comment": "group 1 stage 1 of finetune-exploration",
+                "conf_idx": [0],
+                "n_sample":3,
+                "exploration":{
+                "type": "lmp-md",
+                "ensemble": "npt",
+                "dt":0.005,
+                "nsteps": 100,
+                "temps": [500],
+                "press":[1],
+                "trj_freq": 20},
+            "max_sample": 10000}
+            ]],
+        "max_iter":2,
+        "converge_config":{
+            "type":"energy_rmse",
+            "RMSE":0.01},
+        "test_set_config":{
+            "test_size":0.1
+        }
+        }
         
-        "expl_tasks": [
-                {
-                    "_comment": "group 1, perturb + short MD with DPA pre-trained model",
-                    "conf_idx": [0],
-                    "n_sample":10,
-                    "exploration":{
-                        "type": "lmp-md",
-                        "ensemble": "npt",
-                        "dt":0.005,
-                        "nsteps": 1000,
-                        "temps": [900],
-                        "press":[1,1000,10000],
-                        "trj_freq": 20
-                    },
-                    
-                    "max_sample": 10000
-                }
-                
-        ],
-        "_comment": "all"
-    },
-    "validation":{
-        "_comment":"leave "
-    }
 }

@@ -6,10 +6,10 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="DP-distill",
-    version="0.0.1",
+    version="0.0.2",
     author="Ruoyu Wang",
     author_email="ruoyuwang1995@gmail.com",
-    description="Model fine-tune and distillation kit for DPA-2 pre-trained models",
+    description="Automated model fine-tune and distillation kit for DPA-2 pre-trained models",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/ruoyuwang1995nya/dp-distill.git",
@@ -25,7 +25,8 @@ setuptools.setup(
 	     'fpop',
 	     'dpgui',
          'cp2kdata',
-         'dpgen2'
+         'periodictable',
+         'ase'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",

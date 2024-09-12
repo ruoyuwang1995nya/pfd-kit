@@ -14,7 +14,7 @@ from dflow import (
     download_artifact,
 )
 
-from dpgen2.utils.dflow_query import (
+from distill.utils.dflow_query import (
     get_iteration,
     get_subkey,
 )
@@ -52,6 +52,8 @@ class DownloadDefinition:
 
 
 op_download_setting = {
+    "pert-gen": DownloadDefinition()
+    .add_output("confs"),
     "prep-run-train": DownloadDefinition()
     .add_input("init_models")
     .add_input("init_data")
@@ -69,6 +71,10 @@ op_download_setting = {
     .add_output("logs")
     .add_output("lcurves"),
     "prep-run-explore": DownloadDefinition()
+    .add_output("logs")
+    .add_output("trajs")
+    .add_output("model_devis"),
+    "prep-run-lmp": DownloadDefinition()
     .add_output("logs")
     .add_output("trajs")
     .add_output("model_devis"),

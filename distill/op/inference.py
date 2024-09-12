@@ -4,9 +4,6 @@ import numpy as np
 import glob
 import os
 from pathlib import Path
-from pathlib import (
-    Path,
-)
 from typing import (
     List,
     Union,
@@ -18,8 +15,8 @@ from dflow.python import (
     Artifact,
     BigParameter,
     OPIOSign,
-    Parameter
-)
+    Parameter)
+
 
 class Inference(OP):
     r"""Collect data for direct inference
