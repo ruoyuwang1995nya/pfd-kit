@@ -96,8 +96,7 @@ class CollectData(OP):
         if additional_systems := ip.get("additional_systems"):
             systems.extend(additional_systems)
         # List of multi_systems
-        if ip.get("additional_multi_system"):
-            multi_system=ip.get("additional_multi_system")
+        if multi_system:= ip.get("additional_multi_systems"):
             print("Multi_sys is", multi_system)
         else:
             multi_system=[]
