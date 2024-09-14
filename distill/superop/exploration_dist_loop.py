@@ -322,7 +322,7 @@ class ExplDistLoop(Steps):
             "train_config": InputParameter(),
             "explore_config": InputParameter(),
             "idx_stage": InputParameter(value=0),
-            "max_iter": InputParameter(value=1),
+            "max_iter": InputParameter(),
             "converge_config": InputParameter(value={}),
             "inference_config": InputParameter(),
             "test_size":InputParameter(value=0.1),
@@ -439,7 +439,7 @@ def _expl_dist_cl(
             "models":steps.inputs.artifacts["teacher_model"]
         },
         key="--".join(
-            ["%s" %steps.inputs.parameters["block_id"], "prep-run-explore"]
+            ["init", "prep-run-explore"]
         )
     )
     steps.add(prep_run_explore)
@@ -622,7 +622,6 @@ def _loop(
             "block_id": "iter-%s"% blk_counter.outputs.parameters["iter_id"],
             "type_map": loop.inputs.parameters["type_map"],
             "mass_map":loop.inputs.parameters["mass_map"],
-            #"expl_tasks":loop.inputs.parameters["expl_tasks"],
             "expl_tasks":stage_scheduler.outputs.parameters["tasks"],
             "converge_config":loop.inputs.parameters["converge_config"],
             "numb_models": loop.inputs.parameters["numb_models"],
@@ -676,6 +675,7 @@ def _loop(
             "numb_models": loop.inputs.parameters["numb_models"],
             "template_script": loop.inputs.parameters["template_script"], 
             "train_config": loop.inputs.parameters["train_config"],
+            "max_iter": loop.inputs.parameters["max_iter"],
             "explore_config": loop.inputs.parameters["explore_config"],
             "inference_config":loop.inputs.parameters["inference_config"],
             "type_map_train": loop.inputs.parameters["type_map_train"]
