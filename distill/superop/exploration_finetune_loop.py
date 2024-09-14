@@ -421,7 +421,7 @@ def _expl_ft_blk(
     steps.add(prep_run_ft)
     steps.outputs.artifacts["ft_model"].from_expression = if_expression(
         _if=evaluate.outputs.parameters["converged"],
-        _then=steps.inputs.artifacts["init_model"],
+        _then=steps.inputs.artifacts["current_model"],
         _else=prep_run_ft.outputs.artifacts["models"])
     
     steps.outputs.parameters["converged"].value_from_parameter = evaluate.outputs.parameters["converged"]

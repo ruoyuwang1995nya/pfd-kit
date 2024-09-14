@@ -210,7 +210,7 @@ def _fine_tune_cl(
                 name=name + "-prep-run-fp",
                 template=prep_run_fp_op,
                 parameters={
-                    "block_id": ft_steps.inputs.parameters["block_id"],
+                    "block_id": "init",
                     "fp_config": ft_steps.inputs.parameters["aimd_config"],
                     "type_map": ft_steps.inputs.parameters["type_map"]},
                 artifacts={
@@ -230,7 +230,7 @@ def _fine_tune_cl(
                 artifacts={
                     "systems": prep_run_fp.outputs.artifacts["labeled_data"]},
                 key="--".join(
-                    ["aimd-expl", "collect-data"]),
+                    ["init", "collect-data"]),
                 executor=collect_data_executor,
                 **collect_data_step_config)
             ft_steps.add(collect_data)
@@ -241,7 +241,7 @@ def _fine_tune_cl(
             name + "-prep-run-dp-train",
             template=prep_run_dp_train_op,
             parameters={
-            "block_id": "init-training",
+            "block_id": "init",
             "train_config": ft_steps.inputs.parameters["train_config"],
             "numb_models": ft_steps.inputs.parameters["numb_models"],
             "template_script": ft_steps.inputs.parameters["template_script"],

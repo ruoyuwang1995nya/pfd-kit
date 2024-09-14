@@ -106,8 +106,9 @@ class NextLoop(OP):
             op['converged']=True
             op['stage_converged']=True
         elif ip['converged'] is True and ip["idx_stage"]+1 < numb_stages:
-            op['stage_converged']=True,
+            op['stage_converged']=True
             op['idx_stage']=ip["idx_stage"]+1
+        print(op)
         return OPIO(op)
         
         
