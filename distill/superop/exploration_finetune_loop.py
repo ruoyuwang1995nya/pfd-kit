@@ -536,6 +536,7 @@ def _loop(
             "template_script": loop.inputs.parameters["template_script"], 
             "train_config": loop.inputs.parameters["train_config"],
             "explore_config": loop.inputs.parameters["explore_config"],
+            "max_iter": loop.inputs.parameters["max_iter"],
             "fp_config":loop.inputs.parameters["fp_config"],
             "dp_test_validation_config": loop.inputs.parameters["dp_test_validation_config"]
             }
