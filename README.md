@@ -25,29 +25,18 @@ A lightweight DeePMD model can also be generated from a pre-trained/fine-tuned D
 </div>
 
 ## 2. Installation
-DP-distill can be built and installed form the source. First clone the package by
+DP-distill can be built and installed form the source.
 ```shell
 git clone https://github.com/ruoyuwang1995nya/dp-distill.git
-```
-
-then install by
-```shell
-cd dp-distill && git checkout devel
 pip install .
 ```
 
 ## 3. Quick start
-DP-distill can be accessed from Python API. A workflow would be submitted by running following Python script.
-```python
-from distill.entrypoint.submit import submit_dist
-import json
-with open("example.json",'r') as fp:
-    config_dict=json.load(fp)
-wf=submit_dist(
-        config_dict,
-        )
-wf.submit()
+DP-distill can be accessed from CLI interface. For instance, a finetune workflow can be submitted by the following command:
+```shell
+dp-dist submit finetune.json -t finetune
 ```
+The `finetune.json` specifies imput parameters of the finetune task, whose details can be found in the `examples` directory of this repository. 
 
 ## 4. Userguide
-An example of json input file can be found in the "examples" directory. 
+Examples of json input file for model finetune and distillation can be found in the `examples` directory. 
