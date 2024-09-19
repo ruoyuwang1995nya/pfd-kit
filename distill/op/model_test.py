@@ -53,6 +53,7 @@ class ModelTestOP(OP):
             name=sys.name
             evaluator=Eval(
                 model=model_path,
+                prefix=str(res_dir),
                 data=sys,
                 type_map=type_map
                 )

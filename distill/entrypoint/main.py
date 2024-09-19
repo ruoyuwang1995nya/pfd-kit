@@ -125,19 +125,6 @@ def main_parser() -> argparse.ArgumentParser:
         description=(
             textwrap.dedent(
                 """
-            Typically there are three ways of using the command
-
-            1. list all supported steps and their input/output artifacts
-            $ dpgen2 download CONFIG ID -l
-
-            2. donwload all the input/output of all the steps.
-            $ dpgen2 download CONFIG ID
-
-            3. donwload specified input/output artifacts of certain steps. For example
-            $ dpgen2 download CONFIG ID -i 0-8 8 9 -d prep-run-train/input/init_data prep-run-explore/output/trajs
-
-            The command will download the init_data of prep-run-train's input and trajs of the prep-run-explore's output from iterations 0 to 9 (by -i 0-8 8 9).
-            The supported step and the names of input/output can be checked by the -l flag.
             """
             )
         ),
@@ -157,6 +144,20 @@ def main_parser() -> argparse.ArgumentParser:
         type=str,
         nargs="+",
         help="the keys of the downloaded steps. If not provided download all artifacts",
+    )
+    parser_download.add_argument(
+        "-i",
+        "--iterations",
+        type=str,
+        nargs="+",
+        help="the iterations to be downloaded, support ranging expression as 0-10.",
+    )
+    parser_download.add_argument(
+        "-d",
+        "--step-definitions",
+        type=str,
+        nargs="+",
+        help="the definition for downloading step artifacts",
     )
     parser_download.add_argument(
         "-p",
@@ -233,6 +234,17 @@ def main():
                 wfid,
                 config,
                 wf_keys=args.keys,
+                prefix=args.prefix,
+                chk_pnt=args.no_check_point,
+            )
+        else:
+            download_by_def(
+                wfid,
+                config,
+                iterations=(
+                    expand_idx(args.iterations) if args.iterations is not None else None
+                ),
+                step_defs=args.step_definitions,
                 prefix=args.prefix,
                 chk_pnt=args.no_check_point,
             )

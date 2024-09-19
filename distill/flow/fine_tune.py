@@ -193,7 +193,7 @@ def _fine_tune_cl(
             "init_confs":ft_steps.inputs.artifacts["init_confs"]
         },
         key="--".join(
-            ["%s" %ft_steps.inputs.parameters["block_id"], "pert-gen"]
+            ["init", "pert-gen"]
         ),
         executor=pert_gen_executor,
         **pert_gen_step_config
@@ -210,13 +210,13 @@ def _fine_tune_cl(
                 name=name + "-prep-run-fp",
                 template=prep_run_fp_op,
                 parameters={
-                    "block_id": ft_steps.inputs.parameters["block_id"],
+                    "block_id": "init",
                     "fp_config": ft_steps.inputs.parameters["aimd_config"],
                     "type_map": ft_steps.inputs.parameters["type_map"]},
                 artifacts={
                     "confs": pert_gen.outputs.artifacts["confs"]},
                 key="--".join(
-                    ["aimd-expl", "prep-run-fp"]))
+                    ["init", "prep-run-fp"]))
             ft_steps.add(prep_run_fp)
             collect_data = Step(
                 name=name + "-collect-aimd",
@@ -230,7 +230,7 @@ def _fine_tune_cl(
                 artifacts={
                     "systems": prep_run_fp.outputs.artifacts["labeled_data"]},
                 key="--".join(
-                    ["aimd-expl", "collect-data"]),
+                    ["init", "collect-data"]),
                 executor=collect_data_executor,
                 **collect_data_step_config)
             ft_steps.add(collect_data)
@@ -241,7 +241,7 @@ def _fine_tune_cl(
             name + "-prep-run-dp-train",
             template=prep_run_dp_train_op,
             parameters={
-            "block_id": "init-training",
+            "block_id": "init",
             "train_config": ft_steps.inputs.parameters["train_config"],
             "numb_models": ft_steps.inputs.parameters["numb_models"],
             "template_script": ft_steps.inputs.parameters["template_script"],
@@ -254,7 +254,7 @@ def _fine_tune_cl(
             "iter_data": loop_iter_data#collect_data.outputs.artifacts["multi_systems"]#steps.inputs.artifacts["iter_data"],
         },
             key="--".join(
-                ["aimd-init-ft", "prep-run-train"]))
+                ["init", "prep-run-train"]))
         ft_steps.add(prep_run_ft)
         expl_models=prep_run_ft.outputs.artifacts.get("models")
     # if skip initial model training
