@@ -225,7 +225,8 @@ def _fine_tune_cl(
                     python_packages=upload_python_packages,
                     **collect_data_template_config),
                 parameters={
-                    "optional_parameters": ft_steps.inputs.parameters["collect_data_config"],
+                    "optional_parameters": {"labeled_data":True,
+                                    "multi_sys_name": "init"},
                     "type_map": ft_steps.inputs.parameters["type_map"]},
                 artifacts={
                     "systems": prep_run_fp.outputs.artifacts["labeled_data"]},
