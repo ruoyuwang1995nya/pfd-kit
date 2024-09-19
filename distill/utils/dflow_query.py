@@ -122,15 +122,13 @@ def find_slice_ranges(
     for idx, ii in enumerate(keys):
         if status == "not-found":
             if re.match(f"iter-[0-9]*--{sliced_subkey}-[0-9]*", ii) \
-                or re.match(f"finetune--{sliced_subkey}-[0-9]*", ii) \
-                    or re.match(f"dist--{sliced_subkey}-[0-9]*",ii):
+                    or re.match(f"init--{sliced_subkey}-[0-9]*",ii):
                 status = "found"
                 tmp_range.append(idx)
         elif status == "found":
             if not (
-                re.match(f"iter-[0-9]*--{sliced_subkey}-[0-9]*", ii)
-                or re.match(f"finetune--{sliced_subkey}-[0-9]*", ii)
-                or re.match(f"dist--{sliced_subkey}-[0-9]*",ii)
+                re.match(f"iter-[0-9]*--{sliced_subkey}-[0-9]*", ii) \
+                    or re.match(f"init--{sliced_subkey}-[0-9]*",ii)
             ):
                 status = "not-found"
                 tmp_range.append(idx)

@@ -320,6 +320,18 @@ def workflow_dist(
         template_script=json.load(fp)
     init_confs=upload_artifact(config["conf_generation"]["init_configurations"]["files"])
     teacher_model = upload_artifact([config["inputs"]["teacher_model"]])
+    
+    # init_data    
+    if config["inputs"]["init_data_uri"] is not None:
+        init_data = get_artifact_from_uri(config["inputs"]["init_data_uri"])
+    elif config["inputs"]["init_data_sys"] is not None:
+        init_data_prefix = config["inputs"]["init_data_prefix"]
+        init_data = config["inputs"]["init_data_sys"]
+        init_data = get_systems_from_data(init_data, init_data_prefix)
+        init_data = upload_artifact_and_print_uri(init_data, "init_data")
+    else:
+        init_data = upload_artifact([])
+    
 
     # make distillation op
     dist_op=make_dist_op(
@@ -357,7 +369,7 @@ def workflow_dist(
         artifacts={
             "init_confs": init_confs,
             "teacher_model" : teacher_model,
-            "init_data": upload_artifact([]),
+            "init_data": init_data,
             "iter_data": upload_artifact([])
             })
     return dist_step
@@ -631,6 +643,7 @@ def get_resubmit_keys(
     all_step_keys = successful_step_keys(wf)
     
     step_keys = [
+        "pert-gen",
         "prep-run-train",
         "prep-train",
         "run-train",
