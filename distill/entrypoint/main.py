@@ -146,6 +146,20 @@ def main_parser() -> argparse.ArgumentParser:
         help="the keys of the downloaded steps. If not provided download all artifacts",
     )
     parser_download.add_argument(
+        "-i",
+        "--iterations",
+        type=str,
+        nargs="+",
+        help="the iterations to be downloaded, support ranging expression as 0-10.",
+    )
+    parser_download.add_argument(
+        "-d",
+        "--step-definitions",
+        type=str,
+        nargs="+",
+        help="the definition for downloading step artifacts",
+    )
+    parser_download.add_argument(
         "-p",
         "--prefix",
         type=str,
@@ -220,6 +234,17 @@ def main():
                 wfid,
                 config,
                 wf_keys=args.keys,
+                prefix=args.prefix,
+                chk_pnt=args.no_check_point,
+            )
+        else:
+            download_by_def(
+                wfid,
+                config,
+                iterations=(
+                    expand_idx(args.iterations) if args.iterations is not None else None
+                ),
+                step_defs=args.step_definitions,
                 prefix=args.prefix,
                 chk_pnt=args.no_check_point,
             )
