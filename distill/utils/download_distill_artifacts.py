@@ -85,6 +85,12 @@ op_download_setting = {
     "collect-data": DownloadDefinition()
     .add_input("systems")
     .add_output("systems")
+    .add_output("multi_systems")
+    .add_output("test_systems"),
+    "collect-data-fp": DownloadDefinition()
+    .add_input("systems")
+    .add_output("systems")
+    .add_output("multi_systems")
     .add_output("test_systems"),
 }
 
@@ -178,6 +184,9 @@ def download_dpgen2_artifacts_by_def(
     prefix: Optional[str] = None,
     chk_pnt: bool = False,
 ):
+    """
+    download selected artifacts give iteration numbers and step definition
+    """
     wf_step_keys = wf.query_keys_of_steps()
 
     if prefix is not None:
@@ -307,7 +316,7 @@ def _get_dld_items(
 ):
     items = []
     for ii, jj in itertools.product(iterations, step_defs):  # type: ignore
-        items.append(f"iter-{ii:06d}--" + jj)
+        items.append(f"iter-{ii:03d}--" + jj)
     return items
 
 
