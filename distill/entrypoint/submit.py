@@ -415,7 +415,6 @@ def workflow_finetune(
     pert_config=config["conf_generation"]
     explore_config=config["exploration"]["md"]["config"]
     max_iter=config["exploration"]["md"].get("max_iter",1)
-    print(max_iter)
     converge_config=config["exploration"]["converge_config"]
     # conf selectors
     conf_filters=get_conf_filters(config["exploration"]["filter"])
@@ -659,6 +658,7 @@ def get_resubmit_keys(
         "prep-fp",
         "run-fp",
         "collect-data",
+        "validation-test",
         "scheduler",
         "id",
     ]

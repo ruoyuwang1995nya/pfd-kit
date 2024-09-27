@@ -22,7 +22,6 @@ from dflow.python import (
     Parameter
 )
 
-
 class PertGen(OP):
     r"""Perturb the input configurations
 
@@ -38,7 +37,6 @@ class PertGen(OP):
     def get_input_sign(cls):
         return OPIOSign(
             {
-                #"lmp_task_grp": BigParameter(BaseExplorationTaskGroup),
                 "init_confs":Artifact(List[Path]),
                 "config":BigParameter(dict),
             }
@@ -64,34 +62,42 @@ class PertGen(OP):
         ----------
         ip : dict
             Input dict with components:
-            - `lmp_task_grp` : (`BigParameter(Path)`) Can be pickle loaded as a ExplorationTaskGroup. Definitions for LAMMPS tasks
-
+            - `init_confs` : (`Artifact(List[Path])`) The paths to the input files of initial structure configurations.
+            - `config` : (`BigParameter(dict)`) The input parameters for generating perturbed configurations.
         Returns
         -------
         op : dict
             Output dict with components:
-
-            - `task_names`: (`List[str]`) The name of tasks. Will be used as the identities of the tasks. The names of different tasks are different.
-            - `task_paths`: (`Artifact(List[Path])`) The parepared working paths of the tasks. Contains all input files needed to start the LAMMPS simulation. The order fo the Paths should be consistent with `op["task_names"]`
+            - `pert_sys`: (`Artifact(List[Path])`) The paths of perturbed systems. A list of `dpdata.System`.
+            - `confs`: (`Artifact(List[Path])`) The prepared paths of perturbed systems. A list of `dpdata.MultiSystems`.
         """
         init_confs=ip["init_confs"]
         gen_config=ip["config"]#["conf_generation"]
         
         pert_configs=gen_config["pert_generation"]
-        if pert_configs[0]["conf_idx"]=="default":
-            pert_ls=[0 for ii in range(len(init_confs))]
+        # default settings
+        pert_ls=[0 for ii in range(len(init_confs))]
+        
+        for pert_idx in range(len(pert_configs)):
+            if pert_configs[pert_idx]["conf_idx"]=="default":
+                pert_ls=[pert_idx for ii in range(len(init_confs))]
+                
+            elif isinstance(pert_configs[pert_idx]["conf_idx"],list):
+                for ii in pert_configs[pert_idx]["conf_idx"]:
+                    pert_ls[ii]=pert_idx
+            else:
+                raise RuntimeError("Illegal specification of perturb generation")
         
         # get workdir
-        wk_dir=os.getcwd()
-        conf_paths=[]
-        sys_paths=[]
+        wk_dir=Path("multi_sys")
+        wk_dir.mkdir(exist_ok=True)
+        multi_sys_ls=[]
+        sys_ls=[]
         for ii in range(len(init_confs)):
             # create task directory
             name = "conf.%06d"%ii
             conf_path= Path(wk_dir) / name
-            conf_path.mkdir(exist_ok=True)           
-            # get pert config 
-            os.chdir(conf_path)
+            #os.chdir(conf_path)
             pert_param=pert_configs[pert_ls[ii]]
             cell_pert_fraction=pert_param.get("cell_pert_fraction",0.05)
             pert_num=pert_param.get("pert_num",200)
@@ -109,17 +115,13 @@ class PertGen(OP):
             if_orig = pert_param.get("orig",False)
             if if_orig is True:
                 pert_sys.append(orig_sys)
-            #orig_sys.to("deepmd/npy","orig")
-            pert_sys.to("deepmd/npy","pert")
-            os.chdir(wk_dir)
-            #if_orig = pert_param.get("orig",False)
-            #if if_orig is True:
-            #    sys_paths.append(conf_path/ "orig")
-            sys_paths.append(conf_path / "pert")  
-            conf_paths.append(conf_path)
+            pert_sys.to("deepmd/npy",str(conf_path))
+            #os.chdir(wk_dir)
+            sys_ls.append(conf_path)  
+            multi_sys_ls.append(wk_dir)
         return OPIO(
             {
-                "pert_sys":sys_paths,
-                "confs":conf_paths
+                "pert_sys":sys_ls,
+                "confs": multi_sys_ls
             }
         )
