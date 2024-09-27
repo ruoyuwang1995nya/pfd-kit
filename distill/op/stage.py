@@ -1,23 +1,7 @@
-from pathlib import (
-    Path,
-)
-from typing import (
-    List,
-    Dict,
-    Tuple,
-    Union,
-    Optional
-)
+from typing import List
 
-from dflow.python import (
-    OP,
-    OPIO,
-    Artifact,
-    BigParameter,
-    OPIOSign,
-    Parameter
-)
-from traitlets import default
+from dflow.python import OP, OPIO, Artifact, BigParameter, OPIOSign, Parameter
+
 
 class StageScheduler(OP):
     def __init__(self):
@@ -25,24 +9,25 @@ class StageScheduler(OP):
 
     @classmethod
     def get_input_sign(cls):
-        return OPIOSign({
-            'stages': Parameter(List[List[dict]]),
-            'idx_stage':Parameter(int,default=0),
-            #'converged':Parameter(bool,default=False)
-        })
+        return OPIOSign(
+            {
+                "stages": Parameter(List[List[dict]]),
+                "idx_stage": Parameter(int, default=0),
+                #'converged':Parameter(bool,default=False)
+            }
+        )
+
     @classmethod
     def get_output_sign(cls):
-        return OPIOSign({
-            'tasks': Parameter(List[dict]),
-            #'idx_stage': Parameter(int),
-            #'next_stage': Parameter(int)
-        })
+        return OPIOSign(
+            {
+                "tasks": Parameter(List[dict]),
+            }
+        )
 
     @OP.exec_sign_check
     def execute(
-            self,
-            ip: OPIO,
-        ) -> OPIO:
-        return OPIO(
-            {"tasks":ip["stages"][ip['idx_stage']]}
-        )
+        self,
+        ip: OPIO,
+    ) -> OPIO:
+        return OPIO({"tasks": ip["stages"][ip["idx_stage"]]})
