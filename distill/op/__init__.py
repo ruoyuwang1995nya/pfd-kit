@@ -2,10 +2,6 @@ from .collect import (
     CollectData,
 )
 
-from .run_lmp import (
-    RunLmp,
-)
-
 from .pert_gen import (
     PertGen, 
 )

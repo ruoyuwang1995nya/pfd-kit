@@ -1,4 +1,3 @@
-
 import setuptools
 
 with open("README.md", "r") as fh:
@@ -15,28 +14,28 @@ setuptools.setup(
     url="https://github.com/ruoyuwang1995nya/dp-distill.git",
     packages=setuptools.find_packages(),
     install_requires=[
-        'numpy',
-	     'dpdata',
-	     'pydflow>=1.6.57',
-	     'dargs>=0.3.1',
-	     'scipy',
-	     'lbg',
-	     'packaging',
-	     'fpop',
-	     'dpgui',
-         'cp2kdata',
-         'periodictable',
-         'ase'
+        "numpy",
+        "dpdata",
+        "pydflow>=1.6.57",
+        "dargs>=0.3.1",
+        "scipy",
+        "lbg",
+        "packaging",
+        "fpop",
+        "dpgui",
+        "cp2kdata",
+        "periodictable",
+        "ase",
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.8',
+    python_requires=">=3.8",
     entry_points={
-        'console_scripts': [
-            'dp-dist = distill.entrypoint.main:main',
+        "console_scripts": [
+            "dp-dist = distill.entrypoint.main:main",
         ],
     },
 )

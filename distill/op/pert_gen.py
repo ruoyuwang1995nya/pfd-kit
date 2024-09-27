@@ -7,20 +7,10 @@ from pathlib import Path
 from pathlib import (
     Path,
 )
-from typing import (
-    List,
-    Dict,
-    Tuple,
-)
+from typing import List
 
-from dflow.python import (
-    OP,
-    OPIO,
-    Artifact,
-    BigParameter,
-    OPIOSign,
-    Parameter
-)
+from dflow.python import OP, OPIO, Artifact, BigParameter, OPIOSign, Parameter
+
 
 class PertGen(OP):
     r"""Perturb the input configurations
@@ -37,8 +27,8 @@ class PertGen(OP):
     def get_input_sign(cls):
         return OPIOSign(
             {
-                "init_confs":Artifact(List[Path]),
-                "config":BigParameter(dict),
+                "init_confs": Artifact(List[Path]),
+                "config": BigParameter(dict),
             }
         )
 
@@ -47,7 +37,7 @@ class PertGen(OP):
         return OPIOSign(
             {
                 "pert_sys": Artifact(List[Path]),
-                "confs": Artifact(List[Path]) # multi system
+                "confs": Artifact(List[Path]),  # multi system
             }
         )
 
@@ -71,57 +61,52 @@ class PertGen(OP):
             - `pert_sys`: (`Artifact(List[Path])`) The paths of perturbed systems. A list of `dpdata.System`.
             - `confs`: (`Artifact(List[Path])`) The prepared paths of perturbed systems. A list of `dpdata.MultiSystems`.
         """
-        init_confs=ip["init_confs"]
-        gen_config=ip["config"]#["conf_generation"]
-        
-        pert_configs=gen_config["pert_generation"]
+        init_confs = ip["init_confs"]
+        gen_config = ip["config"]  # ["conf_generation"]
+
+        pert_configs = gen_config["pert_generation"]
         # default settings
-        pert_ls=[0 for ii in range(len(init_confs))]
-        
+        pert_ls = [0 for ii in range(len(init_confs))]
+
         for pert_idx in range(len(pert_configs)):
-            if pert_configs[pert_idx]["conf_idx"]=="default":
-                pert_ls=[pert_idx for ii in range(len(init_confs))]
-                
-            elif isinstance(pert_configs[pert_idx]["conf_idx"],list):
+            if pert_configs[pert_idx]["conf_idx"] == "default":
+                pert_ls = [pert_idx for ii in range(len(init_confs))]
+
+            elif isinstance(pert_configs[pert_idx]["conf_idx"], list):
                 for ii in pert_configs[pert_idx]["conf_idx"]:
-                    pert_ls[ii]=pert_idx
+                    pert_ls[ii] = pert_idx
             else:
                 raise RuntimeError("Illegal specification of perturb generation")
-        
+
         # get workdir
-        wk_dir=Path("multi_sys")
+        wk_dir = Path("multi_sys")
         wk_dir.mkdir(exist_ok=True)
-        multi_sys_ls=[]
-        sys_ls=[]
+        multi_sys_ls = []
+        sys_ls = []
         for ii in range(len(init_confs)):
             # create task directory
-            name = "conf.%06d"%ii
-            conf_path= Path(wk_dir) / name
-            #os.chdir(conf_path)
-            pert_param=pert_configs[pert_ls[ii]]
-            cell_pert_fraction=pert_param.get("cell_pert_fraction",0.05)
-            pert_num=pert_param.get("pert_num",200)
-            atom_pert_distance=pert_param.get("atom_pert_distance",0.2)
-            atom_pert_style=pert_param.get("atom_pert_style","normal")
-            fmt=gen_config["init_configurations"]["fmt"]
+            name = "conf.%06d" % ii
+            conf_path = Path(wk_dir) / name
+            # os.chdir(conf_path)
+            pert_param = pert_configs[pert_ls[ii]]
+            cell_pert_fraction = pert_param.get("cell_pert_fraction", 0.05)
+            pert_num = pert_param.get("pert_num", 200)
+            atom_pert_distance = pert_param.get("atom_pert_distance", 0.2)
+            atom_pert_style = pert_param.get("atom_pert_style", "normal")
+            fmt = gen_config["init_configurations"]["fmt"]
             print(atom_pert_distance)
-            orig_sys=dpdata.System(str(init_confs[ii]),fmt=fmt)
-            pert_sys=orig_sys.perturb(
-                    pert_num=pert_num,
-                    cell_pert_fraction=cell_pert_fraction,
-                    atom_pert_distance=atom_pert_distance,
-                    atom_pert_style=atom_pert_style,
+            orig_sys = dpdata.System(str(init_confs[ii]), fmt=fmt)
+            pert_sys = orig_sys.perturb(
+                pert_num=pert_num,
+                cell_pert_fraction=cell_pert_fraction,
+                atom_pert_distance=atom_pert_distance,
+                atom_pert_style=atom_pert_style,
             )
-            if_orig = pert_param.get("orig",False)
+            if_orig = pert_param.get("orig", False)
             if if_orig is True:
                 pert_sys.append(orig_sys)
-            pert_sys.to("deepmd/npy",str(conf_path))
-            #os.chdir(wk_dir)
-            sys_ls.append(conf_path)  
+            pert_sys.to("deepmd/npy", str(conf_path))
+            # os.chdir(wk_dir)
+            sys_ls.append(conf_path)
             multi_sys_ls.append(wk_dir)
-        return OPIO(
-            {
-                "pert_sys":sys_ls,
-                "confs": multi_sys_ls
-            }
-        )
+        return OPIO({"pert_sys": sys_ls, "confs": multi_sys_ls})
