@@ -10,6 +10,10 @@ from fake_data_set import (
 from pathlib import Path
 import dpdata
 
+
+
+
+
 class TestCollectData(unittest.TestCase):
     def setUp(self):
         self.labeled_data = [Path("data0"), Path("data1")]
@@ -25,7 +29,7 @@ class TestCollectData(unittest.TestCase):
         ss_0.to("deepmd/npy",self.labeled_data[0])
         ss_1.to("deepmd/npy",self.labeled_data[1])
 
-    def test_success_other(self):
+    def test_collect(self):
         op = CollectData()
         out = op.execute(
             OPIO(
