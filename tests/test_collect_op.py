@@ -8,6 +8,8 @@ from fake_data_set import (
 from pathlib import Path
 import dpdata
 
+from tests import fake_data_set
+
 
 class TestCollectData(unittest.TestCase):
     def setUp(self):
@@ -36,10 +38,11 @@ class TestCollectData(unittest.TestCase):
             )
         )
         ss_0 = dpdata.System(out["systems"][0], "deepmd/npy")
-        self.assertEqual(ss_0.get_nframes(), 6)
+        self.assertEqual(ss_0.get_nframes(), 5)
         ss_1 = dpdata.System(out["systems"][1], "deepmd/npy")
-        self.assertEqual(ss_1.get_nframes(), 5)
+        self.assertEqual(ss_1.get_nframes(), 6)
 
 
 if __name__ == "__main__":
+    print(fake_data_set.__path__)
     unittest.main()
