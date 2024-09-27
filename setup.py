@@ -26,7 +26,8 @@ setuptools.setup(
 	     'dpgui',
          'cp2kdata',
          'periodictable',
-         'ase'
+         'ase',
+         'dpgen2'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
