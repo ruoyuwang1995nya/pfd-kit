@@ -4,8 +4,5 @@
     "@semantic-release/git": "^10.0.1",
     "@semantic-release/github": "^11.0.0",
     "semantic-release": "^24.1.1"
-  },
-  "release": {
-    "repositoryUrl": "https://github.com/ruoyuwang1995nya/dp-distill.git"
   }
 }
