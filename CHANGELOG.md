@@ -1,5 +1,27 @@
 # CHANGELOG
 
+## v1.0.2 (2024-09-28)
+
+### Fix
+
+* fix: semantic ([`8e94e48`](https://github.com/ruoyuwang1995nya/dp-distill/commit/8e94e480d9200fb653e45566e027a980e4a96024))
+
+* fix: semantic ([`96f2b49`](https://github.com/ruoyuwang1995nya/dp-distill/commit/96f2b4955d9d6bc738f15aedf716d7b14931e86b))
+
+* fix: untrack devel for semantic ([`5f0daa3`](https://github.com/ruoyuwang1995nya/dp-distill/commit/5f0daa3c9a8ccd53391a9af89e34e2d9bb05374f))
+
+* fix: update semantic ([`d5f1619`](https://github.com/ruoyuwang1995nya/dp-distill/commit/d5f16190339bb5ca129646703f25107869b0598c))
+
+### Unknown
+
+* Merge pull request #34 from ruoyuwang1995nya/devel
+
+fix: semantic ([`b73273c`](https://github.com/ruoyuwang1995nya/dp-distill/commit/b73273c6dd8c2a5f911f015a229b1c0407689b29))
+
+* Merge pull request #33 from ruoyuwang1995nya/devel
+
+Config python semantic release ([`6a60cc4`](https://github.com/ruoyuwang1995nya/dp-distill/commit/6a60cc42f33a89801d94d0a2b8d64a5c14177ee6))
+
 ## v1.0.1 (2024-09-28)
 
 ### Fix
