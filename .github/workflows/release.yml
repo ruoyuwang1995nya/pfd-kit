@@ -27,4 +27,5 @@ jobs:
     - name: Run semantic-release
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        GIT_COMMIT_AUTHOR: ${{ variables.GIT_COMMIT_AUTHOR }}
       run: semantic-release  version 
