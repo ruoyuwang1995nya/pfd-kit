@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="DP-distill",
-    version="0.0.2",
+    version="0.0.0",
     author="Ruoyu Wang",
     author_email="ruoyuwang1995@gmail.com",
     description="Automated model fine-tune and distillation kit for DPA-2 pre-trained models",
