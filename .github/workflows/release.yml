@@ -16,16 +16,15 @@ jobs:
         fetch-depth: 0
         persist-credentials: false # <--- this
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
       with:
-        node-version: '22'
+        python-version: '3.12'
 
     - name: Install dependencies
-      run: npm install
+      run: pip install python-semantic-release
 
     - name: Run semantic-release
       env:
-        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      run: npx semantic-release
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      run: semantic-release version
