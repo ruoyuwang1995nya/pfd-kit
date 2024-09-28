@@ -6,6 +6,15 @@
     "semantic-release": "^24.1.1"
   },
   "release": {
-    "repositoryUrl": "https://github.com/ruoyuwang1995nya/dp-distill.git"
+    "repositoryUrl": "https://github.com/ruoyuwang1995nya/dp-distill.git",
+    "branches": ["main", "devel"],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/changelog",
+      "@semantic-release/npm",
+      "@semantic-release/github",
+      "@semantic-release/git"
+    ]
   }
 }
