@@ -1,5 +1,4 @@
 name: Release
-
 on:
   push:
     branches:
@@ -13,17 +12,20 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
       with:
-        node-version: '22'
+        fetch-depth: 0
+        persist-credentials: false # <--- this
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.12'
 
     - name: Install dependencies
-      run: npm install
+      run: pip install python-semantic-release
 
     - name: Run semantic-release
       env:
-        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      run: npx semantic-release
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        GIT_COMMIT_AUTHOR: ${{ vars.GIT_COMMIT_AUTHOR }}
+      run: semantic-release  version 
