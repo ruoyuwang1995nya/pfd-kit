@@ -1,6 +1,7 @@
 {
+  "semantic_release":{
   "branches": ["main","devel"],
   "version_variable": "setup.py:version",
   "upload_to_pypi": false,
   "commit_message": "chore(release): ${version} [skip ci]\n\n${changelog}"
-}
+}}

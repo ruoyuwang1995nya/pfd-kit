@@ -1,11 +1,13 @@
 import setuptools
 
+__version__ = "0.0.0"
+
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="DP-distill",
-    version="0.0.0",
+    version=__version__,
     author="Ruoyu Wang",
     author_email="ruoyuwang1995@gmail.com",
     description="Automated model fine-tune and distillation kit for DPA-2 pre-trained models",
