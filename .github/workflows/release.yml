@@ -27,4 +27,4 @@ jobs:
     - name: Run semantic-release
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
-      run: semantic-release --config .releaserc.json version 
+      run: semantic-release  version 
