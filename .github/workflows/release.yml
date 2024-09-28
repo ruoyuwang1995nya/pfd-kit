@@ -1,5 +1,4 @@
 name: Release
-
 on:
   push:
     branches:
@@ -13,9 +12,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-    with:
-      fetch-depth: 0
-      persist-credentials: false # <--- this
+      with:
+        fetch-depth: 0
+        persist-credentials: false # <--- this
 
     - name: Set up Node.js
       uses: actions/setup-node@v2
