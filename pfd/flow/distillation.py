@@ -33,7 +33,7 @@ from dflow.python import (
     PythonOPTemplate,
 )
 
-from pdf.op import ModelTestOP
+from pfd.op import ModelTestOP
 
 from dpgen2.utils.step_config import init_executor
 

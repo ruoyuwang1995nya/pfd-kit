@@ -10,16 +10,16 @@ from dpgen2.constants import (
     model_name_pattern,
     plm_input_name,
 )
-from pdf.exploration.task.caly_task_group import (
+from pfd.exploration.task.caly_task_group import (
     CalyTaskGroup,
 )
-from pdf.exploration.task.customized_lmp_template_task_group import (
+from pfd.exploration.task.customized_lmp_template_task_group import (
     CustomizedLmpTemplateTaskGroup,
 )
-from pdf.exploration.task.lmp_template_task_group import (
+from pfd.exploration.task.lmp_template_task_group import (
     LmpTemplateTaskGroup,
 )
-from pdf.exploration.task.npt_task_group import (
+from pfd.exploration.task.npt_task_group import (
     NPTTaskGroup,
 )
 

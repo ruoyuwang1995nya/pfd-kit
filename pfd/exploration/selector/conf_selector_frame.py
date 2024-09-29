@@ -14,7 +14,7 @@ from typing import (
 import dpdata
 import numpy as np
 
-from pdf.exploration.render import (
+from pfd.exploration.render import (
     TrajRender,
 )
 from dpgen2.exploration.report import (

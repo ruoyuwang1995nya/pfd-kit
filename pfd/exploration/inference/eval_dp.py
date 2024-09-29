@@ -1,5 +1,5 @@
-from pdf.exploration.inference.eval_model import EvalModel
-from pdf.exploration.inference.util import get_mae, get_rmse
+from pfd.exploration.inference.eval_model import EvalModel
+from pfd.exploration.inference.util import get_mae, get_rmse
 from pathlib import Path
 import dpdata
 import numpy as np

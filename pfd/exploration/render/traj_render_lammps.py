@@ -15,7 +15,7 @@ from .traj_render import (
 )
 
 if TYPE_CHECKING:
-    from pdf.exploration.selector import (
+    from pfd.exploration.selector import (
         ConfFilters,
     )
 

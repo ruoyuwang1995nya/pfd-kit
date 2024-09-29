@@ -32,7 +32,7 @@ from dflow.python import (
 )
 
 from dpgen2.utils.step_config import init_executor
-from pdf.op import ModelTestOP, EvalConv, IterCounter, StageScheduler, NextLoop
+from pfd.op import ModelTestOP, EvalConv, IterCounter, StageScheduler, NextLoop
 
 
 class ExplorationBlock(Steps):

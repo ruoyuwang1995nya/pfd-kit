@@ -1,5 +1,5 @@
 import unittest
-from pdf.op.collect import CollectData
+from pfd.op.collect import CollectData
 from dflow.python import OPIO
 from fake_data_set import (
     fake_multi_sys,

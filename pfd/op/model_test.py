@@ -5,7 +5,7 @@ from typing import (
 )
 
 from dflow.python import OP, OPIO, Artifact, BigParameter, OPIOSign, Parameter
-from pdf.exploration.inference import ModelTypes
+from pfd.exploration.inference import ModelTypes
 
 
 class ModelTestOP(OP):

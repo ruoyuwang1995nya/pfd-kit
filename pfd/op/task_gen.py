@@ -17,7 +17,7 @@ from dflow.python import OP, OPIO, Artifact, BigParameter, OPIOSign, Parameter
 from dpdata.lammps.lmp import from_system_data
 
 from dpgen2.constants import lmp_task_pattern, pytorch_model_name_pattern
-from pdf.exploration.task import (
+from pfd.exploration.task import (
     BaseExplorationTaskGroup,
     ExplorationTaskGroup,
     NPTTaskGroup,

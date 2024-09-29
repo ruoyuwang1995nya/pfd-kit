@@ -5,7 +5,7 @@ import json
 import dpdata
 import dflow
 import dpgen2
-import pdf
+import pfd
 import re
 import fpop
 import ase
@@ -13,8 +13,8 @@ import ase
 from dflow import ArgoStep, Step, Steps, Workflow, upload_artifact
 
 
-from pdf.entrypoint.args import normalize as normalize_args
-from pdf.entrypoint.common import global_config_workflow, expand_idx
+from pfd.entrypoint.args import normalize as normalize_args
+from pfd.entrypoint.common import global_config_workflow, expand_idx
 
 from dpgen2.fp import fp_styles
 
@@ -22,8 +22,8 @@ from dpgen2.superop import PrepRunLmp, PrepRunDPTrain, PrepRunFp
 
 from dpgen2.op import PrepLmp, RunLmp, PrepDPTrain, RunDPTrain
 
-from pdf.flow.fine_tune import FineTune
-from pdf.op import (
+from pfd.flow.fine_tune import FineTune
+from pfd.op import (
     PertGen,
     TaskGen,
     CollectData,
@@ -33,25 +33,25 @@ from pdf.op import (
     inference,
 )
 
-from pdf.superop import (
+from pfd.superop import (
     ExplorationBlock,
     ExplFinetuneLoop,
     ExplFinetuneBlock,
     ExplDistBlock,
     ExplDistLoop,
 )
-from pdf.exploration.selector import (
+from pfd.exploration.selector import (
     ConfFilters,
     ConfSelectorFrames,
     conf_filter_styles,
 )
 
-from pdf.exploration.render import TrajRenderLammps
+from pfd.exploration.render import TrajRenderLammps
 
-from pdf.flow import Distillation
-from pdf.constants import default_image
+from pfd.flow import Distillation
+from pfd.constants import default_image
 from dpgen2.utils.step_config import normalize as normalize_step_dict
-from pdf.utils import (
+from pfd.utils import (
     upload_artifact_and_print_uri,
     get_artifact_from_uri,
     matched_step_key,
@@ -271,7 +271,7 @@ def workflow_dist(
     upload_python_packages.extend(custom_packages)
     upload_python_packages.extend(list(dpdata.__path__))
     upload_python_packages.extend(list(dflow.__path__))
-    upload_python_packages.extend(list(pdf.__path__))
+    upload_python_packages.extend(list(pfd.__path__))
     upload_python_packages.extend(list(dpgen2.__path__))
     ## task configs
     type_map = config["inputs"]["type_map"]
@@ -392,7 +392,7 @@ def workflow_finetune(config: Dict) -> Step:
     upload_python_packages.extend(custom_packages)
     upload_python_packages.extend(list(dpdata.__path__))
     upload_python_packages.extend(list(dflow.__path__))
-    upload_python_packages.extend(list(pdf.__path__))
+    upload_python_packages.extend(list(pfd.__path__))
     upload_python_packages.extend(list(dpgen2.__path__))
     upload_python_packages.extend(list(fpop.__path__))
     upload_python_packages.extend(list(ase.__path__))

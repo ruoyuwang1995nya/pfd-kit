@@ -37,7 +37,7 @@ from dflow.python import (
 
 from dpgen2.utils.step_config import init_executor
 
-from pdf.op import EvalConv, NextLoop, IterCounter, ModelTestOP, StageScheduler
+from pfd.op import EvalConv, NextLoop, IterCounter, ModelTestOP, StageScheduler
 
 
 class ExplFinetuneBlock(Steps):
