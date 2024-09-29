@@ -6,11 +6,11 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="DP-distill",
+    name="PDF-kit",
     version=__version__,
     author="Ruoyu Wang",
     author_email="ruoyuwang1995@gmail.com",
-    description="Automated model fine-tune and distillation kit for DPA-2 pre-trained models",
+    description="Finetune and distillation from pre-trained atomic models",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/ruoyuwang1995nya/dp-distill.git",
@@ -37,7 +37,7 @@ setuptools.setup(
     python_requires=">=3.8",
     entry_points={
         "console_scripts": [
-            "dp-dist = distill.entrypoint.main:main",
+            "pdf = pdf.entrypoint.main:main",
         ],
     },
 )
