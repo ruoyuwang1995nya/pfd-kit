@@ -10,7 +10,7 @@ from typing import (
 from pfd.utils.download_pfd_artifacts import (
     print_op_download_setting,
 )
-
+from pfd import __version__
 from .download import (
     download,
     download_by_def,
@@ -151,6 +151,15 @@ def main_parser() -> argparse.ArgumentParser:
         "--no-check-point",
         action="store_false",
         help="if specified, download regardless whether check points exist.",
+    )
+
+    # Add the version argument
+    parser.add_argument(
+        "-v",
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
+        help="show the version number and exit",
     )
     return parser
 
