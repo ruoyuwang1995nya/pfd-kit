@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## v0.0.2 (2024-09-29)
+
+### Fix
+
+* fix: restore cli ([`71f8df8`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/71f8df88685bf3cc140fe4c2bcb13ba898eb8e0e))
+
+### Unknown
+
+* Merge pull request #38 from ruoyuwang1995nya/devel
+
+fix: restore cli ([`b752afa`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/b752afa08a673d5c4638fe59986fff04540c962c))
+
 ## v0.0.1 (2024-09-29)
 
 ### Unknown
