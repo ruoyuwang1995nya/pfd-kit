@@ -4,6 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "PFD-kit"
+dynamic = ["version"]
 description = "fine-tune and distillation from pre-trained atomic models"
 readme = { file = "README.md", content-type = "text/markdown" }
 authors = [
@@ -34,6 +35,9 @@ dependencies = [
 
 [project.urls]
 homepage = "https://github.com/ruoyuwang1995nya/pfd-kit.git"
+
+[tool.setuptools.dynamic]
+version = {attr = "pfd.__version__"}
 
 [tool.semantic_release]
 assets = []
