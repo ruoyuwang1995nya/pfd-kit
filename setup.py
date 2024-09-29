@@ -6,14 +6,14 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="PDF-kit",
+    name="PFD-kit",
     version=__version__,
     author="Ruoyu Wang",
     author_email="ruoyuwang1995@gmail.com",
-    description="Finetune and distillation from pre-trained atomic models",
+    description="fine-tune and distillation from pre-trained atomic models",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/ruoyuwang1995nya/dp-distill.git",
+    url="https://github.com/ruoyuwang1995nya/pfd-kit.git",
     packages=setuptools.find_packages(),
     install_requires=[
         "numpy",
@@ -28,6 +28,7 @@ setuptools.setup(
         "cp2kdata",
         "periodictable",
         "ase",
+        "git+https://github.com/deepmodeling/dpgen2.git",
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -37,7 +38,7 @@ setuptools.setup(
     python_requires=">=3.8",
     entry_points={
         "console_scripts": [
-            "pdf = pdf.entrypoint.main:main",
+            "pfd = pfd.entrypoint.main:main",
         ],
     },
 )
