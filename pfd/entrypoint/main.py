@@ -1,26 +1,13 @@
 import argparse
 import json
 import logging
-import os
 import textwrap
 from typing import (
     List,
     Optional,
 )
 
-import dflow
-from dflow import (
-    Step,
-    Steps,
-    Workflow,
-    download_artifact,
-    upload_artifact,
-)
-
-from dpgen2 import (
-    __version__,
-)
-from dpgen2.utils.download_dpgen2_artifacts import (
+from pfd.utils.download_pfd_artifacts import (
     print_op_download_setting,
 )
 
@@ -37,7 +24,7 @@ from .common import (
 
 
 def main_parser() -> argparse.ArgumentParser:
-    """DP-DISTILL commandline options argument parser.
+    """PFD-kit commandline options argument parser.
 
     Notes
     -----
@@ -49,7 +36,7 @@ def main_parser() -> argparse.ArgumentParser:
         the argument parser
     """
     parser = argparse.ArgumentParser(
-        description="DP-DISTILL: efficient fine-tune and distillation workflow for pre-trained DPA model"
+        description="PFD-kit: fine-tune and distillation from pre-trained atomic models"
         "machine learning potential energy models.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
@@ -115,7 +102,7 @@ def main_parser() -> argparse.ArgumentParser:
     # download
     parser_download = subparsers.add_parser(
         "download",
-        help=("Download the artifacts of DPGEN2 steps.\n"),
+        help=("Download the artifacts of PFD workflow steps.\n"),
         description=(
             textwrap.dedent(
                 """
