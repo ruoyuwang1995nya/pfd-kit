@@ -4,7 +4,6 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "PFD-kit"
-version = "0.0.0"
 description = "fine-tune and distillation from pre-trained atomic models"
 readme = { file = "README.md", content-type = "text/markdown" }
 authors = [
@@ -47,10 +46,10 @@ allow_zero_version = true
 repo_dir = "./"
 no_git_verify = false
 tag_format = "v{version}"
-version_variables = ["setup.py:__version__"]
+version_variables = ["pfd/__init__.py:__version__"]
 
 [tool.semantic_release.branches.main]
-match = "(main|master)"
+match = "(main|master|devel)"
 prerelease_token = "rc"
 prerelease = false
 
