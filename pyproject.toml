@@ -49,7 +49,7 @@ tag_format = "v{version}"
 version_variables = ["pfd/__init__.py:__version__"]
 
 [tool.semantic_release.branches.main]
-match = "(main|master|devel)"
+match = "(main|master)"
 prerelease_token = "rc"
 prerelease = false
 
