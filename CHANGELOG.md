@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## v0.0.1 (2024-09-29)
+
+### Unknown
+
+* Merge pull request #37 from ruoyuwang1995nya/devel
+
+Update toml ([`59a3782`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/59a3782cdee1f6b5c544d1452e3b1e0458690258))
+
+## v0.0.0 (2024-09-29)
+
+### Fix
+
+* fix: update toml ([`4b6e644`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/4b6e644a40800a25b531ad549eb8b5190fbd7547))
+
+* fix: update toml ([`39c2379`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/39c23790137e15b72af635dcff79624c60960ae9))
+
 ## v1.0.3 (2024-09-29)
 
 ### Fix
