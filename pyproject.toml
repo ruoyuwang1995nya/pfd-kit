@@ -36,6 +36,9 @@ dependencies = [
 [project.urls]
 homepage = "https://github.com/ruoyuwang1995nya/pfd-kit.git"
 
+[project.scripts]
+pfd = "pfd.entrypoint:main"
+
 [tool.setuptools.dynamic]
 version = {attr = "pfd.__version__"}
 
