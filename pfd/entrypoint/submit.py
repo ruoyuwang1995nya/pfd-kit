@@ -18,6 +18,8 @@ from pfd.entrypoint.common import global_config_workflow, expand_idx
 
 from dpgen2.fp import fp_styles
 
+from pfd.train import train_styles
+
 from dpgen2.superop import PrepRunLmp, PrepRunDPTrain, PrepRunFp
 
 from dpgen2.op import PrepLmp, RunLmp, PrepDPTrain, RunDPTrain
@@ -136,7 +138,8 @@ def make_dist_op(
 
 def make_ft_op(
     fp_style: str = "vasp",
-    # step configs
+    train_style: str = "dp",
+    explore_style: str = "lmp",
     pert_gen_step_config: dict = default_config,
     gen_task_step_config: dict = default_config,
     prep_fp_config: dict = default_config,
@@ -166,26 +169,27 @@ def make_ft_op(
         raise RuntimeError(f"unknown fp_style {fp_style}")
 
     ## initiate DP train op
-    prep_run_train_dp_op = PrepRunDPTrain(
-        "finetune",
-        PrepDPTrain,
-        RunDPTrain,
-        prep_config=prep_train_config,
-        run_config=run_train_config,
-        upload_python_packages=upload_python_packages,
-        # finetune=False,
-        valid_data=None,
-    )
+    if train_style in train_styles.keys():
+        prep_run_train_op = PrepRunDPTrain(
+            "finetune",
+            train_styles[train_style]["prep"],
+            train_styles[train_style]["run"],
+            prep_config=prep_train_config,
+            run_config=run_train_config,
+            upload_python_packages=upload_python_packages,
+            valid_data=None,
+        )
 
     ## initiate LAMMPS op, possibly other engines
-    prep_run_lmp_op = PrepRunLmp(
-        "prep-run-lmp-step",
-        PrepLmp,
-        RunLmp,
-        prep_config=prep_lmp_config,
-        run_config=run_lmp_config,
-        upload_python_packages=upload_python_packages,
-    )
+    if explore_style == "lmp":
+        prep_run_lmp_op = PrepRunLmp(
+            "prep-run-lmp-step",
+            PrepLmp,
+            RunLmp,
+            prep_config=prep_lmp_config,
+            run_config=run_lmp_config,
+            upload_python_packages=upload_python_packages,
+        )
 
     expl_ft_blk_op = ExplFinetuneBlock(
         name="expl-ft-blk",
@@ -194,7 +198,7 @@ def make_ft_op(
         prep_run_fp_op=prep_run_fp_op,
         collect_data_op=CollectData,
         select_confs_op=SelectConfs,
-        prep_run_train_op=prep_run_train_dp_op,
+        prep_run_train_op=prep_run_train_op,
         inference_op=ModelTestOP,
         collect_data_step_config=collect_data_step_config,
         inference_step_config=inference_step_config,
@@ -213,7 +217,7 @@ def make_ft_op(
         pert_gen_op=PertGen,
         prep_run_fp_op=prep_run_fp_op,
         collect_data_op=CollectData,
-        prep_run_dp_train_op=prep_run_train_dp_op,
+        prep_run_dp_train_op=prep_run_train_op,
         expl_finetune_loop_op=expl_finetune_loop_op,
         pert_gen_step_config=pert_gen_step_config,
         collect_data_step_config=collect_data_step_config,
@@ -402,6 +406,7 @@ def workflow_finetune(config: Dict) -> Step:
         mass_map = config["inputs"]["mass_map"]
     else:
         mass_map = [getattr(elements, ii).mass for ii in type_map]
+    train_style = config["train"]["type"]
     train_config = config["train"]["config"]
     numb_models = config["train"].get("numb_models", 1)
     pert_config = config["conf_generation"]
@@ -412,7 +417,7 @@ def workflow_finetune(config: Dict) -> Step:
     conf_filters = get_conf_filters(config["exploration"]["filter"])
     render = TrajRenderLammps(nopbc=False)
     conf_selector = ConfSelectorFrames(render, config["fp"]["task_max"], conf_filters)
-
+    explore_style = config["exploration"]["md"]["type"]
     expl_stages = config["exploration"]["md"]["stages"]
     init_training = config["exploration"].get("init_training", False)
     skip_aimd = config["exploration"].get("skip_aimd", True)
@@ -473,6 +478,8 @@ def workflow_finetune(config: Dict) -> Step:
     # make distillation op
     ft_op = make_ft_op(
         fp_style=fp_type,
+        train_style=train_style,
+        explore_style=explore_style,
         pert_gen_step_config=run_pert_gen_config,
         prep_fp_config=prep_fp_config,
         run_fp_config=run_fp_config,
