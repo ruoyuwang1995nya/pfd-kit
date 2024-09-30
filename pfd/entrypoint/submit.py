@@ -371,8 +371,6 @@ def workflow_finetune(config: Dict) -> Step:
     Build a workflow from the OP templates of distillation
     """
     ## get input config
-    fp_style = config["fp"]["type"]
-    aimd_style = config["aimd"]["type"]
     default_config = config["default_step_config"]
     prep_train_config = config["step_configs"].get("prep_train_config", default_config)
     run_train_config = config["step_configs"].get("run_train_config", default_config)
@@ -462,7 +460,7 @@ def workflow_finetune(config: Dict) -> Step:
     fp_config = {}
     fp_inputs_config = config["fp"]["inputs_config"]
     fp_type = config["fp"]["type"]
-    fp_inputs = fp_styles[fp_style]["inputs"](**fp_inputs_config)
+    fp_inputs = fp_styles[fp_type]["inputs"](**fp_inputs_config)
     fp_config["inputs"] = fp_inputs
     fp_config["run"] = config["fp"]["run_config"]
     fp_config["extra_output_files"] = config["fp"].get("extra_output_files", [])
@@ -470,7 +468,7 @@ def workflow_finetune(config: Dict) -> Step:
     aimd_config = {}
     aimd_inputs_config = config["aimd"]["inputs_config"]
     aimd_type = config["aimd"]["type"]
-    aimd_inputs = fp_styles[aimd_style]["inputs"](**aimd_inputs_config)
+    aimd_inputs = fp_styles[aimd_type]["inputs"](**aimd_inputs_config)
     aimd_config["inputs"] = aimd_inputs
     aimd_config["run"] = config["aimd"]["run_config"]
     aimd_config["extra_output_files"] = config["aimd"].get("extra_output_files", [])
