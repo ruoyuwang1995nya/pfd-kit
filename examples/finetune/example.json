@@ -138,6 +138,10 @@
     "upload_python_packages": [
         "/opt/mamba/envs/openlam/lib/python3.12/site-packages/ase"
     ],
+    "task":{
+        "type":"finetune"
+    },
+    "init_training": false,
     "inputs": {
         "type_map": [
             "H",
@@ -280,35 +284,32 @@
             }
             ]},
     "exploration": {
-        "init_training":true,
-        "skip_aimd":false,
         "max_iter":2,
-        "converge_config":{
+        "convergence":{
             "type":"energy_rmse",
             "RMSE":0.01},
         "filter":[{
             "type":"distance"
         }],
-        "md":{
-            "type": "lmp",
-            "config": {
-                "command": "lmp -var restart 0",
-                "shuffle_models": false, 
-                "head": null},
-            "stages":[[
-                {   "_comment": "group 1 stage 1 of finetune-exploration",
-                    "conf_idx": [0],
-                    "n_sample":3,
-                    "exploration":{
-                        "type": "lmp-md",
-                        "ensemble": "npt",
-                        "dt":0.005,
-                        "nsteps": 2000,
-                        "temps": [500],
-                        "press":[1],
-                        "trj_freq": 200},
-                    "max_sample": 10000
-                    }]]}},
+        "type": "lmp",
+        "config": {
+            "command": "lmp -var restart 0",
+            "shuffle_models": false, 
+            "head": null},
+        "stages":[[
+            {  "_comment": "group 1 stage 1 of finetune-exploration",
+                "conf_idx": [0],
+                "n_sample":3,
+                "exploration":{
+                "type": "lmp-md",
+                "ensemble": "npt",
+                "dt":0.005,
+                "nsteps": 2000,
+                "temps": [500],
+                "press":[1],
+                "trj_freq": 200},
+                "max_sample": 10000
+                    }]]},
     "aimd":{
             "type": "fpop_abacus",
             "task_max": 5,

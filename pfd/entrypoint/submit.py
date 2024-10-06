@@ -1,5 +1,6 @@
 from copy import deepcopy
 import os
+import copy
 from typing import Dict, List, Optional, Tuple
 import json
 import dpdata
@@ -271,8 +272,8 @@ def workflow_dist(
 
     # uploaded python packages
     upload_python_packages = []
-    custom_packages = config.get("upload_python_packages", [])
-    upload_python_packages.extend(custom_packages)
+    if custom_packages := config.get("upload_python_packages"):
+        upload_python_packages.extend(custom_packages)
     upload_python_packages.extend(list(dpdata.__path__))
     upload_python_packages.extend(list(dflow.__path__))
     upload_python_packages.extend(list(pfd.__path__))
@@ -287,8 +288,8 @@ def workflow_dist(
     # exploration
     explore_config = config["exploration"]["config"]
     expl_stages = config["exploration"]["stages"]
-    converge_config = config["exploration"]["converge_config"]
-    max_iter = config["exploration"].get("max_iter", 1)
+    converge_config = config["exploration"]["convergence"]
+    max_iter = config["exploration"]["max_numb_iter"]
     # train
     train_config = config["train"]["config"]
     # type_map_train=config["train"]["type_map"]
@@ -310,7 +311,18 @@ def workflow_dist(
     init_confs = upload_artifact(
         config["conf_generation"]["init_configurations"]["files"]
     )
-    teacher_model = upload_artifact([config["inputs"]["teacher_model"]])
+    # teacher models
+    teacher_models_paths = config["inputs"]["teacher_models_paths"]
+    print(teacher_models_paths)
+    if config["inputs"]["teacher_models_uri"] is not None:
+        print("Using uploaded model at: ", config["inputs"]["teacher_models_uri"])
+        teacher_models = get_artifact_from_uri(config["train"]["init_models_uri"])
+    elif teacher_models_paths is not None:
+        teacher_models = upload_artifact_and_print_uri(
+            teacher_models_paths, "teacher_models"
+        )
+    else:
+        raise FileNotFoundError("Pre-trained model must exist!")
 
     # init_data
     if config["inputs"]["init_data_uri"] is not None:
@@ -358,7 +370,7 @@ def workflow_dist(
         },
         artifacts={
             "init_confs": init_confs,
-            "teacher_model": teacher_model,
+            "teacher_model": teacher_models,
             "init_data": init_data,
             "iter_data": upload_artifact([]),
         },
@@ -390,8 +402,8 @@ def workflow_finetune(config: Dict) -> Step:
     run_lmp_config = config["step_configs"].get("run_explore_config", default_config)
     # uploaded python packages
     upload_python_packages = []
-    custom_packages = config.get("upload_python_packages", [])
-    upload_python_packages.extend(custom_packages)
+    if custom_packages := config.get("upload_python_packages"):
+        upload_python_packages.extend(custom_packages)
     upload_python_packages.extend(list(dpdata.__path__))
     upload_python_packages.extend(list(dflow.__path__))
     upload_python_packages.extend(list(pfd.__path__))
@@ -406,19 +418,23 @@ def workflow_finetune(config: Dict) -> Step:
         mass_map = [getattr(elements, ii).mass for ii in type_map]
     train_style = config["train"]["type"]
     train_config = config["train"]["config"]
-    numb_models = config["train"].get("numb_models", 1)
+    numb_models = config["train"]["numb_models"]
     pert_config = config["conf_generation"]
-    explore_config = config["exploration"]["md"]["config"]
-    max_iter = config["exploration"]["md"].get("max_iter", 1)
-    converge_config = config["exploration"]["converge_config"]
+
+    explore_config = config["exploration"]["config"]
+    max_iter = config["exploration"]["max_numb_iter"]
+    converge_config = config["exploration"]["convergence"]
     # conf selectors
     conf_filters = get_conf_filters(config["exploration"]["filter"])
     render = TrajRenderLammps(nopbc=False)
     conf_selector = ConfSelectorFrames(render, config["fp"]["task_max"], conf_filters)
-    explore_style = config["exploration"]["md"]["type"]
-    expl_stages = config["exploration"]["md"]["stages"]
-    init_training = config["exploration"].get("init_training", False)
-    skip_aimd = config["exploration"].get("skip_aimd", True)
+    explore_style = config["exploration"]["type"]
+    expl_stages = config["exploration"]["stages"]
+    # task
+    init_training = config["task"]["init_training"]
+    if init_training is False:
+        print("No initial training before exploration")
+    skip_aimd = config["task"]["skip_aimd"]
     if skip_aimd is True:
         print("AIMD is exploration skipped!")
 
@@ -433,10 +449,18 @@ def workflow_finetune(config: Dict) -> Step:
     # read training template
     with open(config["train"]["template_script"], "r") as fp:
         template_script = json.load(fp)
-    init_confs = upload_artifact(
-        config["conf_generation"]["init_configurations"]["files"]
-    )
-
+    # init_confs
+    if config["conf_generation"]["init_configurations"]["confs_uri"] is not None:
+        init_confs = get_artifact_from_uri(
+            config["conf_generation"]["init_configurations"]["confs_uri"]
+        )
+    elif config["conf_generation"]["init_configurations"]["files"] is not None:
+        init_confs_prefix = config["conf_generation"]["init_configurations"]["prefix"]
+        init_confs = config["conf_generation"]["init_configurations"]["files"]
+        init_confs = get_systems_from_data(init_confs, init_confs_prefix)
+        init_confs = upload_artifact_and_print_uri(init_confs, "init_data")
+    else:
+        raise RuntimeError("init_confs must be provided")
     # init_data
     if config["inputs"]["init_data_uri"] is not None:
         init_data = get_artifact_from_uri(config["inputs"]["init_data_uri"])
@@ -448,10 +472,10 @@ def workflow_finetune(config: Dict) -> Step:
     else:
         init_data = upload_artifact([])
     iter_data = upload_artifact([])
-    init_models_paths = config["train"].get("init_models_paths", None)
-    if config["train"].get("init_models_url") is not None:
-        print("Using uploaded model at: ", config["train"].get("init_models_url"))
-        init_models = get_artifact_from_uri(config["train"]["init_models_url"])
+    init_models_paths = config["train"]["init_models_paths"]
+    if config["train"]["init_models_uri"] is not None:
+        print("Using uploaded model at: ", config["train"]["init_models_uri"])
+        init_models = get_artifact_from_uri(config["train"]["init_models_uri"])
     elif init_models_paths is not None:
         init_models = upload_artifact_and_print_uri(init_models_paths, "init_models")
     else:
@@ -465,13 +489,16 @@ def workflow_finetune(config: Dict) -> Step:
     fp_config["run"] = config["fp"]["run_config"]
     fp_config["extra_output_files"] = config["fp"].get("extra_output_files", [])
 
+    # aimd exploration
     aimd_config = {}
-    aimd_inputs_config = config["aimd"]["inputs_config"]
-    aimd_type = config["aimd"]["type"]
-    aimd_inputs = fp_styles[aimd_type]["inputs"](**aimd_inputs_config)
-    aimd_config["inputs"] = aimd_inputs
-    aimd_config["run"] = config["aimd"]["run_config"]
-    aimd_config["extra_output_files"] = config["aimd"].get("extra_output_files", [])
+    if skip_aimd is not True:
+        aimd_config.update(fp_config)
+        aimd_inputs_config = copy.deepcopy(fp_inputs_config)
+        aimd_inputs_config.update(config["aimd"]["inputs_config"])
+        aimd_inputs = fp_styles[fp_type]["inputs"](**aimd_inputs_config)
+        aimd_config["inputs"] = aimd_inputs
+        # aimd_config["run"] = config["aimd"]["run_config"]
+        # aimd_config["extra_output_files"] = config["aimd"].get("extra_output_files", [])
 
     # make distillation op
     ft_op = make_ft_op(
