@@ -308,9 +308,18 @@ def workflow_dist(
     # read training template
     with open(config["train"]["template_script"], "r") as fp:
         template_script = json.load(fp)
-    init_confs = upload_artifact(
-        config["conf_generation"]["init_configurations"]["files"]
-    )
+    # init_confs
+    if config["conf_generation"]["init_configurations"]["confs_uri"] is not None:
+        init_confs = get_artifact_from_uri(
+            config["conf_generation"]["init_configurations"]["confs_uri"]
+        )
+    elif config["conf_generation"]["init_configurations"]["files"] is not None:
+        init_confs_prefix = config["conf_generation"]["init_configurations"]["prefix"]
+        init_confs = config["conf_generation"]["init_configurations"]["files"]
+        init_confs = get_systems_from_data(init_confs, init_confs_prefix)
+        init_confs = upload_artifact_and_print_uri(init_confs, "init_data")
+    else:
+        raise RuntimeError("init_confs must be provided")
     # teacher models
     teacher_models_paths = config["inputs"]["teacher_models_paths"]
     print(teacher_models_paths)
