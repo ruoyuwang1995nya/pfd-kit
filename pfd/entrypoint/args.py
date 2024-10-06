@@ -9,22 +9,13 @@ from dargs import (
     Variant,
 )
 
-import dpgen2
-from dpgen2.conf import (
-    conf_styles,
-)
-from dpgen2.constants import (
-    default_image,
-)
-from dpgen2.exploration.report import (
-    conv_styles,
-)
+from pfd.exploration.converge import ConvTypes as conv_styles
+
 from dpgen2.fp import (
     fp_styles,
 )
-from dpgen2.op.run_dp_train import (
-    RunDPTrain,
-)
+from pfd.train import train_styles
+
 from dpgen2.op.run_lmp import (
     RunLmp,
 )
@@ -41,44 +32,68 @@ def make_link(content, ref_key):
     )
 
 
-def dp_dist_train_args():
-    doc_config = "Configuration of training"
-    doc_template_script = "File names of the template training script. It can be a `List[str]`, the length of which is the same as `numb_models`. Each template script in the list is used to train a model. Can be a `str`, the models share the same template training script. "
-    dock_student_model_path = "The path of student model"
-    doc_student_model_uri = "The URI of student model"
-    doc_optional_files = "Optional files for training"
+def task_dist():
+    return []
 
+
+def task_finetune():
+    doc_init_train = "Training before exploration"
+    doc_skip_aimd = "Skip aimd exploration"
     return [
         Argument(
-            "config",
-            dict,
-            RunDPTrain.training_args(),
-            optional=True,
-            default=RunDPTrain.normalize_config({}),
-            doc=doc_config,
+            "init_training", bool, optional=True, default=False, doc=doc_init_train
         ),
-        Argument(
-            "template_script", [List[str], str], optional=False, doc=doc_template_script
-        ),
-        Argument("student_model_path", str, optional=True, doc=dock_student_model_path),
-        Argument(
-            "student_model_uri",
-            str,
-            optional=True,
-            default=None,
-            doc=doc_student_model_uri,
-        ),
-        Argument(
-            "optional_files",
-            list,
-            optional=True,
-            default=None,
-            doc=doc_optional_files,
-        ),
+        Argument("skip_aimd", bool, optional=True, default=True, doc=doc_skip_aimd),
     ]
 
 
-def dp_train_args():
+def variant_task():
+    doc = "Select task type"
+    return Variant(
+        "type",
+        [Argument("finetune", dict, task_finetune()), Argument("dist", dict, [])],
+    )
+
+
+def conf_args():
+    doc_fmt = "Format of input structure files"
+    return [
+        Argument("type", str, optional=True, default="file"),
+        Argument("prefix", str, optional=True, default="./"),
+        Argument("fmt", str, optional=True, default="vasp/poscar", doc=doc_fmt),
+        Argument("files", [str, List[str]], optional=True),
+        Argument("confs_uri", [str, List[str]], optional=True, default=None),
+    ]
+
+
+def pert_gen():
+    doc_atom_pert_distance = "Perturb distance for atoms, in Angstrom"
+    doc_pert_num = "Number of perturbed structures"
+    return [
+        Argument("conf_idx", [str, List[int]], optional=True, default="default"),
+        Argument(
+            "atom_pert_distance",
+            float,
+            optional=True,
+            default=0.1,
+            doc=doc_atom_pert_distance,
+        ),
+        Argument("atom_pert_fraction", float, optional=True, default=0.03),
+        Argument("pert_num", int, optional=True, default=1, doc=doc_atom_pert_distance),
+    ]
+
+
+def conf_gen_args():
+    doc = "Generation of atomic configuration for pfd exploration"
+    return [
+        Argument(
+            "init_configurations", dict, conf_args(), alias=["confs", "init_confs"]
+        ),
+        Argument("pert_generation", List[dict], pert_gen()),
+    ]
+
+
+def train_args(run_train):
     doc_numb_models = "Number of models trained for evaluating the model deviation"
     doc_config = "Configuration of training"
     doc_template_script = "File names of the template training script. It can be a `List[str]`, the length of which is the same as `numb_models`. Each template script in the list is used to train a model. Can be a `str`, the models share the same template training script. "
@@ -90,10 +105,10 @@ def dp_train_args():
         Argument(
             "config",
             dict,
-            RunDPTrain.training_args(),
+            run_train.training_args(),
             optional=True,
-            default=RunDPTrain.normalize_config({}),
-            doc=doc_numb_models,
+            default=run_train.normalize_config({}),
+            doc=doc_config,
         ),
         Argument("numb_models", int, optional=True, default=1, doc=doc_numb_models),
         Argument(
@@ -125,13 +140,14 @@ def dp_train_args():
 
 
 def variant_train():
-    doc = "the type of the training"
+    doc = "the type of the training model"
+    train_list = []
+    for kk in train_styles.keys():
+        train_list.append(Argument(kk, dict, train_args(train_styles[kk]["run"])))
+
     return Variant(
         "type",
-        [
-            Argument("dp", dict, dp_train_args()),
-            Argument("dp-dist", dict, dp_dist_train_args()),
-        ],
+        train_list,
         doc=doc,
     )
 
@@ -155,25 +171,6 @@ def variant_conv():
     )
 
 
-def variant_conf():
-    doc = "the type of the initial configuration generator."
-    var_list = []
-    for kk in conf_styles.keys():
-        var_list.append(
-            Argument(
-                kk,
-                dict,
-                conf_styles[kk].args(),
-                doc=conf_styles[kk].doc(),
-            )
-        )
-    return Variant(
-        "type",
-        var_list,
-        doc=doc,
-    )
-
-
 def lmp_args():
     doc_config = "Configuration of lmp exploration"
     doc_max_numb_iter = "Maximum number of iterations per stage"
@@ -182,13 +179,13 @@ def lmp_args():
     )
     doc_output_nopbc = "Remove pbc of the output configurations"
     doc_convergence = "The method of convergence check."
-    doc_configuration = "A list of initial configurations."
     doc_stages = (
         "The definition of exploration stages of type `List[List[ExplorationTaskGroup]`. "
         "The outer list provides the enumeration of the exploration stages. "
         "Then each stage is defined by a list of exploration task groups. "
         "Each task group is described in :ref:`the task group definition<task_group_sec>` "
     )
+    doc_filter = "Filter configuration for DFT calculation"
 
     return [
         Argument(
@@ -200,7 +197,12 @@ def lmp_args():
             doc=doc_config,
         ),
         Argument(
-            "max_numb_iter", int, optional=True, default=10, doc=doc_max_numb_iter
+            "max_numb_iter",
+            int,
+            optional=True,
+            default=10,
+            doc=doc_max_numb_iter,
+            alias=["max_iter"],
         ),
         Argument(
             "fatal_at_max", bool, optional=True, default=True, doc=doc_fatal_at_max
@@ -215,16 +217,14 @@ def lmp_args():
             [variant_conv()],
             optional=False,
             doc=doc_convergence,
+            alias=["converge_config"],
         ),
         Argument(
-            "configurations",
-            list,
-            [],
-            [variant_conf()],
-            optional=False,
-            repeat=True,
-            doc=doc_configuration,
-            alias=["configuration"],
+            "filter",
+            List[dict],
+            optional=True,
+            default=[{"type": "distance"}],
+            doc=doc_filter,
         ),
         Argument("stages", List[List[dict]], optional=False, doc=doc_stages),
     ]
@@ -298,16 +298,6 @@ def caly_args():
             [variant_conv()],
             optional=False,
             doc=doc_convergence,
-        ),
-        Argument(
-            "configurations",
-            list,
-            [],
-            [variant_conf()],
-            optional=False,
-            repeat=True,
-            doc=doc_configuration,
-            alias=["configuration"],
         ),
         Argument("stages", List[List[dict]], optional=False, doc=doc_stages),
     ]
@@ -400,7 +390,7 @@ def input_args():
 
     return [
         Argument("type_map", List[str], optional=False, doc=doc_type_map),
-        Argument("mass_map", List[float], optional=False, doc=doc_mass_map),
+        Argument("mass_map", List[float], optional=True, doc=doc_mass_map),
         Argument(
             "init_data_prefix",
             str,
@@ -421,6 +411,20 @@ def input_args():
         ),
         Argument(
             "init_data_uri",
+            str,
+            optional=True,
+            default=None,
+            doc=doc_init_data_uri,
+        ),
+        Argument(
+            "teacher_models_paths",
+            [List[str], str],
+            optional=True,
+            default=None,
+            doc=doc_init_sys,
+        ),
+        Argument(
+            "teacher_models_uri",
             str,
             optional=True,
             default=None,
@@ -553,7 +557,7 @@ def default_step_config_args():
     ]
 
 
-def dpgen_step_config_args(default_config):
+def pfd_step_config_args(default_config):
     doc_prep_train_config = "Configuration for prepare train"
     doc_run_train_config = "Configuration for run train"
     doc_prep_explore_config = "Configuration for prepare exploration"
@@ -562,7 +566,6 @@ def dpgen_step_config_args(default_config):
     doc_run_fp_config = "Configuration for run fp"
     doc_select_confs_config = "Configuration for the select confs"
     doc_collect_data_config = "Configuration for the collect data"
-    doc_cl_step_config = "Configuration for the concurrent learning step"
 
     return [
         Argument(
@@ -629,14 +632,6 @@ def dpgen_step_config_args(default_config):
             default=default_config,
             doc=doc_collect_data_config,
         ),
-        Argument(
-            "cl_step_config",
-            dict,
-            step_conf_args(),
-            optional=True,
-            default=default_config,
-            doc=doc_cl_step_config,
-        ),
     ]
 
 
@@ -644,11 +639,13 @@ def submit_args(default_step_config=normalize_step_dict({})):
     doc_bohrium_config = "Configurations for the Bohrium platform."
     doc_step_configs = "Configurations for executing dflow steps"
     doc_upload_python_packages = "Upload python package, for debug purpose"
-    doc_inputs = "The input parameter and artifacts for dpgen2"
+    doc_task = "Task type, `finetune` or `dist`"
+    doc_conf_gen = "The inputparameter and artifacts for confs generation"
+    doc_inputs = "The input parameter and artifacts for pfd"
     doc_train = "The configuration for training"
     doc_explore = "The configuration for exploration"
     doc_fp = "The configuration for FP"
-    doc_name = "The workflow name, 'dpgen' for default"
+    doc_name = "The workflow name, 'pfd' for default"
     doc_parallelism = "The parallelism for the workflow. Accept an int that stands for the maximum number of running pods for the workflow. None for default"
 
     return (
@@ -666,7 +663,7 @@ def submit_args(default_step_config=normalize_step_dict({})):
             Argument(
                 "step_configs",
                 dict,
-                dpgen_step_config_args(default_step_config),
+                pfd_step_config_args(default_step_config),
                 optional=True,
                 default={},
                 doc=doc_step_configs,
@@ -679,20 +676,31 @@ def submit_args(default_step_config=normalize_step_dict({})):
                 doc=doc_upload_python_packages,
                 alias=["upload_python_package"],
             ),
+            Argument(
+                "conf_generation",
+                dict,
+                conf_gen_args(),
+                optional=False,
+                doc=doc_conf_gen,
+            ),
+            # task formatter
+            Argument("task", dict, [], [variant_task()], optional=False, doc=doc_task),
+            # formatter for `input` section
             Argument("inputs", dict, input_args(), optional=False, doc=doc_inputs),
             Argument(
                 "train", dict, [], [variant_train()], optional=False, doc=doc_train
             ),
             Argument(
-                "explore",
+                "exploration",
                 dict,
                 [],
                 [variant_explore()],
                 optional=False,
                 doc=doc_explore,
+                alias=["explore"],
             ),
-            Argument("fp", dict, [], [variant_fp()], optional=False, doc=doc_fp),
-            Argument("name", str, optional=True, default="dpgen", doc=doc_name),
+            Argument("fp", dict, [], [variant_fp()], optional=True, doc=doc_fp),
+            Argument("name", str, optional=True, default="pfd", doc=doc_name),
             Argument(
                 "parallelism", int, optional=True, default=None, doc=doc_parallelism
             ),
@@ -702,12 +710,12 @@ def submit_args(default_step_config=normalize_step_dict({})):
 
 def normalize(data):
     default_step_config = normalize_step_dict(data.get("default_step_config", {}))
+    # nested arguments formatter
     defs = submit_args(default_step_config)
-
     base = Argument("base", dict, defs)
     data = base.normalize_value(data, trim_pattern="_*")
     # not possible to strictly check arguments, dirty hack!
-    # base.check_value(data, strict=False)
+    base.check_value(data, strict=False)
     return data
 
 
