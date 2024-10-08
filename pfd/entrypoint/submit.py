@@ -18,26 +18,22 @@ from pfd.entrypoint.args import normalize as normalize_args
 from pfd.entrypoint.common import global_config_workflow, expand_idx
 
 from dpgen2.fp import fp_styles
-
 from pfd.train import train_styles
+from pfd.exploration import explore_styles
 
-from dpgen2.superop import PrepRunLmp, PrepRunDPTrain, PrepRunFp
+from dpgen2.superop import PrepRunDPTrain, PrepRunFp
 
-from dpgen2.op import PrepLmp, RunLmp, PrepDPTrain, RunDPTrain
 
 from pfd.flow.fine_tune import FineTune
 from pfd.op import (
     PertGen,
-    TaskGen,
     CollectData,
     Inference,
     SelectConfs,
     ModelTestOP,
-    inference,
 )
 
 from pfd.superop import (
-    ExplorationBlock,
     ExplFinetuneLoop,
     ExplFinetuneBlock,
     ExplDistBlock,
@@ -78,46 +74,66 @@ def get_conf_filters(config):
 
 
 def make_dist_op(
-    prep_lmp_config: dict,
-    run_lmp_config: dict,
-    prep_train_config: dict,
-    run_train_config: dict,
-    gen_task_config: dict,
-    collect_data_config: dict,
-    pert_gen_config: dict,
-    inference_config: dict,
+    teacher_model_style: str = "dp",
+    model_style: str = "dp",
+    explore_style: str = "lmp",
+    prep_lmp_config: dict = default_config,
+    run_lmp_config: dict = default_config,
+    prep_train_config: dict = default_config,
+    run_train_config: dict = default_config,
+    collect_data_config: dict = default_config,
+    pert_gen_config: dict = default_config,
+    inference_config: dict = default_config,
     upload_python_packages: Optional[List[os.PathLike]] = None,
 ):
     """
     Make a super OP template for distillation process
     """
     # build lmp op
-    prep_run_lmp_op = PrepRunLmp(
-        "prep-run-lmp-step",
-        PrepLmp,
-        RunLmp,
-        prep_config=prep_lmp_config,
-        run_config=run_lmp_config,
-        upload_python_packages=upload_python_packages,
-    )
+    if teacher_model_style in explore_styles.keys():
+        if explore_style in explore_styles[teacher_model_style].keys():
+            prep_run_lmp_op = explore_styles[teacher_model_style][explore_style][
+                "preprun"
+            ](
+                "prep-run-explore-step",
+                explore_styles[teacher_model_style][explore_style]["prep"],
+                explore_styles[teacher_model_style][explore_style]["run"],
+                prep_config=prep_lmp_config,
+                run_config=run_lmp_config,
+                upload_python_packages=upload_python_packages,
+            )
+        else:
+            raise NotImplementedError(
+                f"Explore style {explore_style} has not been implemented!"
+            )
 
-    prep_run_dp_op = PrepRunDPTrain(
-        "prep-run-dp-step",
-        PrepDPTrain,
-        RunDPTrain,
-        prep_config=prep_train_config,
-        run_config=run_train_config,
-        upload_python_packages=upload_python_packages,
-    )
+    else:
+        raise NotImplementedError(
+            f"Model style {teacher_model_style} has not been implemented!"
+        )
+
+    ## initiate DP train op
+    if model_style in train_styles.keys():
+        prep_run_train_op = PrepRunDPTrain(
+            "finetune",
+            train_styles[model_style]["prep"],
+            train_styles[model_style]["run"],
+            prep_config=prep_train_config,
+            run_config=run_train_config,
+            upload_python_packages=upload_python_packages,
+            valid_data=None,
+        )
+    else:
+        raise NotImplementedError(
+            f"Training style {model_style} has not been implemented!"
+        )
 
     expl_dist_blk_op = ExplDistBlock(
         "expl-dist",
-        gen_task_op=TaskGen,
         prep_run_explore_op=prep_run_lmp_op,
-        prep_run_train_op=prep_run_dp_op,
+        prep_run_train_op=prep_run_train_op,
         collect_data_op=CollectData,
         inference_op=Inference,
-        gen_task_config=gen_task_config,
         inference_config=inference_config,
         collect_data_config=collect_data_config,
         upload_python_packages=upload_python_packages,
@@ -142,7 +158,6 @@ def make_ft_op(
     train_style: str = "dp",
     explore_style: str = "lmp",
     pert_gen_step_config: dict = default_config,
-    gen_task_step_config: dict = default_config,
     prep_fp_config: dict = default_config,
     run_fp_config: dict = default_config,
     prep_train_config: dict = default_config,
@@ -180,21 +195,25 @@ def make_ft_op(
             upload_python_packages=upload_python_packages,
             valid_data=None,
         )
+    else:
+        raise NotImplementedError(
+            f"Training style {train_style} has not been implemented!"
+        )
 
-    ## initiate LAMMPS op, possibly other engines
-    if explore_style == "lmp":
-        prep_run_lmp_op = PrepRunLmp(
-            "prep-run-lmp-step",
-            PrepLmp,
-            RunLmp,
+    if explore_style in explore_styles[train_style].keys():
+        prep_run_lmp_op = explore_styles[train_style][explore_style]["preprun"](
+            "prep-run-explore-step",
+            explore_styles[train_style][explore_style]["prep"],
+            explore_styles[train_style][explore_style]["run"],
             prep_config=prep_lmp_config,
             run_config=run_lmp_config,
             upload_python_packages=upload_python_packages,
         )
+    else:
+        raise ValueError(f"Explore style {explore_style} has not been implemented!")
 
     expl_ft_blk_op = ExplFinetuneBlock(
         name="expl-ft-blk",
-        gen_task_op=TaskGen,
         prep_run_explore_op=prep_run_lmp_op,
         prep_run_fp_op=prep_run_fp_op,
         collect_data_op=CollectData,
@@ -204,7 +223,6 @@ def make_ft_op(
         collect_data_step_config=collect_data_step_config,
         inference_step_config=inference_step_config,
         select_confs_step_config=select_confs_step_config,
-        gen_task_step_config=gen_task_step_config,
         upload_python_packages=upload_python_packages,
     )
     expl_finetune_loop_op = ExplFinetuneLoop(
@@ -257,9 +275,6 @@ def workflow_dist(
     run_lmp_step_config = config["step_configs"].get(
         "run_explore_config", default_step_config
     )
-    gen_lmp_step_config = config["step_configs"].get(
-        "gen_lmp_config", default_step_config
-    )
     collect_data_step_config = config["step_configs"].get(
         "collect_data_config", default_step_config
     )
@@ -286,14 +301,15 @@ def workflow_dist(
         mass_map = [getattr(elements, ii).mass for ii in type_map]
     pert_config = config["conf_generation"]
     # exploration
+    explore_style = config["exploration"]["type"]
     explore_config = config["exploration"]["config"]
     expl_stages = config["exploration"]["stages"]
     converge_config = config["exploration"]["convergence"]
     max_iter = config["exploration"]["max_numb_iter"]
-    # train
+    # train (student model) style
+    train_style = config["train"]["type"]
     train_config = config["train"]["config"]
-    # type_map_train=config["train"]["type_map"]
-    numb_models = config["train"].get("numb_models", 1)
+    numb_models = config["train"]["numb_models"]
     # others
 
     collect_data_config = config["exploration"].get("test_set_config", {})
@@ -321,6 +337,7 @@ def workflow_dist(
     else:
         raise RuntimeError("init_confs must be provided")
     # teacher models
+    teacher_model_style = config["inputs"]["teacher_model_style"]
     teacher_models_paths = config["inputs"]["teacher_models_paths"]
     print(teacher_models_paths)
     if config["inputs"]["teacher_models_uri"] is not None:
@@ -332,7 +349,7 @@ def workflow_dist(
         )
     else:
         raise FileNotFoundError("Pre-trained model must exist!")
-
+    scheduler_config = {"model_style": train_style, "explore_style": explore_style}
     # init_data
     if config["inputs"]["init_data_uri"] is not None:
         init_data = get_artifact_from_uri(config["inputs"]["init_data_uri"])
@@ -346,14 +363,16 @@ def workflow_dist(
 
     # make distillation op
     dist_op = make_dist_op(
-        prep_lmp_step_config,
-        run_lmp_step_config,
-        prep_train_step_config,
-        run_train_step_config,
-        gen_lmp_step_config,
-        collect_data_step_config,
-        pert_gen_step_config,
-        inference_step_config,
+        teacher_model_style=teacher_model_style,
+        model_style=train_style,
+        explore_style=explore_style,
+        prep_lmp_config=prep_lmp_step_config,
+        run_lmp_config=run_lmp_step_config,
+        prep_train_config=prep_train_step_config,
+        run_train_config=run_train_step_config,
+        collect_data_config=collect_data_step_config,
+        pert_gen_config=pert_gen_step_config,
+        inference_config=inference_step_config,
         upload_python_packages=upload_python_packages,
     )
 
@@ -370,6 +389,7 @@ def workflow_dist(
             "numb_models": numb_models,
             "explore_config": explore_config,
             "converge_config": converge_config,
+            "scheduler_config": scheduler_config,
             "max_iter": max_iter,
             "template_script": template_script,
             "train_config": train_config,
@@ -429,16 +449,16 @@ def workflow_finetune(config: Dict) -> Step:
     train_config = config["train"]["config"]
     numb_models = config["train"]["numb_models"]
     pert_config = config["conf_generation"]
-
+    explore_style = config["exploration"]["type"]
+    expl_stages = config["exploration"]["stages"]
     explore_config = config["exploration"]["config"]
     max_iter = config["exploration"]["max_numb_iter"]
     converge_config = config["exploration"]["convergence"]
+    scheduler_config = {"model_style": train_style, "explore_style": explore_style}
     # conf selectors
     conf_filters = get_conf_filters(config["exploration"]["filter"])
     render = TrajRenderLammps(nopbc=False)
     conf_selector = ConfSelectorFrames(render, config["fp"]["task_max"], conf_filters)
-    explore_style = config["exploration"]["type"]
-    expl_stages = config["exploration"]["stages"]
     # task
     init_training = config["task"]["init_training"]
     if init_training is False:
@@ -541,6 +561,7 @@ def workflow_finetune(config: Dict) -> Step:
             "expl_stages": expl_stages,
             "conf_selector": conf_selector,
             "converge_config": converge_config,
+            "scheduler_config": scheduler_config,
             "max_iter": max_iter,
             "explore_config": explore_config,
             "template_script": template_script,
@@ -567,7 +588,7 @@ def submit_dist(
     Major entry point for the whole workflow, only one config dict
     """
     # normalize args
-    wf_config = normalize_args(wf_config)
+    wf_config = normalize_args(wf_config, "dist")
     global_config_workflow(wf_config)
     dist_step = workflow_dist(wf_config)
     wf = Workflow(
@@ -590,7 +611,7 @@ def submit_ft(
     Major entry point for the whole workflow, only one config dict
     """
     # normalize args
-    wf_config = normalize_args(wf_config)
+    wf_config = normalize_args(wf_config, "ft")
     global_config_workflow(wf_config)
     ft_step = workflow_finetune(wf_config)
 
@@ -719,7 +740,7 @@ def resubmit_workflow(
     flow_type="dist",
     **kwargs,
 ):
-    wf_config = normalize_args(wf_config)
+    wf_config = normalize_args(wf_config, flow_type)
     global_config_workflow(wf_config)
     old_wf = Workflow(id=wfid)
     folded_keys = get_resubmit_keys(old_wf)

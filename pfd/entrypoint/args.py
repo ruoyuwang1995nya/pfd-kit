@@ -417,20 +417,6 @@ def input_args():
             doc=doc_init_data_uri,
         ),
         Argument(
-            "teacher_models_paths",
-            [List[str], str],
-            optional=True,
-            default=None,
-            doc=doc_init_sys,
-        ),
-        Argument(
-            "teacher_models_uri",
-            str,
-            optional=True,
-            default=None,
-            doc=doc_init_data_uri,
-        ),
-        Argument(
             "multitask",
             bool,
             optional=True,
@@ -708,10 +694,17 @@ def submit_args(default_step_config=normalize_step_dict({})):
     )
 
 
-def normalize(data):
+def normalize(data, task: str):
     default_step_config = normalize_step_dict(data.get("default_step_config", {}))
     # nested arguments formatter
-    defs = submit_args(default_step_config)
+    if task in ["ft", "finetune"]:
+        defs = submit_args(default_step_config)
+    elif task in ["dist", "distilllation"]:
+        defs = submit_dist_args(default_step_config)
+    else:
+        raise ValueError(
+            f"Invalid task type {task}. Only `finetune` and `distillation is allowed`"
+        )
     base = Argument("base", dict, defs)
     data = base.normalize_value(data, trim_pattern="_*")
     # not possible to strictly check arguments, dirty hack!
@@ -732,3 +725,118 @@ def gen_doc(*, make_anchor=True, make_link=True, **kwargs):
         if "argument path" in ii:
             key_words.append(ii.split(":")[1].replace("`", "").strip())
     return "\n\n".join(ptr)
+
+
+def input_dist_args():
+    doc_teacher_model_paths = "Path(s) for the teacher model"
+    doc_teacher_model_uri = "URI of the teacher model"
+    doc_teacher_model_style = "Type of the teacher model"
+    op = input_args()
+    op.extend(
+        [
+            Argument(
+                "teacher_models_paths",
+                [List[str], str],
+                optional=True,
+                default=None,
+                doc=doc_teacher_model_paths,
+            ),
+            Argument(
+                "teacher_models_uri",
+                str,
+                optional=True,
+                default=None,
+                doc=doc_teacher_model_uri,
+            ),
+            Argument(
+                "teacher_model_style",
+                str,
+                optional=True,
+                default="dp",
+                doc=doc_teacher_model_style,
+                alias=["teacher_stype", "teacher_models_stype"],
+            ),
+        ]
+    )
+    return op
+
+
+## specifics to dist workflow
+def submit_dist_args(default_step_config=normalize_step_dict({})):
+    doc_bohrium_config = "Configurations for the Bohrium platform."
+    doc_step_configs = "Configurations for executing dflow steps"
+    doc_upload_python_packages = "Upload python package, for debug purpose"
+    doc_task = "Task type, `finetune` or `dist`"
+    doc_conf_gen = "The inputparameter and artifacts for confs generation"
+    doc_inputs = "The input parameter and artifacts for pfd"
+    doc_train = "The configuration for training"
+    doc_explore = "The configuration for exploration"
+    doc_name = "The workflow name, 'pfd' for default"
+    doc_parallelism = "The parallelism for the workflow. Accept an int that stands for the maximum number of running pods for the workflow. None for default"
+    doc_test_set = "Set the portion of test set"
+    return (
+        dflow_conf_args()
+        + default_step_config_args()
+        + [
+            Argument(
+                "bohrium_config",
+                dict,
+                bohrium_conf_args(),
+                optional=True,
+                default=None,
+                doc=doc_bohrium_config,
+            ),
+            Argument(
+                "step_configs",
+                dict,
+                pfd_step_config_args(default_step_config),
+                optional=True,
+                default={},
+                doc=doc_step_configs,
+            ),
+            Argument(
+                "upload_python_packages",
+                [List[str], str],
+                optional=True,
+                default=None,
+                doc=doc_upload_python_packages,
+                alias=["upload_python_package"],
+            ),
+            Argument(
+                "conf_generation",
+                dict,
+                conf_gen_args(),
+                optional=False,
+                doc=doc_conf_gen,
+            ),
+            # task formatter
+            Argument("task", dict, [], [variant_task()], optional=False, doc=doc_task),
+            # formatter for `input` section
+            Argument("inputs", dict, input_dist_args(), optional=False, doc=doc_inputs),
+            Argument(
+                "train", dict, [], [variant_train()], optional=False, doc=doc_train
+            ),
+            Argument(
+                "exploration",
+                dict,
+                [
+                    Argument(
+                        "test_set_config",
+                        dict,
+                        optional=True,
+                        default={"test_size": 0.1},
+                        alias=["test_set"],
+                        doc=doc_test_set,
+                    )
+                ],
+                [variant_explore()],
+                optional=False,
+                doc=doc_explore,
+                alias=["explore"],
+            ),
+            Argument("name", str, optional=True, default="pfd-dist", doc=doc_name),
+            Argument(
+                "parallelism", int, optional=True, default=None, doc=doc_parallelism
+            ),
+        ]
+    )

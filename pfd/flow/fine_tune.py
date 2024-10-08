@@ -67,6 +67,7 @@ class FineTune(Steps):
             "aimd_config": InputParameter(),
             "collect_data_config": InputParameter(),
             "converge_config": InputParameter(),
+            "scheduler_config": InputParameter(),
         }
         self._input_artifacts = {
             "init_confs": InputArtifact(),
@@ -247,6 +248,7 @@ def _fine_tune_cl(
             "dp_test_validation_config": {},
             "max_iter": ft_steps.inputs.parameters["max_iter"],
             "converge_config": ft_steps.inputs.parameters["converge_config"],
+            "scheduler_config": ft_steps.inputs.parameters["scheduler_config"],
         },
         artifacts={
             "systems": pert_gen.outputs.artifacts[

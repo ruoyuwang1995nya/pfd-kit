@@ -35,186 +35,14 @@ from dpgen2.utils.step_config import init_executor
 from pfd.op import ModelTestOP, EvalConv, IterCounter, StageScheduler, NextLoop
 
 
-class ExplorationBlock(Steps):
-    def __init__(
-        self,
-        name: str,
-        expl_tasks_op: Type[OP],
-        prep_run_explore_op: OPTemplate,
-        collect_data_op: Type[OP],
-        gen_lmp_step_config: dict,
-        collect_data_step_config: dict,
-        upload_python_packages: Optional[List[os.PathLike]] = None,
-    ):
-        self._input_parameters = {
-            "block_id": InputParameter(),
-            "expl_tasks": InputParameter(),
-            "explore_config": InputParameter(),
-            "type_map": InputParameter(),
-            "mass_map": InputParameter(),
-        }
-        self._input_artifacts = {
-            "systems": InputArtifact(),
-            "models": InputArtifact(),
-            "additional_systems": InputArtifact(optional=True),
-        }
-        self._output_parameters = {}
-        self._output_artifacts = {"expl_systems": OutputArtifact()}
-
-        super().__init__(
-            name=name,
-            inputs=Inputs(
-                parameters=self._input_parameters,
-                artifacts=self._input_artifacts,
-            ),
-            outputs=Outputs(
-                parameters=self._output_parameters,
-                artifacts=self._output_artifacts,
-            ),
-        )
-        # list of custom keys
-        self._my_keys = ["task-gen", "collect-data"]
-
-        # key for the whole steps
-        self._keys = (
-            self._my_keys[:1]
-            + prep_run_explore_op.keys
-            + self._my_keys[1:2]
-            # + self._my_keys[2:3]
-        )
-        self.step_keys = {}
-        for ii in self._my_keys:
-            self.step_keys[ii] = "--".join(
-                ["%s" % self.inputs.parameters["block_id"], ii]
-            )
-
-        self = _block_cl(
-            self,
-            self.step_keys,
-            name,
-            expl_tasks_op,
-            prep_run_explore_op,
-            collect_data_op,
-            gen_lmp_step_config,
-            collect_data_step_config,
-            upload_python_packages=upload_python_packages,
-        )
-
-    @property
-    def input_parameters(self):
-        return self._input_parameters
-
-    @property
-    def input_artifacts(self):
-        return self._input_artifacts
-
-    @property
-    def output_parameters(self):
-        return self._output_parameters
-
-    @property
-    def output_artifacts(self):
-        return self._output_artifacts
-
-    @property
-    def keys(self):
-        return self._keys
-
-
-def _block_cl(
-    block_steps: Steps,
-    step_keys: Dict[str, Any],
-    name: str,
-    expl_tasks_op: Type[OP],
-    prep_run_explore_op: OPTemplate,
-    collect_data_op: Type[OP],
-    gen_lmp_step_config: dict,
-    collect_data_step_config: dict,
-    upload_python_packages: Optional[List[os.PathLike]] = None,
-):
-    ## get step config dict (not task config!)
-    gen_lmp_step_config = deepcopy(gen_lmp_step_config)
-    collect_data_step_config = deepcopy(collect_data_step_config)
-    gen_lmp_template_config = gen_lmp_step_config.pop("template_config")
-    collect_data_template_config = collect_data_step_config.pop("template_config")
-    gen_lmp_executor = init_executor(gen_lmp_step_config.pop("executor"))
-    collect_data_executor = init_executor(collect_data_step_config.pop("executor"))
-
-    gen_lmp_tasks = Step(
-        name + "gen-lmp-tasks",
-        template=PythonOPTemplate(
-            expl_tasks_op,
-            python_packages=upload_python_packages,
-            **gen_lmp_template_config,
-        ),
-        parameters={
-            "expl_tasks": block_steps.inputs.parameters["expl_tasks"],
-            "type_map": block_steps.inputs.parameters["type_map"],
-            "mass_map": block_steps.inputs.parameters["mass_map"],
-        },
-        artifacts={
-            "systems": block_steps.inputs.artifacts["systems"],
-        },
-        key="--".join(["%s" % block_steps.inputs.parameters["block_id"], "gen-lmp"]),
-        executor=gen_lmp_executor,
-        **gen_lmp_step_config,
-    )
-    block_steps.add(gen_lmp_tasks)
-
-    prep_run_lmp = Step(
-        name + "prep-run-lmp",
-        template=prep_run_explore_op,
-        parameters={
-            "block_id": block_steps.inputs.parameters["block_id"],
-            "explore_config": block_steps.inputs.parameters["explore_config"],
-            "type_map": block_steps.inputs.parameters["type_map"],
-            "expl_task_grp": gen_lmp_tasks.outputs.parameters["lmp_task_grp"],
-        },
-        artifacts={"models": block_steps.inputs.artifacts["models"]},
-        key="--".join(
-            ["%s" % block_steps.inputs.parameters["block_id"], "prep-run-lmp"]
-        ),
-    )
-    block_steps.add(prep_run_lmp)
-
-    collect_data = Step(
-        name + "collect-data",
-        template=PythonOPTemplate(
-            collect_data_op,
-            python_packages=upload_python_packages,
-            **collect_data_template_config,
-        ),
-        parameters={
-            "type_map": block_steps.inputs.parameters["type_map"],
-            "optional_parameters": {"labeled_data": False},
-        },
-        artifacts={
-            "systems": prep_run_lmp.outputs.artifacts["trajs"],
-            "additional_systems": block_steps.inputs.artifacts["additional_systems"],
-        },
-        key="--".join(
-            ["%s" % block_steps.inputs.parameters["block_id"], "collect-data"]
-        ),
-        executor=collect_data_executor,
-        **collect_data_step_config,
-    )
-    block_steps.add(collect_data)
-    block_steps.outputs.artifacts[
-        "expl_systems"
-    ]._from = collect_data.outputs.artifacts["systems"]
-    return block_steps
-
-
 class ExplDistBlock(Steps):
     def __init__(
         self,
         name: str,
-        gen_task_op: Type[OP],
         prep_run_explore_op: OPTemplate,
         prep_run_train_op: OPTemplate,
         collect_data_op: Type[OP],
         inference_op: Type[OP],
-        gen_task_config: dict,
         inference_config: dict,
         collect_data_config: dict,
         upload_python_packages: Optional[List[os.PathLike]] = None,
@@ -260,12 +88,10 @@ class ExplDistBlock(Steps):
         self = _expl_dist_cl(
             self,
             name,
-            gen_task_op,
             prep_run_explore_op,
             prep_run_train_op,
             collect_data_op,
             inference_op,
-            gen_task_config,
             inference_config,
             collect_data_config,
             upload_python_packages,
@@ -301,7 +127,6 @@ class ExplDistLoop(Steps):
             "block_id": InputParameter(value=0),
             "type_map": InputParameter(),
             "mass_map": InputParameter(),
-            # "init_expl_model": InputParameter(type=bool),
             "expl_stages": InputParameter(),  # Total input parameter file: to be changed in the future
             "conf_selector": InputParameter(value={}),
             "numb_models": InputParameter(type=int),
@@ -314,6 +139,7 @@ class ExplDistLoop(Steps):
             "inference_config": InputParameter(),
             "test_size": InputParameter(value=0.1),
             "type_map_train": InputParameter(),
+            "scheduler_config": InputParameter(value={}),
         }
         self._input_artifacts = {
             "systems": InputArtifact(),  # starting systems for model deviation
@@ -368,20 +194,14 @@ class ExplDistLoop(Steps):
 def _expl_dist_cl(
     steps,
     name: str,
-    gen_task_op: Type[OP],
     prep_run_explore_op: OPTemplate,
     prep_run_train_op: OPTemplate,
     collect_data_op: Type[OP],
     inference_op: Type[OP],
-    gen_task_config: dict,
     inference_config: dict,
     collect_data_config: dict,
     upload_python_packages: Optional[List[os.PathLike]] = None,
 ):
-
-    gen_task_config = deepcopy(gen_task_config)
-    gen_task_template_config = gen_task_config.pop("template_config")
-    gen_task_executor = init_executor(gen_task_config.pop("executor"))
 
     inference_config = deepcopy(inference_config)
     inference_template_config = inference_config.pop("template_config")
@@ -391,28 +211,6 @@ def _expl_dist_cl(
     collect_data_template_config = collect_data_config.pop("template_config")
     collect_data_executor = init_executor(collect_data_config.pop("executor"))
 
-    gen_lmp_tasks = Step(
-        name + "gen-lmp-tasks",
-        template=PythonOPTemplate(
-            gen_task_op,
-            python_packages=upload_python_packages,
-            **gen_task_template_config,
-        ),
-        parameters={
-            "expl_tasks": steps.inputs.parameters["expl_tasks"],
-            "type_map": steps.inputs.parameters["type_map"],
-            "mass_map": steps.inputs.parameters["mass_map"],
-        },
-        artifacts={
-            "systems": steps.inputs.artifacts["systems"],
-        },
-        key="--".join(["%s" % steps.inputs.parameters["block_id"], "gen-task"]),
-        executor=gen_task_executor,
-        **gen_task_config,
-    )
-
-    steps.add(gen_lmp_tasks)
-
     prep_run_explore = Step(
         name + "prep-run-explore",
         template=prep_run_explore_op,
@@ -420,7 +218,7 @@ def _expl_dist_cl(
             "block_id": steps.inputs.parameters["block_id"],
             "explore_config": steps.inputs.parameters["explore_config"],
             "type_map": steps.inputs.parameters["type_map"],
-            "expl_task_grp": gen_lmp_tasks.outputs.parameters["lmp_task_grp"],
+            "expl_task_grp": steps.inputs.parameters["expl_tasks"],
         },
         artifacts={"models": steps.inputs.artifacts["teacher_model"]},
         key="--".join(["init", "prep-run-explore"]),
@@ -589,6 +387,12 @@ def _loop(
         parameters={
             "stages": loop.inputs.parameters["expl_stages"],
             "idx_stage": loop.inputs.parameters["idx_stage"],
+            "type_map": loop.inputs.parameters["type_map"],
+            "mass_map": loop.inputs.parameters["mass_map"],
+            "scheduler_config": loop.inputs.parameters["scheduler_config"],
+        },
+        artifacts={
+            "systems": loop.inputs.artifacts["systems"],
         },
         key="--".join(
             ["iter-%s" % blk_counter.outputs.parameters["iter_id"], "stage-schedule"]
@@ -603,7 +407,7 @@ def _loop(
             "block_id": "iter-%s" % blk_counter.outputs.parameters["iter_id"],
             "type_map": loop.inputs.parameters["type_map"],
             "mass_map": loop.inputs.parameters["mass_map"],
-            "expl_tasks": stage_scheduler.outputs.parameters["tasks"],
+            "expl_tasks": stage_scheduler.outputs.parameters["task_grp"],
             "converge_config": loop.inputs.parameters["converge_config"],
             "numb_models": loop.inputs.parameters["numb_models"],
             "template_script": loop.inputs.parameters["template_script"],
