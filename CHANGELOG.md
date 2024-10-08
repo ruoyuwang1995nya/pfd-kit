@@ -1,8 +1,54 @@
 # CHANGELOG
 
+
+## v0.0.3 (2024-10-08)
+
+### Fixes
+
+* fix: update pre-commit ([`43372f5`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/43372f53962b40eaaf6bf31e72d192a58c0ccd22))
+
+* fix: deprecate the gen_task op ([`24c26b4`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/24c26b44b0dccdbcf69b9752fb25f8ce31a2d4bb))
+
+* fix: update ft example ([`a7f7a88`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/a7f7a88573fec7cf56a330afbf1de31a00865d8f))
+
+* fix: init conf prefix ([`f97f6b4`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/f97f6b470e9ff48e351b85538b1e7cfd7efcd26c))
+
+* fix: reformulate input script and add darg ([`a82e336`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/a82e3364f87130f65099d0b1d3436b1c9d9e6934))
+
+* fix: improve code ([`4e12b45`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/4e12b45600f1ac8bb02db6ad92e152d749ad690f))
+
+* fix: add support for other models ([`a39c78a`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/a39c78a48d2aff6ae852f49cf999cd502dec5e50))
+
+### Unknown
+
+* Merge pull request #45 from ruoyuwang1995nya/devel
+
+Deprecate TaskGen OP ([`abc28aa`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/abc28aa0a78b07cd5505568c373faa644af81bc3))
+
+* Merge pull request #44 from ruoyuwang1995nya/tmp
+
+Deprecate the TaskGen op ([`36ec843`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/36ec843e268366f952d98223141d05ea10c3f373))
+
+* Merge pull request #43 from ruoyuwang1995nya/tmp
+
+fix: update ft example ([`e2a39fb`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/e2a39fba7b309b509e2937c48b0d57cfef57c946))
+
+* Merge pull request #42 from ruoyuwang1995nya/tmp
+
+fix: init conf prefix ([`7b1fc8b`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/7b1fc8ba1334407ca69992e7408b354659dbf222))
+
+* Merge pull request #41 from ruoyuwang1995nya/tmp
+
+fix: reformulate input script and add darg ([`f7a7322`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/f7a7322239eb2b93b98fd67a62c5d4f593677da5))
+
+* Merge pull request #39 from ruoyuwang1995nya/tmp
+
+Enable alternative routine options ([`c7e1a7e`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/c7e1a7ea9566fa406c60d6637a1672b9a90a0b14))
+
+
 ## v0.0.2 (2024-09-29)
 
-### Fix
+### Fixes
 
 * fix: restore cli ([`71f8df8`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/71f8df88685bf3cc140fe4c2bcb13ba898eb8e0e))
 
@@ -12,6 +58,7 @@
 
 fix: restore cli ([`b752afa`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/b752afa08a673d5c4638fe59986fff04540c962c))
 
+
 ## v0.0.1 (2024-09-29)
 
 ### Unknown
@@ -20,17 +67,19 @@ fix: restore cli ([`b752afa`](https://github.com/ruoyuwang1995nya/pfd-kit/commit
 
 Update toml ([`59a3782`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/59a3782cdee1f6b5c544d1452e3b1e0458690258))
 
+
 ## v0.0.0 (2024-09-29)
 
-### Fix
+### Fixes
 
 * fix: update toml ([`4b6e644`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/4b6e644a40800a25b531ad549eb8b5190fbd7547))
 
 * fix: update toml ([`39c2379`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/39c23790137e15b72af635dcff79624c60960ae9))
 
+
 ## v1.0.3 (2024-09-29)
 
-### Fix
+### Fixes
 
 * fix: change init version ([`20eb6b8`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/20eb6b869b0e535731537cd682d71bfe91b5aaba))
 
@@ -68,9 +117,10 @@ Rename to PFD-kit ([`b548a26`](https://github.com/ruoyuwang1995nya/pfd-kit/commi
 
 Rename to pfd ([`b13b922`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/b13b922416d1385a1e2d0a7375afb1bbf685bd2c))
 
+
 ## v1.0.2 (2024-09-28)
 
-### Fix
+### Fixes
 
 * fix: semantic ([`8e94e48`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/8e94e480d9200fb653e45566e027a980e4a96024))
 
@@ -90,9 +140,10 @@ fix: semantic ([`b73273c`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/b7
 
 Config python semantic release ([`6a60cc4`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/6a60cc42f33a89801d94d0a2b8d64a5c14177ee6))
 
+
 ## v1.0.1 (2024-09-28)
 
-### Fix
+### Fixes
 
 * fix: semantic ([`8e12ba7`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/8e12ba7387680da7c6a1e6b751f722c0445c6c8c))
 
@@ -114,9 +165,10 @@ Config python semantic release ([`6a60cc4`](https://github.com/ruoyuwang1995nya/
 
 * update semantic ([`36d2a84`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/36d2a84011c736f94cbcbea0f8f89087a439334a))
 
+
 ## v1.0.0 (2024-09-28)
 
-### Chore
+### Chores
 
 * chore(release): 1.0.0 [skip ci]
 
@@ -202,7 +254,7 @@ Config python semantic release ([`6a60cc4`](https://github.com/ruoyuwang1995nya/
 * update url ([ffc91b2](https://github.com/ruoyuwang1995nya/dp-distill/commit/ffc91b2727c9961aff63d60aa154a1322cbcbb08))
 * update version info ([d27c12c](https://github.com/ruoyuwang1995nya/dp-distill/commit/d27c12c473c8ec75019fab08858181d80f33539c)) ([`450c658`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/450c6588aa7deaa6d0736b5dc8c61578d1b6d672))
 
-### Fix
+### Fixes
 
 * fix: update release ([`96548d9`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/96548d9f69888b5ce5bd0b1ee862d1f78eb8af8f))
 
