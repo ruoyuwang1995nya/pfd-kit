@@ -1,4 +1,5 @@
 from .check_conv import CheckConv
+from dargs import Argument
 
 
 class EnerConvRMSE(CheckConv):
@@ -16,3 +17,11 @@ class EnerConvRMSE(CheckConv):
         if weighted_rmse < conv_rmse:
             converged = True
         return converged
+
+    @classmethod
+    def args(cls):
+        return [Argument("RMSE", float, optional=True, default=0.01)]
+
+    @classmethod
+    def doc(cls):
+        return "Converge by RMSE of energy per atom"

@@ -1,5 +1,5 @@
 {
-    "name":"test-interface",
+    "name":"pfd-finetune",
     "bohrium_config": {
         "username": "urname",
         "password": "123456",
@@ -138,6 +138,12 @@
     "upload_python_packages": [
         "/opt/mamba/envs/openlam/lib/python3.12/site-packages/ase"
     ],
+    "task":{
+        "type":"finetune",
+        "init_training": true,
+        "skip_aimd": false
+    },
+    
     "inputs": {
         "type_map": [
             "H",
@@ -279,60 +285,41 @@
             "pert_num": 5
             }
             ]},
+    "aimd":{
+            "task_max": 5,
+            "inputs_config": {
+            "input_file": "INPUT.md"
+            },
+            "_comment": "fp parameters for AIMD calculation"
+        },
     "exploration": {
-        "init_training":true,
-        "skip_aimd":false,
         "max_iter":2,
-        "converge_config":{
+        "convergence":{
             "type":"energy_rmse",
             "RMSE":0.01},
         "filter":[{
             "type":"distance"
         }],
-        "md":{
-            "type": "lmp",
-            "config": {
-                "command": "lmp -var restart 0",
-                "shuffle_models": false, 
-                "head": null},
-            "stages":[[
-                {   "_comment": "group 1 stage 1 of finetune-exploration",
-                    "conf_idx": [0],
-                    "n_sample":3,
-                    "exploration":{
-                        "type": "lmp-md",
-                        "ensemble": "npt",
-                        "dt":0.005,
-                        "nsteps": 2000,
-                        "temps": [500],
-                        "press":[1],
-                        "trj_freq": 200},
-                    "max_sample": 10000
-                    }]]}},
-    "aimd":{
-            "type": "fpop_abacus",
-            "task_max": 5,
-            "extra_output_files:":[],
-            "run_config": {
-                            "command": "OMP_NUM_THREADS=4 mpirun -np 8 abacus | tee log"
-                            },
-            "inputs_config": {
-                "input_file": "INPUT.md",
-                    "pp_files": {
-                    "Li": "./pp/Li_ONCV_PBE-1.0.upf",
-                    "S":"./pp/S_ONCV_PBE-1.0.upf",
-                    "Ge": "./pp/Ge_ONCV_PBE-1.0.upf",
-                    "P": "./pp/P_ONCV_PBE-1.0.upf"
-                    },
-                "orb_files":{
-                    "Li": "./orb/Li_gga_9au_100Ry_6s2p.orb",
-                    "S":"./orb/S_gga_9au_100Ry_3s3p2d.orb",
-                    "Ge": "./orb/Ge_gga_9au_100Ry_3s3p3d2f.orb",
-                    "P": "./orb/P_gga_9au_100Ry_3s3p2d.orb"
-                                    }
-                },
-                "_comment": "fp parameters for AIMD calculation"
-                            },
+        "type": "lmp",
+        "config": {
+            "command": "lmp -var restart 0",
+            "shuffle_models": false, 
+            "head": null},
+        "stages":[[
+            {  "_comment": "group 1 stage 1 of finetune-exploration",
+                "conf_idx": [0],
+                "n_sample":3,
+                "exploration":{
+                "type": "lmp-md",
+                "ensemble": "npt",
+                "dt":0.005,
+                "nsteps": 2000,
+                "temps": [500],
+                "press":[1],
+                "trj_freq": 200},
+                "max_sample": 10000
+                    }]]},
+
     "fp": {
         "type": "fpop_abacus",
         "task_max": 50,

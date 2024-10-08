@@ -82,6 +82,9 @@
         "/opt/mamba/envs/openlam/lib/python3.12/site-packages/fpop"
 
     ],
+    "task":{
+        "type":"dist"
+    },
     "inputs": {
         "type_map": [
             "H",
@@ -203,7 +206,6 @@
             "Ts",
             "Og"
         ],
-        "teacher_model":"./lgps_ft.ckpt.pt",
         "_comment": "all"
     },
     "train": {
@@ -214,9 +216,6 @@
             "init_model_policy": "no",
             "_comment": "all"},
         "template_script": "train.json"},
-    "inference":{
-        "max_force":10,
-        "_comment":"force cutoff for generated confs"},
     "conf_generation": {
         "init_configurations":
             {
