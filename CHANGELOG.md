@@ -1,6 +1,19 @@
 # CHANGELOG
 
 
+## v0.0.4 (2024-10-08)
+
+### Fixes
+
+* fix: bug with PertGen ([`7f21ab8`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/7f21ab8e5e174a1a51d1202fe89463f3a985bc29))
+
+### Unknown
+
+* Merge pull request #46 from ruoyuwang1995nya/devel
+
+fix bugs with PertGen OP ([`95cf190`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/95cf1909c07cda62722a871bd2ed0bafb167fa47))
+
+
 ## v0.0.3 (2024-10-08)
 
 ### Fixes
