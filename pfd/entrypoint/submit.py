@@ -465,7 +465,7 @@ def workflow_finetune(config: Dict) -> Step:
         print("No initial training before exploration")
     skip_aimd = config["task"]["skip_aimd"]
     if skip_aimd is True:
-        print("AIMD is exploration skipped!")
+        print("AIMD exploration is skipped!")
 
     collect_data_config = {}
     collect_data_config["test_size"] = config["conf_generation"].get("test_data", 0.05)
