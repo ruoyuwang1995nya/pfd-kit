@@ -66,6 +66,7 @@ class Distillation(Steps):
             "type_map_train": InputParameter(),
             # other configurations
             "inference_config": InputParameter(),
+            "scheduler_config": InputParameter(),
         }
         self._input_artifacts = {
             "init_confs": InputArtifact(),
@@ -160,6 +161,7 @@ def _dist_cl(
             "explore_config": steps.inputs.parameters["explore_config"],
             "max_iter": steps.inputs.parameters["max_iter"],
             "converge_config": steps.inputs.parameters["converge_config"],
+            "scheduler_config": steps.inputs.parameters["scheduler_config"],
             "inference_config": steps.inputs.parameters["inference_config"],
             "test_size": steps.inputs.parameters["test_size"],
             "type_map_train": steps.inputs.parameters["type_map_train"],

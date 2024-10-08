@@ -18,9 +18,9 @@ from dpdata.lammps.lmp import from_system_data
 
 from dpgen2.constants import lmp_task_pattern, pytorch_model_name_pattern
 from pfd.exploration.task import (
+    ExplorationStage,
     BaseExplorationTaskGroup,
     ExplorationTaskGroup,
-    NPTTaskGroup,
     make_lmp_task_group_from_config,
 )
 

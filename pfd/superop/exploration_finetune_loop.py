@@ -2,9 +2,6 @@ import os
 from copy import (
     deepcopy,
 )
-from pathlib import (
-    Path,
-)
 from typing import (
     Any,
     Dict,
@@ -26,17 +23,13 @@ from dflow import (
     Outputs,
     Step,
     Steps,
-    ShellOPTemplate,
     if_expression,
 )
 from dflow.python import (
     OP,
     PythonOPTemplate,
 )
-
-
 from dpgen2.utils.step_config import init_executor
-
 from pfd.op import EvalConv, NextLoop, IterCounter, ModelTestOP, StageScheduler
 
 
@@ -44,7 +37,6 @@ class ExplFinetuneBlock(Steps):
     def __init__(
         self,
         name: str,
-        gen_task_op: Type[OP],
         prep_run_explore_op: OPTemplate,
         prep_run_fp_op: OPTemplate,
         collect_data_op: Type[OP],
@@ -54,7 +46,6 @@ class ExplFinetuneBlock(Steps):
         collect_data_step_config: dict,
         inference_step_config: dict,
         select_confs_step_config: dict,
-        gen_task_step_config: dict,
         upload_python_packages: Optional[List[os.PathLike]] = None,
     ):
         self._input_parameters = {
@@ -101,18 +92,15 @@ class ExplFinetuneBlock(Steps):
         self = _expl_ft_blk(
             self,
             name=name,
-            gen_task_op=gen_task_op,
             prep_run_explore_op=prep_run_explore_op,
             prep_run_fp_op=prep_run_fp_op,
             prep_run_train_op=prep_run_train_op,
             select_confs_op=select_confs_op,
             inference_op=inference_op,
             collect_data_op=collect_data_op,
-            #
             collect_data_step_config=collect_data_step_config,
             inference_step_config=inference_step_config,
             select_confs_step_config=select_confs_step_config,
-            gen_task_step_config=gen_task_step_config,
             upload_python_packages=upload_python_packages,
         )
 
@@ -156,6 +144,7 @@ class ExplFinetuneLoop(Steps):
             "idx_stage": InputParameter(value=0),
             "max_iter": InputParameter(value=1),
             "converge_config": InputParameter(value={}),
+            "scheduler_config": InputParameter(value={}),
         }
         self._input_artifacts = {
             "systems": InputArtifact(),  # starting systems for model deviation
@@ -169,8 +158,6 @@ class ExplFinetuneLoop(Steps):
         self._output_parameters = {"idx_stage": OutputParameter()}
         self._output_artifacts = {
             "ft_model": OutputArtifact(),
-            # "dp_test_report": OutputArtifact(),
-            # "dp_test_detail_files": OutputArtifact(),
             "iter_data": OutputArtifact(),  # data collected after exploration
         }
 
@@ -211,14 +198,12 @@ class ExplFinetuneLoop(Steps):
 def _expl_ft_blk(
     steps,
     name: str,
-    gen_task_op: Type[OP],
     prep_run_explore_op: OPTemplate,
     prep_run_fp_op: OPTemplate,
     prep_run_train_op: OPTemplate,
     select_confs_op: Type[OP],
     inference_op: Type[OP],
     collect_data_op: Type[OP],
-    gen_task_step_config: dict,
     select_confs_step_config: dict,
     collect_data_step_config: dict,
     inference_step_config: dict,
@@ -232,35 +217,9 @@ def _expl_ft_blk(
     inference_template_config = inference_step_config.pop("template_config")
     inference_executor = init_executor(inference_step_config.pop("executor"))
 
-    gen_task_step_config = deepcopy(gen_task_step_config)
-    gen_task_template_config = gen_task_step_config.pop("template_config")
-    gen_task_executor = init_executor(gen_task_step_config.pop("executor"))
-
     select_confs_step_config = deepcopy(select_confs_step_config)
     select_confs_template_config = select_confs_step_config.pop("template_config")
     select_confs_executor = init_executor(select_confs_step_config.pop("executor"))
-
-    gen_lmp_tasks = Step(
-        name + "gen-lmp-tasks",
-        template=PythonOPTemplate(
-            gen_task_op,
-            python_packages=upload_python_packages,
-            **gen_task_template_config,
-        ),
-        parameters={
-            "expl_tasks": steps.inputs.parameters["expl_tasks"],
-            "type_map": steps.inputs.parameters["type_map"],
-            "mass_map": steps.inputs.parameters["mass_map"],
-        },
-        artifacts={
-            "systems": steps.inputs.artifacts["systems"],
-        },
-        key="--".join(["%s" % steps.inputs.parameters["block_id"], "gen-task"]),
-        executor=gen_task_executor,
-        **gen_task_step_config,
-    )
-
-    steps.add(gen_lmp_tasks)
 
     prep_run_explore = Step(
         name + "prep-run-explore",
@@ -269,7 +228,7 @@ def _expl_ft_blk(
             "block_id": steps.inputs.parameters["block_id"],
             "explore_config": steps.inputs.parameters["explore_config"],
             "type_map": steps.inputs.parameters["type_map"],
-            "expl_task_grp": gen_lmp_tasks.outputs.parameters["lmp_task_grp"],
+            "expl_task_grp": steps.inputs.parameters["expl_tasks"],
         },
         artifacts={"models": steps.inputs.artifacts["current_model"]},
         key="--".join(["%s" % steps.inputs.parameters["block_id"], "prep-run-explore"]),
@@ -443,7 +402,8 @@ def _loop(
     )
     loop.add(blk_counter)
 
-    # add a stage counter
+    ## add a stage counter
+    # it also generate task groups
     stage_scheduler = Step(
         name="stage-scheduler",
         template=PythonOPTemplate(
@@ -454,6 +414,12 @@ def _loop(
         parameters={
             "stages": loop.inputs.parameters["expl_stages"],
             "idx_stage": loop.inputs.parameters["idx_stage"],
+            "type_map": loop.inputs.parameters["type_map"],
+            "mass_map": loop.inputs.parameters["mass_map"],
+            "scheduler_config": loop.inputs.parameters["scheduler_config"],
+        },
+        artifacts={
+            "systems": loop.inputs.artifacts["systems"],
         },
         key="--".join(
             ["iter-%s" % blk_counter.outputs.parameters["iter_id"], "stage-schedule"]
@@ -468,11 +434,9 @@ def _loop(
             "block_id": "iter-%s" % blk_counter.outputs.parameters["iter_id"],
             "type_map": loop.inputs.parameters["type_map"],
             "mass_map": loop.inputs.parameters["mass_map"],
-            # "expl_tasks":loop.inputs.parameters["expl_tasks"],
-            "expl_tasks": stage_scheduler.outputs.parameters["tasks"],
+            "expl_tasks": stage_scheduler.outputs.parameters["task_grp"],
             "converge_config": loop.inputs.parameters["converge_config"],
             "conf_selector": loop.inputs.parameters["conf_selector"],
-            # Total input parameter file: to be changed in the future
             "numb_models": loop.inputs.parameters["numb_models"],
             "template_script": loop.inputs.parameters["template_script"],
             "train_config": loop.inputs.parameters["train_config"],
@@ -538,6 +502,7 @@ def _loop(
         "converge_config": loop.inputs.parameters[
             "converge_config"
         ],  # Total input parameter file: to be changed in the future
+        "scheduler_config": loop.inputs.parameters["scheduler_config"],
         "numb_models": loop.inputs.parameters["numb_models"],
         "template_script": loop.inputs.parameters["template_script"],
         "train_config": loop.inputs.parameters["train_config"],

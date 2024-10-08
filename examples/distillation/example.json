@@ -216,9 +216,6 @@
             "init_model_policy": "no",
             "_comment": "all"},
         "template_script": "train.json"},
-    "inference":{
-        "max_force":10,
-        "_comment":"force cutoff for generated confs"},
     "conf_generation": {
         "init_configurations":
             {
