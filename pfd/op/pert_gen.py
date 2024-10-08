@@ -108,5 +108,5 @@ class PertGen(OP):
             pert_sys.to("deepmd/npy", str(conf_path))
             # os.chdir(wk_dir)
             sys_ls.append(conf_path)
-            multi_sys_ls.append(wk_dir)
+        multi_sys_ls.append(wk_dir)
         return OPIO({"pert_sys": sys_ls, "confs": multi_sys_ls})
