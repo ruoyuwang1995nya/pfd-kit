@@ -25,7 +25,7 @@ dependencies = [
     "scipy",
     "lbg",
     "packaging",
-    "fpop",
+    "fpop==0.0.7",
     "dpgui",
     "cp2kdata",
     "periodictable",
