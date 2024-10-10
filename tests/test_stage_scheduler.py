@@ -84,9 +84,10 @@ class TestStageScheduler(unittest.TestCase):
                 }
             )
         )
-        # print(out["task_grp"])
+        # [print(ii.files()) for ii in out["task_grp"].task_list]
         # sys = dpdata.System(out["pert_sys"][0], fmt="deepmd/npy")
         self.assertEqual(len(out["task_grp"]), 2)
+        self.assertNotEqual(out["task_grp"][0].files(), out["task_grp"][1].files())
 
 
 if __name__ == "__main__":
