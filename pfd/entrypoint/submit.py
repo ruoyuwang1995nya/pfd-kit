@@ -84,6 +84,7 @@ def make_dist_op(
     collect_data_config: dict = default_config,
     pert_gen_config: dict = default_config,
     inference_config: dict = default_config,
+    model_test_config: dict = default_config,
     upload_python_packages: Optional[List[os.PathLike]] = None,
 ):
     """
@@ -135,6 +136,7 @@ def make_dist_op(
         collect_data_op=CollectData,
         inference_op=Inference,
         inference_config=inference_config,
+        model_test_config=model_test_config,
         collect_data_config=collect_data_config,
         upload_python_packages=upload_python_packages,
     )
@@ -281,9 +283,8 @@ def workflow_dist(
     pert_gen_step_config = config["step_configs"].get(
         "pert_gen_config", default_step_config
     )
-    inference_step_config = config["step_configs"].get(
-        "inference_config", default_step_config
-    )
+    inference_step_config = copy.deepcopy(run_lmp_step_config)
+    model_test_config = copy.deepcopy(run_train_step_config)
 
     # uploaded python packages
     upload_python_packages = []
@@ -373,6 +374,7 @@ def workflow_dist(
         collect_data_config=collect_data_step_config,
         pert_gen_config=pert_gen_step_config,
         inference_config=inference_step_config,
+        model_test_config=model_test_config,
         upload_python_packages=upload_python_packages,
     )
 
@@ -424,9 +426,7 @@ def workflow_finetune(config: Dict) -> Step:
         "select_confs_config", default_config
     )
     run_pert_gen_config = config["step_configs"].get("pert_gen_config", default_config)
-    run_inference_config = config["step_configs"].get(
-        "inference_config", default_config
-    )
+    run_inference_config = copy.deepcopy(run_train_config)
     prep_lmp_config = config["step_configs"].get("prep_explore_config", default_config)
     run_lmp_config = config["step_configs"].get("run_explore_config", default_config)
     # uploaded python packages

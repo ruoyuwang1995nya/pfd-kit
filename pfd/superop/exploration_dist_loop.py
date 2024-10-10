@@ -44,6 +44,7 @@ class ExplDistBlock(Steps):
         collect_data_op: Type[OP],
         inference_op: Type[OP],
         inference_config: dict,
+        model_test_config: dict,
         collect_data_config: dict,
         upload_python_packages: Optional[List[os.PathLike]] = None,
     ):
@@ -93,6 +94,7 @@ class ExplDistBlock(Steps):
             collect_data_op,
             inference_op,
             inference_config,
+            model_test_config,
             collect_data_config,
             upload_python_packages,
         )
@@ -199,6 +201,7 @@ def _expl_dist_cl(
     collect_data_op: Type[OP],
     inference_op: Type[OP],
     inference_config: dict,
+    model_test_config: dict,
     collect_data_config: dict,
     upload_python_packages: Optional[List[os.PathLike]] = None,
 ):
@@ -207,6 +210,11 @@ def _expl_dist_cl(
     inference_template_config = inference_config.pop("template_config")
     inference_executor = init_executor(inference_config.pop("executor"))
 
+    model_test_config = deepcopy(model_test_config)
+    model_test_template_config = model_test_config.pop("template_config")
+    model_test_executor = init_executor(model_test_config.pop("executor"))
+
+    # essentially for utillity
     collect_data_config = deepcopy(collect_data_config)
     collect_data_template_config = collect_data_config.pop("template_config")
     collect_data_executor = init_executor(collect_data_config.pop("executor"))
@@ -308,7 +316,7 @@ def _expl_dist_cl(
         template=PythonOPTemplate(
             ModelTestOP,
             python_packages=upload_python_packages,
-            **inference_template_config,
+            **model_test_template_config,
         ),
         parameters={
             "inference_config": {
@@ -321,7 +329,7 @@ def _expl_dist_cl(
             "model": prep_run_dp.outputs.artifacts["models"][0],
         },
         key="--".join(["%s" % steps.inputs.parameters["block_id"], "validation-test"]),
-        executor=inference_executor,
+        executor=model_test_executor,
     )
     steps.add(dp_test)
 
