@@ -1,6 +1,23 @@
 # CHANGELOG
 
 
+## v0.0.5 (2024-10-10)
+
+### Fixes
+
+* fix: bugs with gen_task_lmp ([`7137573`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/7137573b5439092c6bfd426b4adfd22c30916ab2))
+
+* fix: update node config ([`749473b`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/749473b5fa6668f9b65c64e04a485053353ed329))
+
+* fix: update dependency ([`ae42886`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/ae42886b98f0cc22c2cd60ae07505e475ebffc2f))
+
+### Unknown
+
+* Merge pull request #47 from ruoyuwang1995nya/devel
+
+fix bugs with gen_task_lmp ([`337a6a7`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/337a6a788e32bf438190680a575f6bdf63b6ceb0))
+
+
 ## v0.0.4 (2024-10-08)
 
 ### Fixes
