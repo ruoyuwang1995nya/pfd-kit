@@ -52,7 +52,7 @@ class StageScheduler(OP):
             for idx in task_grp["conf_idx"]:
                 expl_stage.add_task_group(
                     explore_styles[model_style][explore_style]["task"](
-                        systems,
+                        systems[idx],
                         type_map,
                         mass_map,
                         task_grp,
