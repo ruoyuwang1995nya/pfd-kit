@@ -51,10 +51,8 @@ class ModelTestOP(OP):
         res_dir.mkdir(exist_ok=True)
         for sys in systems:
             name = sys.name
-            evaluator = Eval(
-                model=model_path, prefix=str(res_dir), data=sys, type_map=type_map
-            )
-            res, rep = evaluator.evaluate(name)
+            evaluator = Eval(model=model_path, data=sys, type_map=type_map)
+            res, rep = evaluator.evaluate(name, prefix=str(res_dir))
             res_total.append(res)
             report[name] = rep
         with open("report.json", "w") as fp:
