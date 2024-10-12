@@ -91,6 +91,11 @@ op_download_setting = {
     .add_output("systems")
     .add_output("multi_systems")
     .add_output("test_systems"),
+    "validation-test": DownloadDefinition()
+    .add_input("systems")
+    .add_input("model")
+    .add_output("test_report")
+    .add_output("test_res_dir"),
 }
 
 
@@ -197,6 +202,7 @@ def download_dpgen2_artifacts_by_def(
     if step_defs is None:
         step_defs = _get_all_step_defs()
     step_defs = _filter_def_by_availability(step_defs)
+
     if len(step_defs) == 0:
         return
 
@@ -204,6 +210,7 @@ def download_dpgen2_artifacts_by_def(
     dld_items = _get_dld_items(iterations, step_defs)
     if chk_pnt:
         dld_items = _filter_if_complished(prefix, dld_items)
+    print(dld_items)
     if len(dld_items) == 0:
         return
 
@@ -219,6 +226,7 @@ def download_dpgen2_artifacts_by_def(
 
     # download all items
     for ii in dld_items:
+        print("hit")
         [step_key, io, item] = ii.split(global_step_def_split)
         step = step_dict.get(step_key)
         # skip all problematic steps
