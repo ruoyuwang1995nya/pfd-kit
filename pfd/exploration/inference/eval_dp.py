@@ -4,10 +4,11 @@ from pathlib import Path
 import dpdata
 import numpy as np
 import copy
+from typing import Union
 
 
 class DPTest(EvalModel):
-    def load_model(self, model: Path | str):
+    def load_model(self, model: Union[Path, str]):
         if isinstance(model, str):
             model = Path(model)
         self.model_path = model
@@ -20,7 +21,9 @@ class DPTest(EvalModel):
     def read_data(self, data, fmt="deepmd/npy", **kwargs):
         self._data = dpdata.LabeledSystem(data, fmt=fmt, **kwargs)
 
-    def evaluate(self, name: str = "default", prefix: Path | str = "./", **kwargs):
+    def evaluate(
+        self, name: str = "default", prefix: Union[Path, str] = "./", **kwargs
+    ):
         if isinstance(prefix, str):
             prefix = Path(prefix)
         res = {}
