@@ -1,6 +1,25 @@
 # CHANGELOG
 
 
+## v0.0.6 (2024-10-12)
+
+### Fixes
+
+* fix: rewrite model test OP ([`286eed3`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/286eed30c495486811ee84b61087882aa5c21517))
+
+* fix: enable download of validation-test ([`435f3e0`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/435f3e08230c5fe6c05e85e475acc15aeb7028c7))
+
+* fix: get task type from config ([`440ba3d`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/440ba3dd3ad57fd235d3271023c009284e57607d))
+
+* fix: minor issue with model test ([`785ec9b`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/785ec9b5fcc6df280a8ec4f400941d00e8182255))
+
+### Unknown
+
+* Merge pull request #48 from ruoyuwang1995nya/devel
+
+Modify rules for model test OP ([`51a6719`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/51a6719c45e7493b91b9234141094e436ab42476))
+
+
 ## v0.0.5 (2024-10-10)
 
 ### Fixes
