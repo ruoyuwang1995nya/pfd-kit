@@ -49,9 +49,11 @@ class ModelTestOP(OP):
         report = {}
         res_dir = Path("result")
         res_dir.mkdir(exist_ok=True)
+        evaluator = Eval(model=model_path)
         for sys in systems:
             name = sys.name
-            evaluator = Eval(model=model_path, data=sys, type_map=type_map)
+            evaluator.read_data(data=sys, type_map=type_map)
+            # evaluator = Eval(model=model_path, data=sys, type_map=type_map)
             res, rep = evaluator.evaluate(name, prefix=str(res_dir))
             res_total.append(res)
             report[name] = rep
