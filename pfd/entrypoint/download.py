@@ -29,7 +29,7 @@ def download_by_def(
     prefix: Optional[str] = None,
     chk_pnt: bool = False,
 ):
-    wf_config = normalize_args(wf_config)
+    wf_config = normalize_args(wf_config, wf_config["task"]["type"])
     global_config_workflow(wf_config)
     wf = Workflow(id=workflow_id)
     download_dpgen2_artifacts_by_def(wf, iterations, step_defs, prefix, chk_pnt)
@@ -42,7 +42,7 @@ def download(
     prefix: Optional[str] = None,
     chk_pnt: bool = False,
 ):
-    wf_config = normalize_args(wf_config)
+    wf_config = normalize_args(wf_config, wf_config["task"]["type"])
     global_config_workflow(wf_config)
     wf = Workflow(id=workflow_id)
     if wf_keys is None:
