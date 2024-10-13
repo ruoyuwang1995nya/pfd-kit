@@ -59,7 +59,7 @@ def conf_args():
     doc_fmt = "Format of input structure files"
     return [
         Argument("type", str, optional=True, default="file"),
-        Argument("prefix", str, optional=True, default="./"),
+        Argument("prefix", str, optional=True, default=None),
         Argument("fmt", str, optional=True, default="vasp/poscar", doc=doc_fmt),
         Argument("files", [str, List[str]], optional=True),
         Argument("confs_uri", [str, List[str]], optional=True, default=None),
@@ -112,7 +112,10 @@ def train_args(run_train):
         ),
         Argument("numb_models", int, optional=True, default=1, doc=doc_numb_models),
         Argument(
-            "template_script", [List[str], str], optional=False, doc=doc_template_script
+            "template_script",
+            [List[str], str, dict],
+            optional=False,
+            doc=doc_template_script,
         ),
         Argument(
             "init_models_paths",
