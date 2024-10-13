@@ -90,7 +90,7 @@ def main_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="if set then super OPs are folded to be reused in the new workflow",
     )
-    parser_run.add_argument(
+    parser_resubmit.add_argument(
         "-m",
         "--monitering",
         action="store_false",
