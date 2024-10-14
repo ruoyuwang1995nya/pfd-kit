@@ -3,9 +3,9 @@ import os
 import json
 import sys
 
-sys.path.append("../")
+# sys.path.append("../")
 import tempfile
-from pfd.entrypoint.submit import submit_ft
+from pfd.entrypoint.submit import FlowGen
 from dflow.python import OPIO
 
 
@@ -126,7 +126,7 @@ class TestWorkflowFinetune(unittest.TestCase):
     os.environ["DFLOW_DEBUG"] = "1"
 
     def test_wf_io(self):
-        assert submit_ft(self.config_param, no_submission=True)
+        assert FlowGen(self.config_param).submit(no_submission=True)
 
 
 if __name__ == "__main__":
