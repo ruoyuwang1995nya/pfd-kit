@@ -274,7 +274,7 @@ class FlowGen:
             global_config_workflow(self._config)
         else:
             raise NotImplemented("Workflow types must be 'dist' or 'finetune'")
-        self.workflow = Workflow(name=config["name"])
+        self.workflow = Workflow(name=self._config["name"])
         if self._wf_type == "dist":
             self._set_dist_wf(self._config)
         elif self.wf_type == "finetune":
