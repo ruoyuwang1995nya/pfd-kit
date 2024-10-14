@@ -809,7 +809,12 @@ def resubmit_workflow(
     fold=False,
     **kwargs,
 ):
-    wf = FlowGen(wf_config)
+    try:
+        wf_type = wf_config["task"]["type"]
+    except KeyError:
+        print("Invalid config file! Must specify task type!")
+        return
+    global_config_workflow(normalize_args(wf_config, wf_type))
     old_wf = Workflow(id=wfid)
     folded_keys = get_resubmit_keys(old_wf)
     all_step_keys = sum(folded_keys.values(), [])
@@ -841,4 +846,5 @@ def resubmit_workflow(
     reuse_step = old_wf.query_step(key=reused_keys)
     # For reused steps whose startedAt are identical, sort them by key
     reuse_step.sort(key=lambda x: "%s-%s" % (x.startedAt, x.key))
+    wf = FlowGen(wf_config)
     wf.submit(reuse_step=reuse_step, **kwargs)
