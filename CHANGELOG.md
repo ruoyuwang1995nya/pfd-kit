@@ -1,6 +1,29 @@
 # CHANGELOG
 
 
+## v0.0.7 (2024-10-14)
+
+### Fixes
+
+* fix: issues with workflow test ([`2e3d921`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/2e3d9213dfca07733085a4e2338aa2ffd4cab347))
+
+* fix: optimize the resubmit functions ([`2c68faf`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/2c68fafd0d3546996570b77733428214b1f5984d))
+
+* fix: bug with cli ([`f42707f`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/f42707ff80d5d4dfe5e3858971cc1fc3251c97ac))
+
+* fix: restructuring flow generation ([`18cec13`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/18cec13495be7989c9b11a94dc7bd62ac09abc89))
+
+### Unknown
+
+* Merge pull request #50 from ruoyuwang1995nya/devel
+
+Restructure flow generation ([`ad999d0`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/ad999d00e9f5444eec72ab086a724dbaeb0ec0ea))
+
+* Merge pull request #49 from ruoyuwang1995nya/app
+
+Restructure flow generation ([`bf59e8d`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/bf59e8dcf0ffabf1e6b12f8e3c85411713a9fa78))
+
+
 ## v0.0.6 (2024-10-12)
 
 ### Fixes
