@@ -16,8 +16,7 @@ from .download import (
     download_by_def,
 )
 
-from .submit import submit_dist, submit_ft, resubmit_workflow
-
+from .submit import FlowGen, resubmit_workflow
 from .common import (
     expand_idx,
 )
@@ -53,10 +52,10 @@ def main_parser() -> argparse.ArgumentParser:
         "CONFIG", help="the config file in json format defining the workflow."
     )
     parser_run.add_argument(
-        "-t",
-        "--task",
-        choices=["dist", "finetune"],
-        help="Specify the task to be executed.",
+        "-m",
+        "--monitering",
+        action="store_false",
+        help="Keep monitering the progress",
     )
 
     ##########################################
@@ -70,12 +69,6 @@ def main_parser() -> argparse.ArgumentParser:
         "CONFIG", help="the config file in json format defining the workflow."
     )
     parser_resubmit.add_argument("ID", help="the ID of existing workflow")
-    parser_resubmit.add_argument(
-        "-t",
-        "--task",
-        choices=["dist", "finetune"],
-        help="Specify the task to be executed.",
-    )
     parser_resubmit.add_argument(
         "-l",
         "--list",
@@ -97,7 +90,12 @@ def main_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="if set then super OPs are folded to be reused in the new workflow",
     )
-
+    parser_resubmit.add_argument(
+        "-m",
+        "--monitering",
+        action="store_false",
+        help="Keep monitering the progress",
+    )
     ##########################################
     # download
     parser_download = subparsers.add_parser(
@@ -189,18 +187,10 @@ def main():
     args = parse_args()
     if args.command == "submit":
         print("Submitting workflow")
-        if args.task == "dist":
-            with open(args.CONFIG) as fp:
-                config = json.load(fp)
-            submit_dist(
-                config,
-            )
-        elif args.task == "finetune":
-            with open(args.CONFIG) as fp:
-                config = json.load(fp)
-            submit_ft(
-                config,
-            )
+        with open(args.CONFIG) as fp:
+            config = json.load(fp)
+        FlowGen(config).submit(only_submit=args.monitering)
+
     elif args.command == "resubmit":
         with open(args.CONFIG) as fp:
             config = json.load(fp)
@@ -211,7 +201,7 @@ def main():
             list_steps=args.list,
             reuse=args.reuse,
             fold=args.fold,
-            flow_type=args.task,
+            only_submit=args.monitering,
         )
 
     elif args.command == "download":

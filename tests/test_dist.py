@@ -5,7 +5,7 @@ import sys
 
 sys.path.append("../")
 import tempfile
-from pfd.entrypoint.submit import submit_dist
+from pfd.entrypoint.submit import FlowGen
 from dflow.python import OPIO
 
 
@@ -30,7 +30,7 @@ class TestWorkDist(unittest.TestCase):
                     "image": "registry.dp.tech/dptech/deepmd-kit:2024Q1-d23cf3e"
                 },
             },
-            "task": {"type": "finetune"},
+            "task": {"type": "dist"},
             "inputs": {
                 "type_map": ["foo"],
                 "mass_map": [1.0],
@@ -94,7 +94,7 @@ class TestWorkDist(unittest.TestCase):
     os.environ["DFLOW_DEBUG"] = "1"
 
     def test_wf_io(self):
-        assert submit_dist(self.config_param, no_submission=True)
+        assert FlowGen(self.config_param).submit(no_submission=True)
 
 
 if __name__ == "__main__":

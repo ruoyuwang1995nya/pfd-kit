@@ -1,7 +1,8 @@
 from copy import deepcopy
 import os
 import copy
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Union
+from pathlib import Path
 import json
 import dpdata
 import dflow
@@ -10,8 +11,8 @@ import pfd
 import re
 import fpop
 import ase
-
-from dflow import ArgoStep, Step, Steps, Workflow, upload_artifact
+import time
+from dflow import ArgoStep, Step, Steps, Workflow, upload_artifact, download_artifact
 
 
 from pfd.entrypoint.args import normalize as normalize_args
@@ -257,372 +258,441 @@ def get_systems_from_data(data, data_prefix=None):
     return data
 
 
-def workflow_dist(
-    config: Dict,
-) -> Step:
-    """
-    Build a workflow from the OP templates of distillation
-    """
-    ## get input config
-    default_step_config = config["default_step_config"]
-    prep_train_step_config = config["step_configs"].get(
-        "prep_train_config", default_step_config
-    )
-    run_train_step_config = config["step_configs"].get(
-        "run_train_config", default_step_config
-    )
-    prep_lmp_step_config = config["step_configs"].get(
-        "prep_explore_config", default_step_config
-    )
-    run_lmp_step_config = config["step_configs"].get(
-        "run_explore_config", default_step_config
-    )
-    collect_data_step_config = config["step_configs"].get(
-        "collect_data_config", default_step_config
-    )
-    pert_gen_step_config = config["step_configs"].get(
-        "pert_gen_config", default_step_config
-    )
-    inference_step_config = copy.deepcopy(run_lmp_step_config)
-    model_test_config = copy.deepcopy(run_train_step_config)
+class FlowGen:
+    def __init__(
+        self,
+        config: Dict,
+        debug: bool = False,
+        download_path: Union[Path, str] = Path("./"),
+    ):
+        self._wf_type = config["task"].get("type")
+        self._download_path = download_path
+        if debug is True:
+            os.environ["DFLOW_DEBUG"] = "1"
+        if self._wf_type in ["dist", "finetune"]:
+            self._config = normalize_args(config, self._wf_type)
+            global_config_workflow(self._config)
+        else:
+            raise NotImplemented("Workflow types must be 'dist' or 'finetune'")
+        self.workflow = Workflow(name=self._config["name"])
+        if self._wf_type == "dist":
+            self._set_dist_wf(self._config)
+        elif self.wf_type == "finetune":
+            self._set_ft_wf(self._config)
 
-    # uploaded python packages
-    upload_python_packages = []
-    if custom_packages := config.get("upload_python_packages"):
-        upload_python_packages.extend(custom_packages)
-    upload_python_packages.extend(list(dpdata.__path__))
-    upload_python_packages.extend(list(dflow.__path__))
-    upload_python_packages.extend(list(pfd.__path__))
-    upload_python_packages.extend(list(dpgen2.__path__))
-    ## task configs
-    type_map = config["inputs"]["type_map"]
-    if config["inputs"].get("mass_map") is not None:
-        mass_map = config["inputs"]["mass_map"]
-    else:
-        mass_map = [getattr(elements, ii).mass for ii in type_map]
-    pert_config = config["conf_generation"]
-    # exploration
-    explore_style = config["exploration"]["type"]
-    explore_config = config["exploration"]["config"]
-    expl_stages = config["exploration"]["stages"]
-    converge_config = config["exploration"]["convergence"]
-    max_iter = config["exploration"]["max_numb_iter"]
-    # train (student model) style
-    train_style = config["train"]["type"]
-    train_config = config["train"]["config"]
-    numb_models = config["train"]["numb_models"]
-    # others
+    @property
+    def wf_type(self):
+        return self._wf_type
 
-    collect_data_config = config["exploration"].get("test_set_config", {})
-    collect_data_config["labeled_data"] = collect_data_config.get("labeled_data", False)
-    collect_data_config["test_size"] = collect_data_config.get("test_size", 0.1)
+    @property
+    def download_path(self):
+        if isinstance(self._download_path, str):
+            return Path(self._download_path)
+        else:
+            return self._download_path
 
-    inference_config = {"task": "inference"}  # config["inference"]
-    dp_test_config = deepcopy(inference_config)
-    dp_test_config["task"] = "dp_test"
-
-    ## prepare artifacts
-    # read training template
-    with open(config["train"]["template_script"], "r") as fp:
-        template_script = json.load(fp)
-    # init_confs
-    if config["conf_generation"]["init_configurations"]["confs_uri"] is not None:
-        init_confs = get_artifact_from_uri(
-            config["conf_generation"]["init_configurations"]["confs_uri"]
+    def _set_dist_wf(self, config):
+        """
+        Build a workflow from the OP templates of distillation
+        """
+        ## get input config
+        default_step_config = config["default_step_config"]
+        prep_train_step_config = config["step_configs"].get(
+            "prep_train_config", default_step_config
         )
-    elif config["conf_generation"]["init_configurations"]["files"] is not None:
-        init_confs_prefix = config["conf_generation"]["init_configurations"]["prefix"]
-        init_confs = config["conf_generation"]["init_configurations"]["files"]
-        init_confs = get_systems_from_data(init_confs, init_confs_prefix)
-        init_confs = upload_artifact_and_print_uri(init_confs, "init_data")
-    else:
-        raise RuntimeError("init_confs must be provided")
-    # teacher models
-    teacher_model_style = config["inputs"]["teacher_model_style"]
-    teacher_models_paths = config["inputs"]["teacher_models_paths"]
-    print(teacher_models_paths)
-    if config["inputs"]["teacher_models_uri"] is not None:
-        print("Using uploaded model at: ", config["inputs"]["teacher_models_uri"])
-        teacher_models = get_artifact_from_uri(config["train"]["init_models_uri"])
-    elif teacher_models_paths is not None:
-        teacher_models = upload_artifact_and_print_uri(
-            teacher_models_paths, "teacher_models"
+        run_train_step_config = config["step_configs"].get(
+            "run_train_config", default_step_config
         )
-    else:
-        raise FileNotFoundError("Pre-trained model must exist!")
-    scheduler_config = {"model_style": train_style, "explore_style": explore_style}
-    # init_data
-    if config["inputs"]["init_data_uri"] is not None:
-        init_data = get_artifact_from_uri(config["inputs"]["init_data_uri"])
-    elif config["inputs"]["init_data_sys"] is not None:
-        init_data_prefix = config["inputs"]["init_data_prefix"]
-        init_data = config["inputs"]["init_data_sys"]
-        init_data = get_systems_from_data(init_data, init_data_prefix)
-        init_data = upload_artifact_and_print_uri(init_data, "init_data")
-    else:
-        init_data = upload_artifact([])
-
-    # make distillation op
-    dist_op = make_dist_op(
-        teacher_model_style=teacher_model_style,
-        model_style=train_style,
-        explore_style=explore_style,
-        prep_lmp_config=prep_lmp_step_config,
-        run_lmp_config=run_lmp_step_config,
-        prep_train_config=prep_train_step_config,
-        run_train_config=run_train_step_config,
-        collect_data_config=collect_data_step_config,
-        pert_gen_config=pert_gen_step_config,
-        inference_config=inference_step_config,
-        model_test_config=model_test_config,
-        upload_python_packages=upload_python_packages,
-    )
-
-    # make distillation steps
-    dist_step = Step(
-        "dp-dist-step",
-        template=dist_op,
-        parameters={
-            "block_id": "dist",
-            "type_map": type_map,
-            "mass_map": mass_map,
-            "pert_config": pert_config,
-            "expl_stages": expl_stages,
-            "numb_models": numb_models,
-            "explore_config": explore_config,
-            "converge_config": converge_config,
-            "scheduler_config": scheduler_config,
-            "max_iter": max_iter,
-            "template_script": template_script,
-            "train_config": train_config,
-            "inference_config": inference_config,
-            "test_size": collect_data_config["test_size"],
-            "type_map_train": [],  # type_map_train
-        },
-        artifacts={
-            "init_confs": init_confs,
-            "teacher_model": teacher_models,
-            "init_data": init_data,
-            "iter_data": upload_artifact([]),
-        },
-    )
-    return dist_step
-
-
-def workflow_finetune(config: Dict) -> Step:
-    """
-    Build a workflow from the OP templates of distillation
-    """
-    ## get input config
-    default_config = config["default_step_config"]
-    prep_train_config = config["step_configs"].get("prep_train_config", default_config)
-    run_train_config = config["step_configs"].get("run_train_config", default_config)
-    prep_fp_config = config["step_configs"].get("perp_fp_config", default_config)
-    run_fp_config = config["step_configs"].get("run_fp_config", default_config)
-    run_collect_data_config = config["step_configs"].get(
-        "collect_data_config", default_config
-    )
-    run_select_confs_config = config["step_configs"].get(
-        "select_confs_config", default_config
-    )
-    run_pert_gen_config = config["step_configs"].get("pert_gen_config", default_config)
-    run_inference_config = copy.deepcopy(run_train_config)
-    prep_lmp_config = config["step_configs"].get("prep_explore_config", default_config)
-    run_lmp_config = config["step_configs"].get("run_explore_config", default_config)
-    # uploaded python packages
-    upload_python_packages = []
-    if custom_packages := config.get("upload_python_packages"):
-        upload_python_packages.extend(custom_packages)
-    upload_python_packages.extend(list(dpdata.__path__))
-    upload_python_packages.extend(list(dflow.__path__))
-    upload_python_packages.extend(list(pfd.__path__))
-    upload_python_packages.extend(list(dpgen2.__path__))
-    upload_python_packages.extend(list(fpop.__path__))
-    upload_python_packages.extend(list(ase.__path__))
-    ## task configs
-    type_map = config["inputs"]["type_map"]
-    if config["inputs"].get("mass_map") is not None:
-        mass_map = config["inputs"]["mass_map"]
-    else:
-        mass_map = [getattr(elements, ii).mass for ii in type_map]
-    train_style = config["train"]["type"]
-    train_config = config["train"]["config"]
-    numb_models = config["train"]["numb_models"]
-    pert_config = config["conf_generation"]
-    explore_style = config["exploration"]["type"]
-    expl_stages = config["exploration"]["stages"]
-    explore_config = config["exploration"]["config"]
-    max_iter = config["exploration"]["max_numb_iter"]
-    converge_config = config["exploration"]["convergence"]
-    scheduler_config = {"model_style": train_style, "explore_style": explore_style}
-    # conf selectors
-    conf_filters = get_conf_filters(config["exploration"]["filter"])
-    render = TrajRenderLammps(nopbc=False)
-    conf_selector = ConfSelectorFrames(render, config["fp"]["task_max"], conf_filters)
-    # task
-    init_training = config["task"]["init_training"]
-    if init_training is False:
-        print("No initial training before exploration")
-    skip_aimd = config["task"]["skip_aimd"]
-    if skip_aimd is True:
-        print("AIMD exploration is skipped!")
-
-    collect_data_config = {}
-    collect_data_config["test_size"] = config["conf_generation"].get("test_data", 0.05)
-    collect_data_config["system_partition"] = config["conf_generation"].get(
-        "system_partition", False
-    )
-    collect_data_config["labeled_data"] = True
-
-    ## prepare artifacts
-    # read training template
-    with open(config["train"]["template_script"], "r") as fp:
-        template_script = json.load(fp)
-    # init_confs
-    if config["conf_generation"]["init_configurations"]["confs_uri"] is not None:
-        init_confs = get_artifact_from_uri(
-            config["conf_generation"]["init_configurations"]["confs_uri"]
+        prep_lmp_step_config = config["step_configs"].get(
+            "prep_explore_config", default_step_config
         )
-    elif config["conf_generation"]["init_configurations"]["files"] is not None:
-        init_confs_prefix = config["conf_generation"]["init_configurations"]["prefix"]
-        init_confs = config["conf_generation"]["init_configurations"]["files"]
-        init_confs = get_systems_from_data(init_confs, init_confs_prefix)
-        init_confs = upload_artifact_and_print_uri(init_confs, "init_data")
-    else:
-        raise RuntimeError("init_confs must be provided")
-    # init_data
-    if config["inputs"]["init_data_uri"] is not None:
-        init_data = get_artifact_from_uri(config["inputs"]["init_data_uri"])
-    elif config["inputs"]["init_data_sys"] is not None:
-        init_data_prefix = config["inputs"]["init_data_prefix"]
-        init_data = config["inputs"]["init_data_sys"]
-        init_data = get_systems_from_data(init_data, init_data_prefix)
-        init_data = upload_artifact_and_print_uri(init_data, "init_data")
-    else:
-        init_data = upload_artifact([])
-    iter_data = upload_artifact([])
-    init_models_paths = config["train"]["init_models_paths"]
-    if config["train"]["init_models_uri"] is not None:
-        print("Using uploaded model at: ", config["train"]["init_models_uri"])
-        init_models = get_artifact_from_uri(config["train"]["init_models_uri"])
-    elif init_models_paths is not None:
-        init_models = upload_artifact_and_print_uri(init_models_paths, "init_models")
-    else:
-        raise FileNotFoundError("Pre-trained model must exist!")
+        run_lmp_step_config = config["step_configs"].get(
+            "run_explore_config", default_step_config
+        )
+        collect_data_step_config = config["step_configs"].get(
+            "collect_data_config", default_step_config
+        )
+        pert_gen_step_config = config["step_configs"].get(
+            "pert_gen_config", default_step_config
+        )
+        inference_step_config = copy.deepcopy(run_lmp_step_config)
+        model_test_config = copy.deepcopy(run_train_step_config)
+        # uploaded python packages
+        upload_python_packages = []
+        if custom_packages := config.get("upload_python_packages"):
+            upload_python_packages.extend(custom_packages)
+        upload_python_packages.extend(list(dpdata.__path__))
+        upload_python_packages.extend(list(dflow.__path__))
+        upload_python_packages.extend(list(pfd.__path__))
+        upload_python_packages.extend(list(dpgen2.__path__))
+        ## task configs
+        type_map = config["inputs"]["type_map"]
+        if config["inputs"].get("mass_map") is not None:
+            mass_map = config["inputs"]["mass_map"]
+        else:
+            mass_map = [getattr(elements, ii).mass for ii in type_map]
+        pert_config = config["conf_generation"]
+        # exploration
+        explore_style = config["exploration"]["type"]
+        explore_config = config["exploration"]["config"]
+        expl_stages = config["exploration"]["stages"]
+        converge_config = config["exploration"]["convergence"]
+        max_iter = config["exploration"]["max_numb_iter"]
+        # train (student model) style
+        train_style = config["train"]["type"]
+        train_config = config["train"]["config"]
+        numb_models = config["train"]["numb_models"]
+        # others
+        collect_data_config = config["exploration"].get("test_set_config", {})
+        collect_data_config["labeled_data"] = collect_data_config.get(
+            "labeled_data", False
+        )
+        collect_data_config["test_size"] = collect_data_config.get("test_size", 0.1)
+        inference_config = {"task": "inference"}  # config["inference"]
+        dp_test_config = deepcopy(inference_config)
+        dp_test_config["task"] = "dp_test"
+        ## prepare artifacts
+        # read training template
+        if isinstance(config["train"]["template_script"], str):
+            with open(config["train"]["template_script"], "r") as fp:
+                template_script = json.load(fp)
+        elif isinstance(config["train"]["template_script"], dict):
+            template_script = config["train"]["template_script"]
+        else:
+            template_script = {}
+        # init_confs
+        if config["conf_generation"]["init_configurations"]["confs_uri"] is not None:
+            init_confs = get_artifact_from_uri(
+                config["conf_generation"]["init_configurations"]["confs_uri"]
+            )
+        elif config["conf_generation"]["init_configurations"]["files"] is not None:
+            init_confs_prefix = config["conf_generation"]["init_configurations"][
+                "prefix"
+            ]
+            init_confs = config["conf_generation"]["init_configurations"]["files"]
+            init_confs = get_systems_from_data(init_confs, init_confs_prefix)
+            init_confs = upload_artifact_and_print_uri(init_confs, "init_confs")
+        else:
+            raise RuntimeError("init_confs must be provided")
+        # teacher models
+        teacher_model_style = config["inputs"]["teacher_model_style"]
+        teacher_models_paths = config["inputs"]["teacher_models_paths"]
+        print("Using teacher model at: %s" % teacher_models_paths)
+        if config["inputs"]["teacher_models_uri"] is not None:
+            print("Using uploaded model at: ", config["inputs"]["teacher_models_uri"])
+            teacher_models = get_artifact_from_uri(config["train"]["init_models_uri"])
+        elif teacher_models_paths is not None:
+            teacher_models = upload_artifact_and_print_uri(
+                teacher_models_paths, "teacher_models"
+            )
+        else:
+            raise FileNotFoundError("Pre-trained model must exist!")
+        scheduler_config = {"model_style": train_style, "explore_style": explore_style}
+        # init_data
+        if config["inputs"]["init_data_uri"] is not None:
+            init_data = get_artifact_from_uri(config["inputs"]["init_data_uri"])
+        elif config["inputs"]["init_data_sys"] is not None:
+            init_data_prefix = config["inputs"]["init_data_prefix"]
+            init_data = config["inputs"]["init_data_sys"]
+            init_data = get_systems_from_data(init_data, init_data_prefix)
+            init_data = upload_artifact_and_print_uri(init_data, "init_data")
+        else:
+            init_data = upload_artifact([])
 
-    fp_config = {}
-    fp_inputs_config = config["fp"]["inputs_config"]
-    fp_type = config["fp"]["type"]
-    fp_inputs = fp_styles[fp_type]["inputs"](**fp_inputs_config)
-    fp_config["inputs"] = fp_inputs
-    fp_config["run"] = config["fp"]["run_config"]
-    fp_config["extra_output_files"] = config["fp"].get("extra_output_files", [])
+        # make distillation op
+        dist_op = make_dist_op(
+            teacher_model_style=teacher_model_style,
+            model_style=train_style,
+            explore_style=explore_style,
+            prep_lmp_config=prep_lmp_step_config,
+            run_lmp_config=run_lmp_step_config,
+            prep_train_config=prep_train_step_config,
+            run_train_config=run_train_step_config,
+            collect_data_config=collect_data_step_config,
+            pert_gen_config=pert_gen_step_config,
+            inference_config=inference_step_config,
+            model_test_config=model_test_config,
+            upload_python_packages=upload_python_packages,
+        )
 
-    # aimd exploration
-    aimd_config = {}
-    if skip_aimd is not True:
-        aimd_config.update(fp_config)
-        aimd_inputs_config = copy.deepcopy(fp_inputs_config)
-        aimd_inputs_config.update(config["aimd"]["inputs_config"])
-        aimd_inputs = fp_styles[fp_type]["inputs"](**aimd_inputs_config)
-        aimd_config["inputs"] = aimd_inputs
-        # aimd_config["run"] = config["aimd"]["run_config"]
-        # aimd_config["extra_output_files"] = config["aimd"].get("extra_output_files", [])
+        # make distillation steps
+        dist_step = Step(
+            "distillation",
+            template=dist_op,
+            parameters={
+                "block_id": "dist",
+                "type_map": type_map,
+                "mass_map": mass_map,
+                "pert_config": pert_config,
+                "expl_stages": expl_stages,
+                "numb_models": numb_models,
+                "explore_config": explore_config,
+                "converge_config": converge_config,
+                "scheduler_config": scheduler_config,
+                "max_iter": max_iter,
+                "template_script": template_script,
+                "train_config": train_config,
+                "inference_config": inference_config,
+                "test_size": collect_data_config["test_size"],
+                "type_map_train": [],  # type_map_train
+            },
+            artifacts={
+                "init_confs": init_confs,
+                "teacher_model": teacher_models,
+                "init_data": init_data,
+                "iter_data": upload_artifact([]),
+            },
+        )
+        self.workflow.add(dist_step)
 
-    # make distillation op
-    ft_op = make_ft_op(
-        fp_style=fp_type,
-        train_style=train_style,
-        explore_style=explore_style,
-        pert_gen_step_config=run_pert_gen_config,
-        prep_fp_config=prep_fp_config,
-        run_fp_config=run_fp_config,
-        prep_train_config=prep_train_config,
-        run_train_config=run_train_config,
-        prep_lmp_config=prep_lmp_config,
-        run_lmp_config=run_lmp_config,
-        collect_data_step_config=run_collect_data_config,
-        select_confs_step_config=run_select_confs_config,
-        inference_step_config=run_inference_config,
-        upload_python_packages=upload_python_packages,
-        init_training=init_training,
-        skip_aimd=skip_aimd,
-    )
+    def _set_ft_wf(self, config: Dict):
+        """
+        Build a workflow from the OP templates of model finetune
+        """
+        default_config = config["default_step_config"]
+        prep_train_config = config["step_configs"].get(
+            "prep_train_config", default_config
+        )
+        run_train_config = config["step_configs"].get(
+            "run_train_config", default_config
+        )
+        prep_fp_config = config["step_configs"].get("perp_fp_config", default_config)
+        run_fp_config = config["step_configs"].get("run_fp_config", default_config)
+        run_collect_data_config = config["step_configs"].get(
+            "collect_data_config", default_config
+        )
+        run_select_confs_config = config["step_configs"].get(
+            "select_confs_config", default_config
+        )
+        run_pert_gen_config = config["step_configs"].get(
+            "pert_gen_config", default_config
+        )
+        run_inference_config = copy.deepcopy(run_train_config)
+        prep_lmp_config = config["step_configs"].get(
+            "prep_explore_config", default_config
+        )
+        run_lmp_config = config["step_configs"].get(
+            "run_explore_config", default_config
+        )
+        # uploaded python packages
+        upload_python_packages = []
+        if custom_packages := config.get("upload_python_packages"):
+            upload_python_packages.extend(custom_packages)
+        upload_python_packages.extend(list(dpdata.__path__))
+        upload_python_packages.extend(list(dflow.__path__))
+        upload_python_packages.extend(list(pfd.__path__))
+        upload_python_packages.extend(list(dpgen2.__path__))
+        upload_python_packages.extend(list(fpop.__path__))
+        upload_python_packages.extend(list(ase.__path__))
+        ## task configs
+        type_map = config["inputs"]["type_map"]
+        if config["inputs"].get("mass_map") is not None:
+            mass_map = config["inputs"]["mass_map"]
+        else:
+            mass_map = [getattr(elements, ii).mass for ii in type_map]
+        train_style = config["train"]["type"]
+        train_config = config["train"]["config"]
+        numb_models = config["train"]["numb_models"]
+        pert_config = config["conf_generation"]
+        explore_style = config["exploration"]["type"]
+        expl_stages = config["exploration"]["stages"]
+        explore_config = config["exploration"]["config"]
+        max_iter = config["exploration"]["max_numb_iter"]
+        converge_config = config["exploration"]["convergence"]
+        scheduler_config = {"model_style": train_style, "explore_style": explore_style}
+        # conf selectors
+        conf_filters = get_conf_filters(config["exploration"]["filter"])
+        render = TrajRenderLammps(nopbc=False)
+        conf_selector = ConfSelectorFrames(
+            render, config["fp"]["task_max"], conf_filters
+        )
+        # task
+        init_training = config["task"]["init_training"]
+        if init_training is False:
+            print("No initial training before exploration")
+        skip_aimd = config["task"]["skip_aimd"]
+        if skip_aimd is True:
+            print("AIMD exploration is skipped!")
+        collect_data_config = {}
+        collect_data_config["test_size"] = config["conf_generation"].get(
+            "test_data", 0.05
+        )
+        collect_data_config["system_partition"] = config["conf_generation"].get(
+            "system_partition", False
+        )
+        collect_data_config["labeled_data"] = True
+        ## prepare artifacts
+        # read training template
+        with open(config["train"]["template_script"], "r") as fp:
+            template_script = json.load(fp)
+        # init_confs
+        if config["conf_generation"]["init_configurations"]["confs_uri"] is not None:
+            init_confs = get_artifact_from_uri(
+                config["conf_generation"]["init_configurations"]["confs_uri"]
+            )
+        elif config["conf_generation"]["init_configurations"]["files"] is not None:
+            init_confs_prefix = config["conf_generation"]["init_configurations"][
+                "prefix"
+            ]
+            init_confs = config["conf_generation"]["init_configurations"]["files"]
+            init_confs = get_systems_from_data(init_confs, init_confs_prefix)
+            init_confs = upload_artifact_and_print_uri(init_confs, "init_data")
+        else:
+            raise RuntimeError("init_confs must be provided")
+        # init_data
+        if config["inputs"]["init_data_uri"] is not None:
+            init_data = get_artifact_from_uri(config["inputs"]["init_data_uri"])
+        elif config["inputs"]["init_data_sys"] is not None:
+            init_data_prefix = config["inputs"]["init_data_prefix"]
+            init_data = config["inputs"]["init_data_sys"]
+            init_data = get_systems_from_data(init_data, init_data_prefix)
+            init_data = upload_artifact_and_print_uri(init_data, "init_data")
+        else:
+            init_data = upload_artifact([])
+        iter_data = upload_artifact([])
+        init_models_paths = config["train"]["init_models_paths"]
+        if config["train"]["init_models_uri"] is not None:
+            print("Using uploaded model at: ", config["train"]["init_models_uri"])
+            init_models = get_artifact_from_uri(config["train"]["init_models_uri"])
+        elif init_models_paths is not None:
+            init_models = upload_artifact_and_print_uri(
+                init_models_paths, "init_models"
+            )
+        else:
+            raise FileNotFoundError("Pre-trained model must exist!")
 
-    ft_step = Step(
-        "fine-tune",
-        template=ft_op,
-        parameters={
-            "block_id": "finetune",
-            "type_map": type_map,
-            "mass_map": mass_map,
-            "pert_config": pert_config,  # Total input parameter file: to be changed in the future
-            "numb_models": numb_models,
-            "expl_stages": expl_stages,
-            "conf_selector": conf_selector,
-            "converge_config": converge_config,
-            "scheduler_config": scheduler_config,
-            "max_iter": max_iter,
-            "explore_config": explore_config,
-            "template_script": template_script,
-            "train_config": train_config,
-            "fp_config": fp_config,
-            "aimd_config": aimd_config,
-            "collect_data_config": collect_data_config,
-        },
-        artifacts={
-            "init_models": init_models,
-            "init_confs": init_confs,
-            "expl_models": init_models,
-            "init_data": init_data,
-            "iter_data": iter_data,
-        },
-    )
-    return ft_step
+        fp_config = {}
+        fp_inputs_config = config["fp"]["inputs_config"]
+        fp_type = config["fp"]["type"]
+        fp_inputs = fp_styles[fp_type]["inputs"](**fp_inputs_config)
+        fp_config["inputs"] = fp_inputs
+        fp_config["run"] = config["fp"]["run_config"]
+        fp_config["extra_output_files"] = config["fp"].get("extra_output_files", [])
+        # aimd exploration
+        aimd_config = {}
+        if skip_aimd is not True:
+            aimd_config.update(fp_config)
+            aimd_inputs_config = copy.deepcopy(fp_inputs_config)
+            aimd_inputs_config.update(config["aimd"]["inputs_config"])
+            aimd_inputs = fp_styles[fp_type]["inputs"](**aimd_inputs_config)
+            aimd_config["inputs"] = aimd_inputs
 
+        # make distillation op
+        ft_op = make_ft_op(
+            fp_style=fp_type,
+            train_style=train_style,
+            explore_style=explore_style,
+            pert_gen_step_config=run_pert_gen_config,
+            prep_fp_config=prep_fp_config,
+            run_fp_config=run_fp_config,
+            prep_train_config=prep_train_config,
+            run_train_config=run_train_config,
+            prep_lmp_config=prep_lmp_config,
+            run_lmp_config=run_lmp_config,
+            collect_data_step_config=run_collect_data_config,
+            select_confs_step_config=run_select_confs_config,
+            inference_step_config=run_inference_config,
+            upload_python_packages=upload_python_packages,
+            init_training=init_training,
+            skip_aimd=skip_aimd,
+        )
 
-def submit_dist(
-    wf_config, reuse_step: Optional[List[ArgoStep]] = None, no_submission: bool = False
-):
-    """
-    Major entry point for the whole workflow, only one config dict
-    """
-    # normalize args
-    wf_config = normalize_args(wf_config, "dist")
-    global_config_workflow(wf_config)
-    dist_step = workflow_dist(wf_config)
-    wf = Workflow(
-        name=wf_config["name"],
-        # parallelism=wf_config["parallelism"]
-    )
-    wf.add(dist_step)
+        ft_step = Step(
+            "finetune",
+            template=ft_op,
+            parameters={
+                "block_id": "finetune",
+                "type_map": type_map,
+                "mass_map": mass_map,
+                "pert_config": pert_config,  # Total input parameter file: to be changed in the future
+                "numb_models": numb_models,
+                "expl_stages": expl_stages,
+                "conf_selector": conf_selector,
+                "converge_config": converge_config,
+                "scheduler_config": scheduler_config,
+                "max_iter": max_iter,
+                "explore_config": explore_config,
+                "template_script": template_script,
+                "train_config": train_config,
+                "fp_config": fp_config,
+                "aimd_config": aimd_config,
+                "collect_data_config": collect_data_config,
+            },
+            artifacts={
+                "init_models": init_models,
+                "init_confs": init_confs,
+                "expl_models": init_models,
+                "init_data": init_data,
+                "iter_data": iter_data,
+            },
+        )
+        self.workflow.add(ft_step)
 
-    if not no_submission:
-        wf.submit(reuse_step=reuse_step)
-    return wf
+    def _moniter_dist(self):
+        print("Running...")
+        while True:
+            time.sleep(4)
+            step_info = self.workflow.query()
+            wf_status = self.workflow.query_status()
+            if wf_status == "Failed":
+                raise RuntimeError(
+                    f"Workflow failed (ID: {self.workflow.id}, UID: {self.workflow.uid})"
+                )
+            try:
+                dist_post = step_info.get_step(name="distillation")[0]
+            except IndexError:
+                continue
+            if dist_post["phase"] == "Succeeded":
+                print(
+                    f"Distillation finished (ID: {self.workflow.id}, UID: {self.workflow.uid})"
+                )
+                print("Retrieving completed tasks to local...")
+                download_artifact(
+                    artifact=dist_post.outputs.artifacts["dist_model"],
+                    path=self.download_path,
+                )
+                break
 
+    def _moniter_ft(self):
+        while True:
+            time.sleep(4)
+            step_info = self.workflow.query()
+            wf_status = self.workflow.query_status()
+            if wf_status == "Failed":
+                raise RuntimeError(
+                    f"Workflow failed (ID: {self.workflow.id}, UID: {self.workflow.uid})"
+                )
+            try:
+                dist_post = step_info.get_step(name="finetune")[0]
+            except IndexError:
+                continue
+            if dist_post["phase"] == "Succeeded":
+                print(
+                    f"Distillation finished (ID: {self.workflow.id}, UID: {self.workflow.uid})"
+                )
+                print("Retrieving completed tasks to local...")
+                download_artifact(
+                    artifact=dist_post.outputs.artifacts["fine_tuned_model"],
+                    path=self.download_path,
+                )
+                break
 
-def submit_ft(
-    wf_config,
-    reuse_step: Optional[List[ArgoStep]] = None,
-    no_submission: bool = False,
-):
-    """
-    Major entry point for the whole workflow, only one config dict
-    """
-    # normalize args
-    wf_config = normalize_args(wf_config, "ft")
-    global_config_workflow(wf_config)
-    ft_step = workflow_finetune(wf_config)
-
-    wf = Workflow(
-        name=wf_config["name"],
-        # parallelism=wf_config["parallelism"]
-    )
-    wf.add(ft_step)
-    if not no_submission:
-        wf.submit(reuse_step=reuse_step)
-    return wf
+    def submit(
+        self,
+        reuse_step: Optional[List[ArgoStep]] = None,
+        no_submission: bool = False,
+        only_submit: bool = True,
+    ):
+        if not no_submission:
+            self.workflow.submit(reuse_step=reuse_step)
+            # return self.workflow
+        else:
+            return self.workflow
+        if not only_submit:
+            if self.wf_type == "dist":
+                self._moniter_dist()
+            elif self.wf_type == "finetune":
+                self._moniter_ft()
 
 
 def successful_step_keys(wf):
@@ -737,22 +807,22 @@ def resubmit_workflow(
     list_steps=False,
     reuse=None,
     fold=False,
-    flow_type="dist",
     **kwargs,
 ):
-    wf_config = normalize_args(wf_config, flow_type)
-    global_config_workflow(wf_config)
+    try:
+        wf_type = wf_config["task"]["type"]
+    except KeyError:
+        print("Invalid config file! Must specify task type!")
+        return
+    global_config_workflow(normalize_args(wf_config, wf_type))
     old_wf = Workflow(id=wfid)
     folded_keys = get_resubmit_keys(old_wf)
     all_step_keys = sum(folded_keys.values(), [])
-
     if list_steps:
         prt_str = print_keys_in_nice_format(
-            all_step_keys,
-            ["run-train", "run-lmp", "run-fp"],
+            all_step_keys, ["run-train", "run-lmp", "run-fp"]
         )
         print(prt_str)
-
     if reuse is None:
         return None
     reuse_idx = expand_idx(reuse)
@@ -776,19 +846,5 @@ def resubmit_workflow(
     reuse_step = old_wf.query_step(key=reused_keys)
     # For reused steps whose startedAt are identical, sort them by key
     reuse_step.sort(key=lambda x: "%s-%s" % (x.startedAt, x.key))
-
-    if flow_type == "dist":
-        return submit_dist(wf_config, reuse_step=reuse_step, **kwargs)
-    elif flow_type == "finetune":
-        return submit_ft(wf_config, reuse_step=reuse_step, **kwargs)
-
-    else:
-        raise NotImplementedError("%d has not been implemented!" % (flow_type))
-
-
-if __name__ == "__main__":
-    import json
-
-    with open("./input-abacus.json", "r") as fp:
-        config_dict = json.load(fp)
-    submit_dist(config_dict)
+    wf = FlowGen(wf_config)
+    wf.submit(reuse_step=reuse_step, **kwargs)
