@@ -229,7 +229,7 @@ def _expl_dist_cl(
             "expl_task_grp": steps.inputs.parameters["expl_tasks"],
         },
         artifacts={"models": steps.inputs.artifacts["teacher_model"]},
-        key="--".join(["init", "prep-run-explore"]),
+        key="--".join(["%s" % steps.inputs.parameters["block_id"], "prep-run-explore"]),
     )
     steps.add(prep_run_explore)
 
@@ -484,6 +484,7 @@ def _loop(
         "explore_config": loop.inputs.parameters["explore_config"],
         "inference_config": loop.inputs.parameters["inference_config"],
         "type_map_train": loop.inputs.parameters["type_map_train"],
+        "scheduler_config": loop.inputs.parameters["scheduler_config"],
     }
     next_step = Step(
         name=name + "-exploration-finetune-next",
