@@ -502,8 +502,9 @@ def bohrium_conf_args():
 
     return [
         Argument("username", str, optional=False, doc=doc_username),
-        Argument("password", str, optional=False, doc=doc_password),
+        Argument("password", str, optional=True, doc=doc_password),
         Argument("project_id", int, optional=False, doc=doc_project_id),
+        Argument("ticket", str, optional=True),
         Argument(
             "host",
             str,

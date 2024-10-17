@@ -17,7 +17,10 @@ def bohrium_config_from_dict(
     config["host"] = bohrium_config["host"]
     config["k8s_api_server"] = bohrium_config["k8s_api_server"]
     bohrium.config["username"] = bohrium_config["username"]
-    bohrium.config["password"] = bohrium_config["password"]
+    if bohrium_config.get("password"):
+        bohrium.config["password"] = bohrium_config["password"]
+    elif bohrium_config.get("ticket"):
+        bohrium.config["ticket"] = bohrium_config["ticket"]
     bohrium.config["project_id"] = str(bohrium_config["project_id"])
     s3_config["repo_key"] = bohrium_config["repo_key"]
     module, cls = bohrium_config["storage_client"].rsplit(".", maxsplit=1)
