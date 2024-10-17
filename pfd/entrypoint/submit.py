@@ -823,8 +823,9 @@ def resubmit_workflow(
             all_step_keys, ["run-train", "run-lmp", "run-fp"]
         )
         print(prt_str)
+        return
     if reuse is None:
-        return None
+        return
     reuse_idx = expand_idx(reuse)
     reused_keys = [all_step_keys[ii] for ii in reuse_idx]
     if fold:

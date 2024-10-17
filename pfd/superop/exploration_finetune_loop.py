@@ -277,27 +277,6 @@ def _expl_ft_blk(
     )
     steps.add(prep_run_fp)
 
-    collect_data = Step(
-        name=name + "-collect-data-fp",
-        template=PythonOPTemplate(
-            collect_data_op,
-            python_packages=upload_python_packages,
-            **collect_data_template_config,
-        ),
-        parameters={
-            "optional_parameters": steps.inputs.parameters["collect_data_config"],
-            "type_map": steps.inputs.parameters["type_map"],
-        },
-        artifacts={
-            "systems": prep_run_fp.outputs.artifacts["labeled_data"],
-            "additional_multi_systems": steps.inputs.artifacts["iter_data"],
-        },
-        key="--".join(["%s" % steps.inputs.parameters["block_id"], "collect-data-fp"]),
-        executor=collect_data_executor,
-        **collect_data_step_config,
-    )
-    steps.add(collect_data)
-
     ## inference with expl_model
     dp_test = Step(
         name + "-dp-test",
@@ -313,7 +292,7 @@ def _expl_ft_blk(
             "type_map": steps.inputs.parameters["type_map"],
         },
         artifacts={
-            "systems": collect_data.outputs.artifacts["systems"],
+            "systems": prep_run_fp.outputs.artifacts["labeled_data"],
             "model": steps.inputs.artifacts[
                 "current_model"
             ],  # expl_model[0] #prep_run_ft.outputs.artifacts["models"][0]
@@ -334,12 +313,36 @@ def _expl_ft_blk(
             "config": steps.inputs.parameters["converge_config"],
             "test_res": dp_test.outputs.parameters["test_res"],
         },
+        artifacts={"systems": prep_run_fp.outputs.artifacts["labeled_data"]},
         key="--".join(
             ["%s" % steps.inputs.parameters["block_id"], "evaluate-converge"]
         ),
         **collect_data_step_config,
     )
     steps.add(evaluate)
+
+    # add a step to
+    collect_data = Step(
+        name=name + "-collect-data-fp",
+        template=PythonOPTemplate(
+            collect_data_op,
+            python_packages=upload_python_packages,
+            **collect_data_template_config,
+        ),
+        parameters={
+            "optional_parameters": steps.inputs.parameters["collect_data_config"],
+            "type_map": steps.inputs.parameters["type_map"],
+        },
+        artifacts={
+            "systems": evaluate.outputs.artifacts["selected_systems"],
+            "additional_multi_systems": steps.inputs.artifacts["iter_data"],
+        },
+        key="--".join(["%s" % steps.inputs.parameters["block_id"], "collect-data-fp"]),
+        executor=collect_data_executor,
+        **collect_data_step_config,
+    )
+    steps.add(collect_data)
+
     prep_run_ft = Step(
         name + "-prep-run-dp-train",
         template=prep_run_train_op,

@@ -50,8 +50,8 @@ class ModelTestOP(OP):
         res_dir = Path("result")
         res_dir.mkdir(exist_ok=True)
         evaluator = Eval(model=model_path)
-        for sys in systems:
-            name = sys.name
+        for idx, sys in enumerate(systems):
+            name = "sys_%03d_%s" % (idx, sys.name)
             evaluator.read_data(data=sys, type_map=type_map)
             # evaluator = Eval(model=model_path, data=sys, type_map=type_map)
             res, rep = evaluator.evaluate(name, prefix=str(res_dir))

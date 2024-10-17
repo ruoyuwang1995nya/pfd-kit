@@ -1,21 +1,21 @@
 from genericpath import isdir
-import json
-import pickle
-import dpdata
-import glob
-import os
 from pathlib import Path
-import random
 from pathlib import (
     Path,
 )
-from typing import List, Dict, Tuple, Union, Optional
+from typing import List, Dict
 
 from dflow.python import OP, OPIO, Artifact, BigParameter, OPIOSign, Parameter
 from pfd.exploration.converge import ConvTypes
 
 
 class EvalConv(OP):
+    """
+    Args:
+        converged: boolean, whether the workflow has already converged.
+        systems: dpdata system, a list of systems
+    """
+
     def __init__(self):
         pass
 
@@ -32,7 +32,12 @@ class EvalConv(OP):
 
     @classmethod
     def get_output_sign(cls):
-        return OPIOSign({"converged": Parameter(bool, default=False)})
+        return OPIOSign(
+            {
+                "converged": Parameter(bool, default=False),
+                "selected_systems": Artifact(List[Path], optional=True),
+            }
+        )
 
     @OP.exec_sign_check
     def execute(
@@ -42,12 +47,13 @@ class EvalConv(OP):
         # implement
         config = ip["config"]
         conv_type = config.pop("type")
+        systems = ip["systems"]
         if conv_type in ConvTypes:
             conv = ConvTypes[conv_type]()
         else:
             raise NotImplementedError("%s is not implemented!" % conv_type)
-        converged = conv.check_conv(ip["test_res"], config)
-        return OPIO({"converged": converged})
+        converged, selected_systems = conv.check_conv(ip["test_res"], config, systems)
+        return OPIO({"converged": converged, "selected_systems": selected_systems})
 
 
 class NextLoop(OP):
