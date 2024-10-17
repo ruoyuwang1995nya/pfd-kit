@@ -1,6 +1,21 @@
 # CHANGELOG
 
 
+## v0.0.8 (2024-10-17)
+
+### Fixes
+
+* fix: add ticket support ([`7cce152`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/7cce1522906cdee10f81b4503b8f5b0083b240fa))
+
+* fix: key error in dist ([`1b789ec`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/1b789ecf21a25288378674c9e0d67f218b90f001))
+
+### Unknown
+
+* Merge pull request #51 from ruoyuwang1995nya/app
+
+Fix bugs in distillation workflow ([`4b5688f`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/4b5688f3e561a74dd4aec29d36a5be9736e5a98d))
+
+
 ## v0.0.7 (2024-10-14)
 
 ### Fixes
