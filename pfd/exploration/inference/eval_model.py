@@ -34,7 +34,15 @@ class EvalModel(ABC):
         pass
 
     @abstractmethod
+    def read_data_unlabeled(self, data: Union[Path, str], **kwargs):
+        pass
+
+    @abstractmethod
     def evaluate(self, **kwargs):
+        pass
+
+    @abstractmethod
+    def inference(self, **kwargs):
         pass
 
     def clear_data(self):

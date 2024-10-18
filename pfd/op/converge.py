@@ -7,6 +7,14 @@ from typing import List, Dict
 
 from dflow.python import OP, OPIO, Artifact, BigParameter, OPIOSign, Parameter
 from pfd.exploration.converge import ConvTypes
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[logging.FileHandler("converge.log"), logging.StreamHandler()],
+)
+logger = logging.getLogger(__name__)
 
 
 class EvalConv(OP):
@@ -44,7 +52,6 @@ class EvalConv(OP):
         self,
         ip: OPIO,
     ) -> OPIO:
-        # implement
         config = ip["config"]
         conv_type = config.pop("type")
         systems = ip["systems"]
@@ -53,6 +60,7 @@ class EvalConv(OP):
         else:
             raise NotImplementedError("%s is not implemented!" % conv_type)
         converged, selected_systems = conv.check_conv(ip["test_res"], config, systems)
+        logging.info("Converged: %s" % converged)
         return OPIO({"converged": converged, "selected_systems": selected_systems})
 
 

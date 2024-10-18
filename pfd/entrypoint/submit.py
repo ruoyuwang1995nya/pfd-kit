@@ -29,7 +29,7 @@ from pfd.flow.fine_tune import FineTune
 from pfd.op import (
     PertGen,
     CollectData,
-    Inference,
+    InferenceOP,
     SelectConfs,
     ModelTestOP,
 )
@@ -135,7 +135,7 @@ def make_dist_op(
         prep_run_explore_op=prep_run_lmp_op,
         prep_run_train_op=prep_run_train_op,
         collect_data_op=CollectData,
-        inference_op=Inference,
+        inference_op=InferenceOP,
         inference_config=inference_config,
         model_test_config=model_test_config,
         collect_data_config=collect_data_config,
@@ -348,7 +348,7 @@ class FlowGen:
             "labeled_data", False
         )
         collect_data_config["test_size"] = collect_data_config.get("test_size", 0.1)
-        inference_config = {"task": "inference"}  # config["inference"]
+        inference_config = {"model": train_style}  # config["inference"]
         dp_test_config = deepcopy(inference_config)
         dp_test_config["task"] = "dp_test"
         ## prepare artifacts
@@ -787,6 +787,8 @@ def get_resubmit_keys(
         "validation-test",
         "scheduler",
         "id",
+        "inference-test",
+        "inference-train",
     ]
 
     all_step_keys = matched_step_key(
