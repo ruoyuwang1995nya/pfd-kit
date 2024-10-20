@@ -344,6 +344,7 @@ def _expl_dist_cl(
             "config": steps.inputs.parameters["converge_config"],
             "test_res": dp_test.outputs.parameters["test_res"],
         },
+        artifacts={"systems": inference_test.outputs.artifacts["labeled_systems"]},
         key="--".join(
             ["%s" % steps.inputs.parameters["block_id"], "evaluate-converge"]
         ),

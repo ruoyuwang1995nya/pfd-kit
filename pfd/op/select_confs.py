@@ -23,6 +23,15 @@ from pfd.exploration.selector import (
     ConfSelector,
 )
 
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[logging.FileHandler("select_conf.log"), logging.StreamHandler()],
+)
+logger = logging.getLogger(__name__)
+
 
 class SelectConfs(OP):
     """Select configurations from exploration trajectories for labeling."""

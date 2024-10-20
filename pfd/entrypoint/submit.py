@@ -29,7 +29,7 @@ from pfd.flow.fine_tune import FineTune
 from pfd.op import (
     PertGen,
     CollectData,
-    Inference,
+    InferenceOP,
     SelectConfs,
     ModelTestOP,
 )
@@ -135,7 +135,7 @@ def make_dist_op(
         prep_run_explore_op=prep_run_lmp_op,
         prep_run_train_op=prep_run_train_op,
         collect_data_op=CollectData,
-        inference_op=Inference,
+        inference_op=InferenceOP,
         inference_config=inference_config,
         model_test_config=model_test_config,
         collect_data_config=collect_data_config,
@@ -348,7 +348,7 @@ class FlowGen:
             "labeled_data", False
         )
         collect_data_config["test_size"] = collect_data_config.get("test_size", 0.1)
-        inference_config = {"task": "inference"}  # config["inference"]
+        inference_config = {"model": train_style}  # config["inference"]
         dp_test_config = deepcopy(inference_config)
         dp_test_config["task"] = "dp_test"
         ## prepare artifacts
@@ -536,7 +536,7 @@ class FlowGen:
             ]
             init_confs = config["conf_generation"]["init_configurations"]["files"]
             init_confs = get_systems_from_data(init_confs, init_confs_prefix)
-            init_confs = upload_artifact_and_print_uri(init_confs, "init_data")
+            init_confs = upload_artifact_and_print_uri(init_confs, "init_confs")
         else:
             raise RuntimeError("init_confs must be provided")
         # init_data
@@ -568,6 +568,7 @@ class FlowGen:
         fp_config["inputs"] = fp_inputs
         fp_config["run"] = config["fp"]["run_config"]
         fp_config["extra_output_files"] = config["fp"].get("extra_output_files", [])
+
         # aimd exploration
         aimd_config = {}
         if skip_aimd is not True:
@@ -576,6 +577,17 @@ class FlowGen:
             aimd_inputs_config.update(config["aimd"]["inputs_config"])
             aimd_inputs = fp_styles[fp_type]["inputs"](**aimd_inputs_config)
             aimd_config["inputs"] = aimd_inputs
+
+        aimd_sample_conf = {"labeled_data": False, "multi_sys_name": "init"}
+        if config["aimd"]["confs"]:
+            aimd_sample_conf.update(
+                {
+                    "sample_conf": {
+                        "confs": config["aimd"]["confs"],
+                        "n_sample": config["aimd"]["n_sample"],
+                    }
+                }
+            )
 
         # make distillation op
         ft_op = make_ft_op(
@@ -616,6 +628,7 @@ class FlowGen:
                 "train_config": train_config,
                 "fp_config": fp_config,
                 "aimd_config": aimd_config,
+                "aimd_sample_conf": aimd_sample_conf,
                 "collect_data_config": collect_data_config,
             },
             artifacts={
@@ -787,6 +800,8 @@ def get_resubmit_keys(
         "validation-test",
         "scheduler",
         "id",
+        "inference-test",
+        "inference-train",
     ]
 
     all_step_keys = matched_step_key(
@@ -823,8 +838,9 @@ def resubmit_workflow(
             all_step_keys, ["run-train", "run-lmp", "run-fp"]
         )
         print(prt_str)
+        return
     if reuse is None:
-        return None
+        return
     reuse_idx = expand_idx(reuse)
     reused_keys = [all_step_keys[ii] for ii in reuse_idx]
     if fold:

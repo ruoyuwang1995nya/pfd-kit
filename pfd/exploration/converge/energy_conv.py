@@ -1,9 +1,11 @@
 from .check_conv import CheckConv
 from dargs import Argument
+from typing import List, Dict
+from pathlib import Path
 
 
 class EnerConvRMSE(CheckConv):
-    def check_conv(self, test_res_ls, conv_config: dict):
+    def check_conv(self, test_res_ls, conv_config: dict, systems: List[Path], **kwargs):
         numb_frame = []
         rmse_e = []
         for res in test_res_ls:
@@ -16,7 +18,7 @@ class EnerConvRMSE(CheckConv):
         converged = False
         if weighted_rmse < conv_rmse:
             converged = True
-        return converged
+        return converged, systems
 
     @classmethod
     def args(cls):

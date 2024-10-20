@@ -6,7 +6,7 @@ from .pert_gen import (
     PertGen,
 )
 
-from .inference import Inference
+from .inference import InferenceOP
 
 from .task_gen import TaskGen
 

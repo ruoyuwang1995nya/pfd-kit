@@ -1,3 +1,4 @@
+from math import log
 from pathlib import Path
 import json
 from typing import (
@@ -5,7 +6,15 @@ from typing import (
 )
 
 from dflow.python import OP, OPIO, Artifact, BigParameter, OPIOSign, Parameter
-from pfd.exploration.inference import ModelTypes
+from pfd.exploration.inference import EvalModel
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[logging.FileHandler("test.log"), logging.StreamHandler()],
+)
+logger = logging.getLogger(__name__)
 
 
 class ModelTestOP(OP):
@@ -41,21 +50,20 @@ class ModelTestOP(OP):
         config = ip["inference_config"]
 
         model_type = config["model"]
-        if model_type in ModelTypes.keys():
-            Eval = ModelTypes[model_type]
-        else:
-            raise NotImplementedError("%s is not implemented!" % model_type)
+        Eval = EvalModel.get_driver(model_type)
         res_total = []
         report = {}
         res_dir = Path("result")
         res_dir.mkdir(exist_ok=True)
         evaluator = Eval(model=model_path)
-        for sys in systems:
-            name = sys.name
+        logging.info("##### Number of systems: %03d" % len(systems))
+        for idx, sys in enumerate(systems):
+            name = "sys_%03d_%s" % (idx, sys.name)
+            logging.info("##### Testing: %s" % name)
             evaluator.read_data(data=sys, type_map=type_map)
-            # evaluator = Eval(model=model_path, data=sys, type_map=type_map)
             res, rep = evaluator.evaluate(name, prefix=str(res_dir))
             res_total.append(res)
+            logging.info("##### Testing ends, : writing to report...")
             report[name] = rep
         with open("report.json", "w") as fp:
             json.dump(report, fp, indent=4)
