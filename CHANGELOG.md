@@ -1,9 +1,26 @@
 # CHANGELOG
 
 
+## v0.0.9 (2024-10-20)
+
+### Bug Fixes
+
+* fix: add logging support ([`15b9747`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/15b97471d29e2e3af4ccb7d6cdcf737c7eefee69))
+
+* fix: add logging support ([`d845181`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/d845181472ec90e8abd1f3a4d009d9e2738ae6e2))
+
+### Unknown
+
+* Merge pull request #52 from ruoyuwang1995nya/devel
+
+A major update to the package ([`235d11f`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/235d11f72e46d89b4d2cb81ca3eb7cdb68b36a99))
+
+* feature: new addition strategy ([`207fcbb`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/207fcbb43d96e7eac1d25c2abb695d832695db14))
+
+
 ## v0.0.8 (2024-10-17)
 
-### Fixes
+### Bug Fixes
 
 * fix: add ticket support ([`7cce152`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/7cce1522906cdee10f81b4503b8f5b0083b240fa))
 
@@ -18,7 +35,7 @@ Fix bugs in distillation workflow ([`4b5688f`](https://github.com/ruoyuwang1995n
 
 ## v0.0.7 (2024-10-14)
 
-### Fixes
+### Bug Fixes
 
 * fix: issues with workflow test ([`2e3d921`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/2e3d9213dfca07733085a4e2338aa2ffd4cab347))
 
@@ -41,7 +58,7 @@ Restructure flow generation ([`bf59e8d`](https://github.com/ruoyuwang1995nya/pfd
 
 ## v0.0.6 (2024-10-12)
 
-### Fixes
+### Bug Fixes
 
 * fix: rewrite model test OP ([`286eed3`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/286eed30c495486811ee84b61087882aa5c21517))
 
@@ -60,7 +77,7 @@ Modify rules for model test OP ([`51a6719`](https://github.com/ruoyuwang1995nya/
 
 ## v0.0.5 (2024-10-10)
 
-### Fixes
+### Bug Fixes
 
 * fix: bugs with gen_task_lmp ([`7137573`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/7137573b5439092c6bfd426b4adfd22c30916ab2))
 
@@ -77,7 +94,7 @@ fix bugs with gen_task_lmp ([`337a6a7`](https://github.com/ruoyuwang1995nya/pfd-
 
 ## v0.0.4 (2024-10-08)
 
-### Fixes
+### Bug Fixes
 
 * fix: bug with PertGen ([`7f21ab8`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/7f21ab8e5e174a1a51d1202fe89463f3a985bc29))
 
@@ -90,7 +107,7 @@ fix bugs with PertGen OP ([`95cf190`](https://github.com/ruoyuwang1995nya/pfd-ki
 
 ## v0.0.3 (2024-10-08)
 
-### Fixes
+### Bug Fixes
 
 * fix: update pre-commit ([`43372f5`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/43372f53962b40eaaf6bf31e72d192a58c0ccd22))
 
@@ -135,7 +152,7 @@ Enable alternative routine options ([`c7e1a7e`](https://github.com/ruoyuwang1995
 
 ## v0.0.2 (2024-09-29)
 
-### Fixes
+### Bug Fixes
 
 * fix: restore cli ([`71f8df8`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/71f8df88685bf3cc140fe4c2bcb13ba898eb8e0e))
 
@@ -157,7 +174,7 @@ Update toml ([`59a3782`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/59a3
 
 ## v0.0.0 (2024-09-29)
 
-### Fixes
+### Bug Fixes
 
 * fix: update toml ([`4b6e644`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/4b6e644a40800a25b531ad549eb8b5190fbd7547))
 
@@ -166,7 +183,7 @@ Update toml ([`59a3782`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/59a3
 
 ## v1.0.3 (2024-09-29)
 
-### Fixes
+### Bug Fixes
 
 * fix: change init version ([`20eb6b8`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/20eb6b869b0e535731537cd682d71bfe91b5aaba))
 
@@ -207,7 +224,7 @@ Rename to pfd ([`b13b922`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/b1
 
 ## v1.0.2 (2024-09-28)
 
-### Fixes
+### Bug Fixes
 
 * fix: semantic ([`8e94e48`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/8e94e480d9200fb653e45566e027a980e4a96024))
 
@@ -230,7 +247,7 @@ Config python semantic release ([`6a60cc4`](https://github.com/ruoyuwang1995nya/
 
 ## v1.0.1 (2024-09-28)
 
-### Fixes
+### Bug Fixes
 
 * fix: semantic ([`8e12ba7`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/8e12ba7387680da7c6a1e6b751f722c0445c6c8c))
 
@@ -255,93 +272,7 @@ Config python semantic release ([`6a60cc4`](https://github.com/ruoyuwang1995nya/
 
 ## v1.0.0 (2024-09-28)
 
-### Chores
-
-* chore(release): 1.0.0 [skip ci]
-
-# 1.0.0 (2024-09-28)
-
 ### Bug Fixes
-
-* add ase to setup file ([730da07](https://github.com/ruoyuwang1995nya/dp-distill/commit/730da079179067a7a5c8d5742696a9fed44df2c0))
-* add ci test module ([6fde807](https://github.com/ruoyuwang1995nya/dp-distill/commit/6fde807818dbf772755346ab2406bb0ac81dc820))
-* add cli entrypoint ([98c39db](https://github.com/ruoyuwang1995nya/dp-distill/commit/98c39db14c1bba72f5aad5510a6902d5cc0e49cd))
-* add conf filter ([1e2e52e](https://github.com/ruoyuwang1995nya/dp-distill/commit/1e2e52e23602860f17f39f4593ed1e137e7588fd))
-* add dist loop ([36e6411](https://github.com/ruoyuwang1995nya/dp-distill/commit/36e64111c3b82aec5348ff64622f89a1090bdc1d))
-* add example file for iterative finetune ([c50f7c6](https://github.com/ruoyuwang1995nya/dp-distill/commit/c50f7c6877f50dcf39683a200c71e16775356e0a))
-* add examples and update docs ([ebc4c3c](https://github.com/ruoyuwang1995nya/dp-distill/commit/ebc4c3c6a9b3292b136efa849cb47a08bfe38777))
-* add filter to ft workflow ([4927f87](https://github.com/ruoyuwang1995nya/dp-distill/commit/4927f8778aed87ecac16d4deefc5f92b930cfe22))
-* add fine-tune module ([d4fc7ba](https://github.com/ruoyuwang1995nya/dp-distill/commit/d4fc7bada70b438a79fd60a148283dcbf1306116))
-* add INCAR to ft example ([708396c](https://github.com/ruoyuwang1995nya/dp-distill/commit/708396c4ae3de54bf8e749bec74de2121942a4b7))
-* add init model policy ([bd4ba88](https://github.com/ruoyuwang1995nya/dp-distill/commit/bd4ba8826b461641888a88aa3251afbdc993ec28))
-* add init_data to dist ([9bb5327](https://github.com/ruoyuwang1995nya/dp-distill/commit/9bb5327de86ede59cbdae96495088f4cba13878f))
-* add iter_max to ft workflow ([681cd51](https://github.com/ruoyuwang1995nya/dp-distill/commit/681cd5115ca1d85c9cfa839406b816cf2ab484f2))
-* add numb_models to dist wf ([c620187](https://github.com/ruoyuwang1995nya/dp-distill/commit/c620187eeecbd6149faee4f5e8388553dcf59407))
-* add pre-commit ([f75aba6](https://github.com/ruoyuwang1995nya/dp-distill/commit/f75aba6069e103421a812b13413e193fcdc61437))
-* add semantic-version ([71ec75b](https://github.com/ruoyuwang1995nya/dp-distill/commit/71ec75b2c250523b26db06dee1f6c3c5fd885ac6))
-* add semantic-version ([3e87da8](https://github.com/ruoyuwang1995nya/dp-distill/commit/3e87da8d7dbd404414758ae482eda2d0e1aabf4e))
-* add unit test for collect_data ([f1bf082](https://github.com/ruoyuwang1995nya/dp-distill/commit/f1bf08271efdbd2252abe48902353cee8dafeb22))
-* bugs with ci-test ([e988f99](https://github.com/ruoyuwang1995nya/dp-distill/commit/e988f99ad8a493a66b210fd249005d2cbf5f4809))
-* bugs with ci-test ([3ea9520](https://github.com/ruoyuwang1995nya/dp-distill/commit/3ea9520b629eae729eeed5421306f3df5a9fb999))
-* bugs with github workflow ([96e2eda](https://github.com/ruoyuwang1995nya/dp-distill/commit/96e2eda97d3bbf8b630ef2aa8af084a778bba138))
-* delete excessive example files ([81dec9e](https://github.com/ruoyuwang1995nya/dp-distill/commit/81dec9ea6ec540b59a7b628f560b3d3ed1252d0d))
-* enable optional fp style ([480db90](https://github.com/ruoyuwang1995nya/dp-distill/commit/480db9016ebd2835ea143cf91e2c77248410587b))
-* first major commit ([63c6d6d](https://github.com/ruoyuwang1995nya/dp-distill/commit/63c6d6d9eaa8ea686fd00b30dfbf31548ab506fe))
-* fix bugs with finetune ([e8e3f05](https://github.com/ruoyuwang1995nya/dp-distill/commit/e8e3f054a5cc765c0aea52986887bd452f3cd39f))
-* fix import issue ([de04905](https://github.com/ruoyuwang1995nya/dp-distill/commit/de04905fd40c2a9ad954908113bd02f4bdd61e12))
-* fix issue with exploration ([c833065](https://github.com/ruoyuwang1995nya/dp-distill/commit/c8330652fc52ac2176319249d7f45fb170f154a0))
-* fix issue with select_conf_config ([117dbb3](https://github.com/ruoyuwang1995nya/dp-distill/commit/117dbb35d329e70bd40d8d25fd27074c1787c9d7))
-* fix issues with data filter ([e5aac22](https://github.com/ruoyuwang1995nya/dp-distill/commit/e5aac22f095b7c1ef87e9e5700d93cacb18de9c3))
-* fix issues with dpdata abacus ([5f302ed](https://github.com/ruoyuwang1995nya/dp-distill/commit/5f302ed71e55ac497e4695992555504ee07e16c0))
-* fix issues with iter data ([0ba12a0](https://github.com/ruoyuwang1995nya/dp-distill/commit/0ba12a0dee35ab6dc2688468a09bfab289549dc6))
-* fix issues with pytorch model ([30ffb5f](https://github.com/ruoyuwang1995nya/dp-distill/commit/30ffb5f5622bad2792e949c2b0e0c6b8da7b5b59))
-* fix minor bug ([5961d60](https://github.com/ruoyuwang1995nya/dp-distill/commit/5961d6060c8b6612bb99ff15da01dba2cd1fb0bf))
-* fix minor bugs ([1748384](https://github.com/ruoyuwang1995nya/dp-distill/commit/174838462629a3cc83caa427ee06a7fb8a79fcfd))
-* fix pop bug ([f0d5a09](https://github.com/ruoyuwang1995nya/dp-distill/commit/f0d5a090207d2e974408d3febb73f7f00d146a57))
-* fix RMSE force bug ([4be8f44](https://github.com/ruoyuwang1995nya/dp-distill/commit/4be8f44374f3ca2d416104fcdbf7d8b7531b1704))
-* fixing compatibility issues with dpgen2 ([38cd80d](https://github.com/ruoyuwang1995nya/dp-distill/commit/38cd80d0090a0800a7b00b25a5f1663d36d0fb66))
-* improve artifact downloads ([8e46780](https://github.com/ruoyuwang1995nya/dp-distill/commit/8e467803bc95e0957e4949288a3346acfb6e0420))
-* improve docs ([5c45044](https://github.com/ruoyuwang1995nya/dp-distill/commit/5c45044d0885e24e30454361eead78ffff611360))
-* improve pert_gen module ([69ed108](https://github.com/ruoyuwang1995nya/dp-distill/commit/69ed10836e33701c8c443e2f274ef86d240d003f))
-* issue with test ([7a68fcc](https://github.com/ruoyuwang1995nya/dp-distill/commit/7a68fcca320ea4f778705c408756df92aa55ab30))
-* issue with test ([a038030](https://github.com/ruoyuwang1995nya/dp-distill/commit/a03803091671604d240c677d7e1d079963027683))
-* issues with test module ([d76e57b](https://github.com/ruoyuwang1995nya/dp-distill/commit/d76e57bf3044d651b0e34725944fba6bb49e8488))
-* major restructuring ([8abfa4f](https://github.com/ruoyuwang1995nya/dp-distill/commit/8abfa4facfb67d9574b2cafc3449fa34e523d379))
-* minor bugs ([17c3476](https://github.com/ruoyuwang1995nya/dp-distill/commit/17c3476be776bb02ecf370911b438392d260fc87))
-* minor import issue ([e013315](https://github.com/ruoyuwang1995nya/dp-distill/commit/e0133151949a31c827386542a8e749035dea2fbe))
-* modify collect data ([7d53af6](https://github.com/ruoyuwang1995nya/dp-distill/commit/7d53af69ed8f43d7abd92c6327712a7c91fda44c))
-* modify help info for dl subcommand ([a6de998](https://github.com/ruoyuwang1995nya/dp-distill/commit/a6de998ebc719b8dc52d866a38f124e6825ce0f1))
-* modify resubmit cli ([85cee42](https://github.com/ruoyuwang1995nya/dp-distill/commit/85cee42de455a32ec6b3633beaa8bacc0b086f1f))
-* modify UI ([7e48c69](https://github.com/ruoyuwang1995nya/dp-distill/commit/7e48c69e042ac2032d1153f379793a34e5b2db85))
-* multi-conf ([25c3fa5](https://github.com/ruoyuwang1995nya/dp-distill/commit/25c3fa51e44d8bbb8067b8537e5dd876dd9384f0))
-* new loop structure for ft workflow ([37fac90](https://github.com/ruoyuwang1995nya/dp-distill/commit/37fac907a26051030b2d906a25b2dcc930475f83))
-* recommit coverge.py ([44f4bff](https://github.com/ruoyuwang1995nya/dp-distill/commit/44f4bff80ae024264e0c21f0c824271a61620d5e))
-* remove user credentials ([67b4ef0](https://github.com/ruoyuwang1995nya/dp-distill/commit/67b4ef07a1c685dbc7478bfaa72c72c14787f6a9))
-* resolve issues with github workflows ([713023d](https://github.com/ruoyuwang1995nya/dp-distill/commit/713023dfccd766dc1177fa0f3c38aa7176b4c42b))
-* restructure dist workflow ([318caef](https://github.com/ruoyuwang1995nya/dp-distill/commit/318caefec988b2a3ae2e61ee7899e58536a51325))
-* set default numb_model to 1 ([b5ff8ea](https://github.com/ruoyuwang1995nya/dp-distill/commit/b5ff8ea62661858a9fab275b09934bd8063a5ac4))
-* test pre-commit ([cbfd5c4](https://github.com/ruoyuwang1995nya/dp-distill/commit/cbfd5c4c4d29b88b7577f1193b811cdfd242b17f))
-* updata examples ([f4d6643](https://github.com/ruoyuwang1995nya/dp-distill/commit/f4d664363d4534e260c9080ea37087299ab79d7d))
-* update action permission ([3bb78f9](https://github.com/ruoyuwang1995nya/dp-distill/commit/3bb78f916faa842394784648fa9b14f8ec43415d))
-* update CLI ([1855dd8](https://github.com/ruoyuwang1995nya/dp-distill/commit/1855dd829d2ff72db8ab30517089f33f03a8e0df))
-* update dependency ([c0c12f0](https://github.com/ruoyuwang1995nya/dp-distill/commit/c0c12f0b44c45c927a740e51c508a039dd98563c))
-* update doc and examples ([b0ef4cb](https://github.com/ruoyuwang1995nya/dp-distill/commit/b0ef4cbe0f54784819e283409d5b39044b4bcc1f))
-* update docs ([428784b](https://github.com/ruoyuwang1995nya/dp-distill/commit/428784b4819c42187ccbec7c18dfcd159b164cfe))
-* update download setting ([d7649a2](https://github.com/ruoyuwang1995nya/dp-distill/commit/d7649a2605207c8fe9839dbc22758aca63dcfd15))
-* update examples and doc ([5282a58](https://github.com/ruoyuwang1995nya/dp-distill/commit/5282a58c8184df1439f8efdefa9f1f7c618de879))
-* update finetuen example.json ([c67935c](https://github.com/ruoyuwang1995nya/dp-distill/commit/c67935c6db12dec9e847f2b3aeea987be72fbf12))
-* update node version ([e04fa8c](https://github.com/ruoyuwang1995nya/dp-distill/commit/e04fa8c7dd9bae316b5a8f394de08daf50b7e664))
-* update node version ([6a40880](https://github.com/ruoyuwang1995nya/dp-distill/commit/6a40880d7d3fd6353555defc8be9d6ff4f0176c1))
-* update release ([96548d9](https://github.com/ruoyuwang1995nya/dp-distill/commit/96548d9f69888b5ce5bd0b1ee862d1f78eb8af8f))
-* update resubmit cli ([a60843c](https://github.com/ruoyuwang1995nya/dp-distill/commit/a60843ce281a87ba505ba7599dd189d07ebdfdbb))
-* update secret ([6a5573b](https://github.com/ruoyuwang1995nya/dp-distill/commit/6a5573b2f6e388646248da2c9ce9d25ca41d2f92))
-* update secret ([105073b](https://github.com/ruoyuwang1995nya/dp-distill/commit/105073ba7ab92cd32a5aad9c16288a64cff372fc))
-* update secret ([50796bd](https://github.com/ruoyuwang1995nya/dp-distill/commit/50796bd74087b467ec914f8dfac8dc5e5532ee81))
-* update setup.py ([eba0019](https://github.com/ruoyuwang1995nya/dp-distill/commit/eba00193effad9d7ff29c02067898e6b5be97120))
-* update url ([ffc91b2](https://github.com/ruoyuwang1995nya/dp-distill/commit/ffc91b2727c9961aff63d60aa154a1322cbcbb08))
-* update version info ([d27c12c](https://github.com/ruoyuwang1995nya/dp-distill/commit/d27c12c473c8ec75019fab08858181d80f33539c)) ([`450c658`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/450c6588aa7deaa6d0736b5dc8c61578d1b6d672))
-
-### Fixes
 
 * fix: update release ([`96548d9`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/96548d9f69888b5ce5bd0b1ee862d1f78eb8af8f))
 
@@ -496,6 +427,92 @@ Config python semantic release ([`6a60cc4`](https://github.com/ruoyuwang1995nya/
 * fix: add examples and update docs ([`ebc4c3c`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/ebc4c3c6a9b3292b136efa849cb47a08bfe38777))
 
 * fix: first major commit ([`63c6d6d`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/63c6d6d9eaa8ea686fd00b30dfbf31548ab506fe))
+
+### Chores
+
+* chore(release): 1.0.0 [skip ci]
+
+# 1.0.0 (2024-09-28)
+
+### Bug Fixes
+
+* add ase to setup file ([730da07](https://github.com/ruoyuwang1995nya/dp-distill/commit/730da079179067a7a5c8d5742696a9fed44df2c0))
+* add ci test module ([6fde807](https://github.com/ruoyuwang1995nya/dp-distill/commit/6fde807818dbf772755346ab2406bb0ac81dc820))
+* add cli entrypoint ([98c39db](https://github.com/ruoyuwang1995nya/dp-distill/commit/98c39db14c1bba72f5aad5510a6902d5cc0e49cd))
+* add conf filter ([1e2e52e](https://github.com/ruoyuwang1995nya/dp-distill/commit/1e2e52e23602860f17f39f4593ed1e137e7588fd))
+* add dist loop ([36e6411](https://github.com/ruoyuwang1995nya/dp-distill/commit/36e64111c3b82aec5348ff64622f89a1090bdc1d))
+* add example file for iterative finetune ([c50f7c6](https://github.com/ruoyuwang1995nya/dp-distill/commit/c50f7c6877f50dcf39683a200c71e16775356e0a))
+* add examples and update docs ([ebc4c3c](https://github.com/ruoyuwang1995nya/dp-distill/commit/ebc4c3c6a9b3292b136efa849cb47a08bfe38777))
+* add filter to ft workflow ([4927f87](https://github.com/ruoyuwang1995nya/dp-distill/commit/4927f8778aed87ecac16d4deefc5f92b930cfe22))
+* add fine-tune module ([d4fc7ba](https://github.com/ruoyuwang1995nya/dp-distill/commit/d4fc7bada70b438a79fd60a148283dcbf1306116))
+* add INCAR to ft example ([708396c](https://github.com/ruoyuwang1995nya/dp-distill/commit/708396c4ae3de54bf8e749bec74de2121942a4b7))
+* add init model policy ([bd4ba88](https://github.com/ruoyuwang1995nya/dp-distill/commit/bd4ba8826b461641888a88aa3251afbdc993ec28))
+* add init_data to dist ([9bb5327](https://github.com/ruoyuwang1995nya/dp-distill/commit/9bb5327de86ede59cbdae96495088f4cba13878f))
+* add iter_max to ft workflow ([681cd51](https://github.com/ruoyuwang1995nya/dp-distill/commit/681cd5115ca1d85c9cfa839406b816cf2ab484f2))
+* add numb_models to dist wf ([c620187](https://github.com/ruoyuwang1995nya/dp-distill/commit/c620187eeecbd6149faee4f5e8388553dcf59407))
+* add pre-commit ([f75aba6](https://github.com/ruoyuwang1995nya/dp-distill/commit/f75aba6069e103421a812b13413e193fcdc61437))
+* add semantic-version ([71ec75b](https://github.com/ruoyuwang1995nya/dp-distill/commit/71ec75b2c250523b26db06dee1f6c3c5fd885ac6))
+* add semantic-version ([3e87da8](https://github.com/ruoyuwang1995nya/dp-distill/commit/3e87da8d7dbd404414758ae482eda2d0e1aabf4e))
+* add unit test for collect_data ([f1bf082](https://github.com/ruoyuwang1995nya/dp-distill/commit/f1bf08271efdbd2252abe48902353cee8dafeb22))
+* bugs with ci-test ([e988f99](https://github.com/ruoyuwang1995nya/dp-distill/commit/e988f99ad8a493a66b210fd249005d2cbf5f4809))
+* bugs with ci-test ([3ea9520](https://github.com/ruoyuwang1995nya/dp-distill/commit/3ea9520b629eae729eeed5421306f3df5a9fb999))
+* bugs with github workflow ([96e2eda](https://github.com/ruoyuwang1995nya/dp-distill/commit/96e2eda97d3bbf8b630ef2aa8af084a778bba138))
+* delete excessive example files ([81dec9e](https://github.com/ruoyuwang1995nya/dp-distill/commit/81dec9ea6ec540b59a7b628f560b3d3ed1252d0d))
+* enable optional fp style ([480db90](https://github.com/ruoyuwang1995nya/dp-distill/commit/480db9016ebd2835ea143cf91e2c77248410587b))
+* first major commit ([63c6d6d](https://github.com/ruoyuwang1995nya/dp-distill/commit/63c6d6d9eaa8ea686fd00b30dfbf31548ab506fe))
+* fix bugs with finetune ([e8e3f05](https://github.com/ruoyuwang1995nya/dp-distill/commit/e8e3f054a5cc765c0aea52986887bd452f3cd39f))
+* fix import issue ([de04905](https://github.com/ruoyuwang1995nya/dp-distill/commit/de04905fd40c2a9ad954908113bd02f4bdd61e12))
+* fix issue with exploration ([c833065](https://github.com/ruoyuwang1995nya/dp-distill/commit/c8330652fc52ac2176319249d7f45fb170f154a0))
+* fix issue with select_conf_config ([117dbb3](https://github.com/ruoyuwang1995nya/dp-distill/commit/117dbb35d329e70bd40d8d25fd27074c1787c9d7))
+* fix issues with data filter ([e5aac22](https://github.com/ruoyuwang1995nya/dp-distill/commit/e5aac22f095b7c1ef87e9e5700d93cacb18de9c3))
+* fix issues with dpdata abacus ([5f302ed](https://github.com/ruoyuwang1995nya/dp-distill/commit/5f302ed71e55ac497e4695992555504ee07e16c0))
+* fix issues with iter data ([0ba12a0](https://github.com/ruoyuwang1995nya/dp-distill/commit/0ba12a0dee35ab6dc2688468a09bfab289549dc6))
+* fix issues with pytorch model ([30ffb5f](https://github.com/ruoyuwang1995nya/dp-distill/commit/30ffb5f5622bad2792e949c2b0e0c6b8da7b5b59))
+* fix minor bug ([5961d60](https://github.com/ruoyuwang1995nya/dp-distill/commit/5961d6060c8b6612bb99ff15da01dba2cd1fb0bf))
+* fix minor bugs ([1748384](https://github.com/ruoyuwang1995nya/dp-distill/commit/174838462629a3cc83caa427ee06a7fb8a79fcfd))
+* fix pop bug ([f0d5a09](https://github.com/ruoyuwang1995nya/dp-distill/commit/f0d5a090207d2e974408d3febb73f7f00d146a57))
+* fix RMSE force bug ([4be8f44](https://github.com/ruoyuwang1995nya/dp-distill/commit/4be8f44374f3ca2d416104fcdbf7d8b7531b1704))
+* fixing compatibility issues with dpgen2 ([38cd80d](https://github.com/ruoyuwang1995nya/dp-distill/commit/38cd80d0090a0800a7b00b25a5f1663d36d0fb66))
+* improve artifact downloads ([8e46780](https://github.com/ruoyuwang1995nya/dp-distill/commit/8e467803bc95e0957e4949288a3346acfb6e0420))
+* improve docs ([5c45044](https://github.com/ruoyuwang1995nya/dp-distill/commit/5c45044d0885e24e30454361eead78ffff611360))
+* improve pert_gen module ([69ed108](https://github.com/ruoyuwang1995nya/dp-distill/commit/69ed10836e33701c8c443e2f274ef86d240d003f))
+* issue with test ([7a68fcc](https://github.com/ruoyuwang1995nya/dp-distill/commit/7a68fcca320ea4f778705c408756df92aa55ab30))
+* issue with test ([a038030](https://github.com/ruoyuwang1995nya/dp-distill/commit/a03803091671604d240c677d7e1d079963027683))
+* issues with test module ([d76e57b](https://github.com/ruoyuwang1995nya/dp-distill/commit/d76e57bf3044d651b0e34725944fba6bb49e8488))
+* major restructuring ([8abfa4f](https://github.com/ruoyuwang1995nya/dp-distill/commit/8abfa4facfb67d9574b2cafc3449fa34e523d379))
+* minor bugs ([17c3476](https://github.com/ruoyuwang1995nya/dp-distill/commit/17c3476be776bb02ecf370911b438392d260fc87))
+* minor import issue ([e013315](https://github.com/ruoyuwang1995nya/dp-distill/commit/e0133151949a31c827386542a8e749035dea2fbe))
+* modify collect data ([7d53af6](https://github.com/ruoyuwang1995nya/dp-distill/commit/7d53af69ed8f43d7abd92c6327712a7c91fda44c))
+* modify help info for dl subcommand ([a6de998](https://github.com/ruoyuwang1995nya/dp-distill/commit/a6de998ebc719b8dc52d866a38f124e6825ce0f1))
+* modify resubmit cli ([85cee42](https://github.com/ruoyuwang1995nya/dp-distill/commit/85cee42de455a32ec6b3633beaa8bacc0b086f1f))
+* modify UI ([7e48c69](https://github.com/ruoyuwang1995nya/dp-distill/commit/7e48c69e042ac2032d1153f379793a34e5b2db85))
+* multi-conf ([25c3fa5](https://github.com/ruoyuwang1995nya/dp-distill/commit/25c3fa51e44d8bbb8067b8537e5dd876dd9384f0))
+* new loop structure for ft workflow ([37fac90](https://github.com/ruoyuwang1995nya/dp-distill/commit/37fac907a26051030b2d906a25b2dcc930475f83))
+* recommit coverge.py ([44f4bff](https://github.com/ruoyuwang1995nya/dp-distill/commit/44f4bff80ae024264e0c21f0c824271a61620d5e))
+* remove user credentials ([67b4ef0](https://github.com/ruoyuwang1995nya/dp-distill/commit/67b4ef07a1c685dbc7478bfaa72c72c14787f6a9))
+* resolve issues with github workflows ([713023d](https://github.com/ruoyuwang1995nya/dp-distill/commit/713023dfccd766dc1177fa0f3c38aa7176b4c42b))
+* restructure dist workflow ([318caef](https://github.com/ruoyuwang1995nya/dp-distill/commit/318caefec988b2a3ae2e61ee7899e58536a51325))
+* set default numb_model to 1 ([b5ff8ea](https://github.com/ruoyuwang1995nya/dp-distill/commit/b5ff8ea62661858a9fab275b09934bd8063a5ac4))
+* test pre-commit ([cbfd5c4](https://github.com/ruoyuwang1995nya/dp-distill/commit/cbfd5c4c4d29b88b7577f1193b811cdfd242b17f))
+* updata examples ([f4d6643](https://github.com/ruoyuwang1995nya/dp-distill/commit/f4d664363d4534e260c9080ea37087299ab79d7d))
+* update action permission ([3bb78f9](https://github.com/ruoyuwang1995nya/dp-distill/commit/3bb78f916faa842394784648fa9b14f8ec43415d))
+* update CLI ([1855dd8](https://github.com/ruoyuwang1995nya/dp-distill/commit/1855dd829d2ff72db8ab30517089f33f03a8e0df))
+* update dependency ([c0c12f0](https://github.com/ruoyuwang1995nya/dp-distill/commit/c0c12f0b44c45c927a740e51c508a039dd98563c))
+* update doc and examples ([b0ef4cb](https://github.com/ruoyuwang1995nya/dp-distill/commit/b0ef4cbe0f54784819e283409d5b39044b4bcc1f))
+* update docs ([428784b](https://github.com/ruoyuwang1995nya/dp-distill/commit/428784b4819c42187ccbec7c18dfcd159b164cfe))
+* update download setting ([d7649a2](https://github.com/ruoyuwang1995nya/dp-distill/commit/d7649a2605207c8fe9839dbc22758aca63dcfd15))
+* update examples and doc ([5282a58](https://github.com/ruoyuwang1995nya/dp-distill/commit/5282a58c8184df1439f8efdefa9f1f7c618de879))
+* update finetuen example.json ([c67935c](https://github.com/ruoyuwang1995nya/dp-distill/commit/c67935c6db12dec9e847f2b3aeea987be72fbf12))
+* update node version ([e04fa8c](https://github.com/ruoyuwang1995nya/dp-distill/commit/e04fa8c7dd9bae316b5a8f394de08daf50b7e664))
+* update node version ([6a40880](https://github.com/ruoyuwang1995nya/dp-distill/commit/6a40880d7d3fd6353555defc8be9d6ff4f0176c1))
+* update release ([96548d9](https://github.com/ruoyuwang1995nya/dp-distill/commit/96548d9f69888b5ce5bd0b1ee862d1f78eb8af8f))
+* update resubmit cli ([a60843c](https://github.com/ruoyuwang1995nya/dp-distill/commit/a60843ce281a87ba505ba7599dd189d07ebdfdbb))
+* update secret ([6a5573b](https://github.com/ruoyuwang1995nya/dp-distill/commit/6a5573b2f6e388646248da2c9ce9d25ca41d2f92))
+* update secret ([105073b](https://github.com/ruoyuwang1995nya/dp-distill/commit/105073ba7ab92cd32a5aad9c16288a64cff372fc))
+* update secret ([50796bd](https://github.com/ruoyuwang1995nya/dp-distill/commit/50796bd74087b467ec914f8dfac8dc5e5532ee81))
+* update setup.py ([eba0019](https://github.com/ruoyuwang1995nya/dp-distill/commit/eba00193effad9d7ff29c02067898e6b5be97120))
+* update url ([ffc91b2](https://github.com/ruoyuwang1995nya/dp-distill/commit/ffc91b2727c9961aff63d60aa154a1322cbcbb08))
+* update version info ([d27c12c](https://github.com/ruoyuwang1995nya/dp-distill/commit/d27c12c473c8ec75019fab08858181d80f33539c)) ([`450c658`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/450c6588aa7deaa6d0736b5dc8c61578d1b6d672))
 
 ### Unknown
 
