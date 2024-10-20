@@ -6,13 +6,13 @@ from typing import (
 )
 
 from dflow.python import OP, OPIO, Artifact, BigParameter, OPIOSign, Parameter
-from pfd.exploration.inference import ModelTypes
+from pfd.exploration.inference import EvalModel
 import logging
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[logging.FileHandler("log"), logging.StreamHandler()],
+    handlers=[logging.FileHandler("test.log"), logging.StreamHandler()],
 )
 logger = logging.getLogger(__name__)
 
@@ -50,10 +50,7 @@ class ModelTestOP(OP):
         config = ip["inference_config"]
 
         model_type = config["model"]
-        if model_type in ModelTypes.keys():
-            Eval = ModelTypes[model_type]
-        else:
-            raise NotImplementedError("%s is not implemented!" % model_type)
+        Eval = EvalModel.get_driver(model_type)
         res_total = []
         report = {}
         res_dir = Path("result")

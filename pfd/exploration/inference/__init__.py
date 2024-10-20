@@ -1,3 +1,3 @@
-from .eval_dp import DPTest
+from .eval_model import EvalModel
 
-ModelTypes = {"dp": DPTest}
+from .eval_dp import DPTest

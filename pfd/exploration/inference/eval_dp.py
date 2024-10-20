@@ -9,6 +9,8 @@ import logging
 import os
 
 
+@EvalModel.register("dp")
+@EvalModel.register("deepmd")
 class DPTest(EvalModel):
     def load_model(self, model: Union[Path, str]):
         if isinstance(model, str):

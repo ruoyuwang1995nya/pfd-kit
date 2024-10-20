@@ -1,15 +1,18 @@
-import json
-import pickle
 import dpdata
-import glob
-import os
 from pathlib import Path
 from pathlib import (
     Path,
 )
 from typing import List
-
 from dflow.python import OP, OPIO, Artifact, BigParameter, OPIOSign, Parameter
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[logging.FileHandler("pert.log"), logging.StreamHandler()],
+)
+logger = logging.getLogger(__name__)
 
 
 class PertGen(OP):
@@ -83,6 +86,7 @@ class PertGen(OP):
         wk_dir.mkdir(exist_ok=True)
         multi_sys_ls = []
         sys_ls = []
+        logging.info("###### Generating perturbed structure...")
         for ii in range(len(init_confs)):
             # create task directory
             name = "conf.%06d" % ii
@@ -102,11 +106,20 @@ class PertGen(OP):
                 atom_pert_distance=atom_pert_distance,
                 atom_pert_style=atom_pert_style,
             )
+            logging.info(
+                "#### Generated %d structures from system %03d" % (pert_num, ii)
+            )
+            logging.info("## cell perturb fraction: %.03f" % cell_pert_fraction)
+            logging.info(
+                "## atom perturb distance: %.03f Angstrom" % atom_pert_distance
+            )
             if_orig = pert_param.get("orig", False)
             if if_orig is True:
                 pert_sys.append(orig_sys)
+                logging.info("## Added original configuration(s)")
             pert_sys.to("deepmd/npy", str(conf_path))
             # os.chdir(wk_dir)
             sys_ls.append(conf_path)
         multi_sys_ls.append(wk_dir)
+        logging.info("###### Generation completed!")
         return OPIO({"pert_sys": sys_ls, "confs": multi_sys_ls})

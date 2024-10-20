@@ -342,7 +342,7 @@ def fp_args(inputs, run):
             optional=False,
             doc=doc_run_config,
         ),
-        Argument("task_max", int, optional=True, default=10, doc=doc_task_max),
+        Argument("task_max", int, optional=True, default=50, doc=doc_task_max),
     ]
 
 
@@ -468,6 +468,17 @@ def input_args():
             default=None,
             doc=doc_valid_data_uri,
         ),
+    ]
+
+
+def aimd_args():
+    doc_conf = "The systems selected for initial fp calculation"
+    doc_n_sample = (
+        "The number of configurations selected for fp calculation within each system"
+    )
+    return [
+        Argument("confs", List[int], optional=True, default=None, doc=doc_conf),
+        Argument("n_sample", int, optional=True, default=1, doc=doc_n_sample),
     ]
 
 
@@ -631,6 +642,7 @@ def submit_args(default_step_config=normalize_step_dict({})):
     doc_upload_python_packages = "Upload python package, for debug purpose"
     doc_task = "Task type, `finetune` or `dist`"
     doc_conf_gen = "The inputparameter and artifacts for confs generation"
+    doc_aimd = "The parameter for initial fp calculation"
     doc_inputs = "The input parameter and artifacts for pfd"
     doc_train = "The configuration for training"
     doc_explore = "The configuration for exploration"
@@ -677,6 +689,7 @@ def submit_args(default_step_config=normalize_step_dict({})):
             Argument("task", dict, [], [variant_task()], optional=False, doc=doc_task),
             # formatter for `input` section
             Argument("inputs", dict, input_args(), optional=False, doc=doc_inputs),
+            Argument("aimd", dict, aimd_args(), optional=True, doc=doc_aimd),
             Argument(
                 "train", dict, [], [variant_train()], optional=False, doc=doc_train
             ),

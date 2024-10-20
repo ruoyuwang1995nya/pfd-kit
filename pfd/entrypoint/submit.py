@@ -536,7 +536,7 @@ class FlowGen:
             ]
             init_confs = config["conf_generation"]["init_configurations"]["files"]
             init_confs = get_systems_from_data(init_confs, init_confs_prefix)
-            init_confs = upload_artifact_and_print_uri(init_confs, "init_data")
+            init_confs = upload_artifact_and_print_uri(init_confs, "init_confs")
         else:
             raise RuntimeError("init_confs must be provided")
         # init_data
@@ -568,6 +568,7 @@ class FlowGen:
         fp_config["inputs"] = fp_inputs
         fp_config["run"] = config["fp"]["run_config"]
         fp_config["extra_output_files"] = config["fp"].get("extra_output_files", [])
+
         # aimd exploration
         aimd_config = {}
         if skip_aimd is not True:
@@ -576,6 +577,17 @@ class FlowGen:
             aimd_inputs_config.update(config["aimd"]["inputs_config"])
             aimd_inputs = fp_styles[fp_type]["inputs"](**aimd_inputs_config)
             aimd_config["inputs"] = aimd_inputs
+
+        aimd_sample_conf = {"labeled_data": False, "multi_sys_name": "init"}
+        if config["aimd"]["confs"]:
+            aimd_sample_conf.update(
+                {
+                    "sample_conf": {
+                        "confs": config["aimd"]["confs"],
+                        "n_sample": config["aimd"]["n_sample"],
+                    }
+                }
+            )
 
         # make distillation op
         ft_op = make_ft_op(
@@ -616,6 +628,7 @@ class FlowGen:
                 "train_config": train_config,
                 "fp_config": fp_config,
                 "aimd_config": aimd_config,
+                "aimd_sample_conf": aimd_sample_conf,
                 "collect_data_config": collect_data_config,
             },
             artifacts={

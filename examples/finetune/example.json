@@ -114,9 +114,6 @@
             }
         }
     },
-    "upload_python_packages": [
-        "/opt/mamba/envs/openlam/lib/python3.12/site-packages/ase"
-    ],
     "task":{
         "type":"finetune",
         "init_training": true,
@@ -269,6 +266,8 @@
             "inputs_config": {
             "input_file": "INPUT.md"
             },
+            "confs":[0],
+            "n_sample":1,
             "_comment": "fp parameters for AIMD calculation"
         },
     "exploration": {

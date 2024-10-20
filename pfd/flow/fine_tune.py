@@ -65,6 +65,7 @@ class FineTune(Steps):
             "fp_config": InputParameter(),
             # fp exploration
             "aimd_config": InputParameter(),
+            "aimd_sample_conf": InputParameter(type=Optional[Dict], value={}),
             "collect_data_config": InputParameter(),
             "converge_config": InputParameter(),
             "scheduler_config": InputParameter(),
@@ -170,6 +171,26 @@ def _fine_tune_cl(
             loop_iter_data = ft_steps.inputs.artifacts.get("iter_data")
         # if execute AIMD exploration
         else:
+            sample_conf_aimd = Step(
+                name=name + "-sample-aimd",
+                template=PythonOPTemplate(
+                    collect_data_op,
+                    python_packages=upload_python_packages,
+                    **collect_data_template_config
+                ),
+                parameters={
+                    "optional_parameters": ft_steps.inputs.parameters[
+                        "aimd_sample_conf"
+                    ],
+                    "type_map": ft_steps.inputs.parameters["type_map"],
+                },
+                artifacts={"systems": pert_gen.outputs.artifacts["pert_sys"]},
+                key="--".join(["init", "sample-aimd"]),
+                executor=collect_data_executor,
+                **collect_data_step_config
+            )
+            ft_steps.add(sample_conf_aimd)
+
             prep_run_fp = Step(
                 name=name + "-prep-run-fp",
                 template=prep_run_fp_op,
@@ -178,7 +199,9 @@ def _fine_tune_cl(
                     "fp_config": ft_steps.inputs.parameters["aimd_config"],
                     "type_map": ft_steps.inputs.parameters["type_map"],
                 },
-                artifacts={"confs": pert_gen.outputs.artifacts["confs"]},
+                artifacts={
+                    "confs": sample_conf_aimd.outputs.artifacts["multi_systems"]
+                },
                 key="--".join(["init", "prep-run-fp"]),
             )
             ft_steps.add(prep_run_fp)

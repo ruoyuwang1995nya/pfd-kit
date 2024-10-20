@@ -1,15 +1,9 @@
-import dpdata
-import json
-import numpy as np
-import glob
-import os
 from pathlib import Path
 from typing import (
     List,
-    Union,
 )
 from dflow.python import OP, OPIO, Artifact, BigParameter, OPIOSign, Parameter
-from pfd.exploration.inference import ModelTypes
+from pfd.exploration.inference import EvalModel
 import logging
 
 logging.basicConfig(
@@ -52,10 +46,7 @@ class InferenceOP(OP):
         config = ip["inference_config"]
 
         model_type = config.pop("model")
-        if model_type in ModelTypes.keys():
-            Eval = ModelTypes[model_type]
-        else:
-            raise NotImplementedError("%s is not implemented!" % model_type)
+        Eval = EvalModel.get_driver(model_type)
         res_dir = Path("inference")
         res_dir.mkdir(exist_ok=True)
         labeled_systems = []

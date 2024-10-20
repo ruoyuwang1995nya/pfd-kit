@@ -1,21 +1,34 @@
-from genericpath import isdir
-import json
-import pickle
 import dpdata
-import glob
-import os
 from pathlib import Path
 import random
 from pathlib import (
     Path,
 )
 from typing import List, Dict, Tuple, Union, Optional
-
+import random
 from dflow.python import OP, OPIO, Artifact, BigParameter, OPIOSign, Parameter
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[logging.FileHandler("collect.log"), logging.StreamHandler()],
+)
+logger = logging.getLogger(__name__)
 
 
 class CollectData(OP):
-    r"""Collect data for direct inference"""
+    """Collect data for further operations, return dpdata.Multisystems
+
+    Args:
+        OP (_type_): _description_
+
+    Raises:
+        NotImplementedError: _description_
+
+    Returns:
+        _type_: _description_
+    """
 
     @classmethod
     def get_input_sign(cls):
@@ -24,8 +37,8 @@ class CollectData(OP):
                 "systems": Artifact(List[Path]),
                 "additional_systems": Artifact(List[Path], optional=True),
                 "additional_multi_systems": Artifact(List[Path], optional=True),
-                "type_map": Parameter(Union[List[str], None]),
-                "optional_parameters": Parameter(Dict),
+                "type_map": Parameter(Union[List[str], None], default=None),
+                "optional_parameters": Parameter(Dict, default={}),
             }
         )
 
@@ -38,25 +51,6 @@ class CollectData(OP):
                 "test_systems": Artifact(List[Path], optional=True),
             }
         )
-
-    @staticmethod
-    def tasks(
-        sys_path: Union[Path, str],
-        fmt: Optional[str] = None,
-        type_map: Optional[List[str]] = None,
-        labeled_data: bool = False,
-        **config,
-    ):
-        print(fmt)
-        if fmt is not None:
-            fmt = fmt
-        else:
-            fmt = get_sys_fmt(sys_path)
-        if labeled_data:
-            sys = dpdata.LabeledSystem(sys_path, fmt=fmt, type_map=type_map, **config)
-        else:
-            sys = dpdata.System(sys_path, fmt=fmt, type_map=type_map, **config)
-        return sys
 
     @OP.exec_sign_check
     def execute(
@@ -89,72 +83,79 @@ class CollectData(OP):
             multi_system = []
         # Collects various types of data
         type_map = ip["type_map"]
-        optional_parameters = ip.get("optional_parameters", {})
-        test_size = optional_parameters.pop("test_size", None)
-        system_partition = optional_parameters.pop("system_partition", False)
+        optional_parameters = ip["optional_parameters"]
+        labeled = optional_parameters.get("labeled_data", False)
+        test_size = optional_parameters.get("test_size")
         multi_sys_name = optional_parameters.pop("multi_sys_name", "multi_system")
-        print(optional_parameters)
-        print(multi_sys_name)
+        multi_sys = dpdata.MultiSystems()
 
-        if system_partition is True and test_size:
-            systems, test_systems, test_sys_idx = get_system_partition(
-                systems, test_size=test_size
-            )
-            multi_sys = get_multi_sys(systems, type_map, **optional_parameters)
-            test_sys = get_multi_sys(test_systems, type_map, **optional_parameters)
-            print("The following systems are selected as test systems: ", test_sys_idx)
-        elif test_size:
-            multi_sys = get_multi_sys(systems, type_map, **optional_parameters)
-            multi_sys, test_sys, test_sys_idx = multi_sys.train_test_split(
-                test_size=test_size, seed=1
-            )
-            print(test_sys_idx)
+        def read_sys(
+            sys_path: Union[Path, str],
+            labeled: bool = False,
+            fmt: Optional[str] = None,
+            type_map: Optional[List[str]] = None,
+        ):
+            if fmt is None:
+                fmt = get_sys_fmt(sys_path)
+            if not labeled:
+                sys = dpdata.System(sys_path, fmt, type_map=type_map)
+            else:
+                sys = dpdata.LabeledSystem(sys_path, fmt, type_map=type_map)
+            return sys
+
+        if sample_param := optional_parameters.get("sample_conf"):
+            for sys_path in [systems[ii] for ii in sample_param["confs"]]:
+                logging.info("-----------------------------------")
+                logging.info("## Collecting system: %03s" % sys_path)
+                # logging.info("-----------------")
+                sys = sample_sys(
+                    read_sys(sys_path, labeled=labeled, type_map=type_map),
+                    sample_param["n_sample"],
+                )
+                logging.info("%d frames collected" % sys.get_nframes())
+                multi_sys.append(sys)
         else:
-            multi_sys = get_multi_sys(systems, type_map, **optional_parameters)
+            for sys_path in systems:
+                logging.info("-----------------------------------")
+                logging.info("## Collecting system: %03s\n" % sys_path)
+                # logging.info("-----------------")
+                multi_sys.append(read_sys(sys_path, labeled=labeled, type_map=type_map))
+
+        if test_size:
+            multi_sys, test_sys, _ = multi_sys.train_test_split(
+                test_size=test_size, seed=random.randint(1, 100000)
+            )
+        else:
             test_sys = dpdata.MultiSystems()
 
         multi_sys.to("deepmd/npy", multi_sys_name)
         test_multi_sys_name = "%s_test" % multi_sys_name
         test_sys.to("deepmd/npy", test_multi_sys_name)
-        # print([path for path in Path("systems").iterdir() if path.is_dir()])
         multi_system.append(Path(multi_sys_name))
+        logging.info("-----------------------------------")
+        logging.info("Save to dpdata.MultiSystems: %s" % multi_sys_name)
+        logging.info("%d frames collected" % multi_sys.get_nframes())
+        # ensure multi_sys_name exist
+        Path(multi_sys_name).mkdir(exist_ok=True)
         return OPIO(
             {
                 "multi_systems": multi_system,
-                "systems": [
-                    path for path in Path(multi_sys_name).iterdir() if path.is_dir()
-                ],
-                "test_systems": [
-                    path
-                    for path in Path(test_multi_sys_name).iterdir()
-                    if path.is_dir()
-                ]
+                "systems": sorted(
+                    [path for path in Path(multi_sys_name).iterdir() if path.is_dir()],
+                    key=lambda p: p.name,
+                ),
+                "test_systems": sorted(
+                    [
+                        path
+                        for path in Path(test_multi_sys_name).iterdir()
+                        if path.is_dir()
+                    ],
+                    key=lambda p: p.name,
+                )
                 if Path(test_multi_sys_name).is_dir()
                 else [],
             }
         )
-
-
-def get_multi_sys(systems: List[Union[Path, str]], type_map: List[str], **kwargs):
-    multi_sys = dpdata.MultiSystems()
-    for sys_path in systems:
-        sys = CollectData.tasks(sys_path, type_map=type_map, **kwargs)
-        multi_sys.append(sys)
-    return multi_sys
-
-
-def get_system_partition(
-    systems: List[Union[Path, str]],
-    test_size: Union[str, float],
-):
-    num_sys = len(systems)
-    ls = [ii for ii in range(num_sys)]
-    random.shuffle(ls)
-    num_test_sys = int(test_size * num_sys)
-    systems_train = [systems[ii] for ii in ls[num_test_sys:]]
-    systems_test = [systems[ii] for ii in ls[:num_test_sys]]
-    test_sys_idx = [str(systems[ii]) for ii in ls[:num_test_sys]]
-    return systems_train, systems_test, test_sys_idx
 
 
 def get_sys_fmt(sys_path: Union[Path, str]):
@@ -168,3 +169,13 @@ def get_sys_fmt(sys_path: Union[Path, str]):
         return "lammps/dump"
     else:
         raise NotImplementedError("Unknown data format")
+
+
+def sample_sys(sys: dpdata.System, n_sample: int = 1):
+    n_frame = sys.get_nframes()
+    if n_sample >= n_frame:
+        return sys
+    else:
+        frame_ls = [ii for ii in range(n_frame)]
+        random.shuffle(frame_ls)
+        return sys.sub_system(frame_ls[:n_sample])

@@ -248,13 +248,7 @@ def _expl_ft_blk(
             "conf_selector": steps.inputs.parameters["conf_selector"],
             "type_map": steps.inputs.parameters["type_map"],
         },
-        artifacts={
-            "trajs": prep_run_explore.outputs.artifacts["trajs"],
-            # "model_devis": prep_run_explore.outputs.artifacts["model_devis"],
-            # "optional_outputs": prep_run_explore.outputs.artifacts["optional_outputs"]
-            # if "optional_outputs" in prep_run_explore.outputs.artifacts
-            # else None,
-        },
+        artifacts={"trajs": prep_run_explore.outputs.artifacts["trajs"]},
         key="--".join(["%s" % steps.inputs.parameters["block_id"], "select-confs"]),
         executor=select_confs_executor,
         **select_confs_step_config,
@@ -286,9 +280,7 @@ def _expl_ft_blk(
             **inference_template_config,
         ),
         parameters={
-            "inference_config": {
-                "model": "dp"
-            },  # ft_steps.inputs.parameters["inference_config"],
+            "inference_config": {"model": "dp"},
             "type_map": steps.inputs.parameters["type_map"],
         },
         artifacts={

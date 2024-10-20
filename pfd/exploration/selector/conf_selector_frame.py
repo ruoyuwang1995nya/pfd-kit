@@ -25,6 +25,7 @@ from . import (
     ConfFilters,
     ConfSelector,
 )
+import logging
 
 
 class ConfSelectorFrames(ConfSelector):
@@ -92,10 +93,14 @@ class ConfSelectorFrames(ConfSelector):
             self.conf_filters,
             optional_outputs,
         )
-
         out_path = Path("confs")
         out_path.mkdir(exist_ok=True)
+        if self.max_numb_sel:
+            if self.max_numb_sel < ms.get_nframes():
+                logging.info(
+                    "Select %s of %s frames" % (self.max_numb_sel, ms.get_nframes())
+                )
+                _, ms, _ = ms.train_test_split(test_size=self.max_numb_sel)
         ms.to_deepmd_npy(out_path)  # type: ignore
-        print("Select %s of frames" % ms.get_nframes())
-
+        logging.info("Select %s of frames" % ms.get_nframes())
         return [out_path]
