@@ -104,13 +104,17 @@ class NextLoop(OP):
         if ip["iter_numb"] > ip["max_iter"]:
             op["converged"] = True
             op["stage_converged"] = True
+            logging.info("Max number of iteration reached. Stop exploration...")
         elif ip["converged"] is True and ip["idx_stage"] + 1 >= numb_stages:
             op["converged"] = True
             op["stage_converged"] = True
+            logging.info("All stages converged...")
         elif ip["converged"] is True and ip["idx_stage"] + 1 < numb_stages:
             op["stage_converged"] = True
+            logging.info(
+                "Task %s converged, continue to the next stage..." % op["idx_stage"]
+            )
             op["idx_stage"] = ip["idx_stage"] + 1
-        print(op)
         return OPIO(op)
 
 
