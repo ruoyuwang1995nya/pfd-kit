@@ -2,6 +2,7 @@ from .check_conv import CheckConv
 from dargs import Argument
 from typing import List, Dict
 from pathlib import Path
+import logging
 
 
 class ForceConvIdvRMSE(CheckConv):
@@ -29,6 +30,7 @@ class ForceConvIdvRMSE(CheckConv):
             if res["RMSE_force"] > selection_thr:
                 selected_systems.append(sys)
         if config.get("adaptive"):
+            logging.info("Adaptively add new training samples")
             prec = config["adaptive"]["prec"]
             if len(systems) > 0:
                 if len(selected_systems) / len(systems) > prec:
@@ -75,9 +77,16 @@ class ForceConvRMSE(CheckConv):
         weighted_rmse = sum(n * rmse for n, rmse in zip(numb_frame, rmse_e)) / sum(
             numb_frame
         )
+        logging.info(
+            "The weighted average of force RMSE is %.06f eV/Angstrom" % weighted_rmse
+        )
         converged = False
         if weighted_rmse < conv_rmse:
             converged = True
+            logging.info(
+                "The weighted average of force RMSE has converged below %.06f eV/Angstrom"
+                % conv_rmse
+            )
         return converged, systems
 
     @classmethod

@@ -242,11 +242,12 @@ def _expl_dist_cl(
         ),
         parameters={
             "type_map": steps.inputs.parameters["type_map"],
-            "optional_parameters": steps.inputs.parameters["collect_data_config"],
+            "optional_parameters": {"labeled_data": False}
+            # steps.inputs.parameters["collect_data_config"],
         },
         artifacts={
             "systems": prep_run_explore.outputs.artifacts["trajs"],
-            "additional_multi_systems": steps.inputs.artifacts["iter_data"],
+            # "additional_multi_systems": steps.inputs.artifacts["iter_data"],
         },
         key="--".join(["%s" % steps.inputs.parameters["block_id"], "collect-data"]),
         executor=collect_data_executor,
@@ -273,25 +274,30 @@ def _expl_dist_cl(
         executor=inference_executor,
     )
 
-    inference_test = Step(
-        name + "-inference-test",
+    steps.add(inference_train)
+
+    collect_data_train = Step(
+        name + "collect-data-train",
         template=PythonOPTemplate(
-            inference_op,
+            collect_data_op,
             python_packages=upload_python_packages,
-            **inference_template_config,
+            **collect_data_template_config,
         ),
         parameters={
-            "inference_config": steps.inputs.parameters["inference_config"],
             "type_map": steps.inputs.parameters["type_map"],
+            "optional_parameters": steps.inputs.parameters["collect_data_config"],
         },
         artifacts={
-            "systems": collect_data.outputs.artifacts["test_systems"],
-            "model": steps.inputs.artifacts["teacher_model"][0],
+            "systems": inference_train.outputs.artifacts["labeled_systems"],
+            "additional_multi_systems": steps.inputs.artifacts["iter_data"],
         },
-        key="--".join(["%s" % steps.inputs.parameters["block_id"], "inference-test"]),
-        executor=inference_executor,
+        key="--".join(
+            ["%s" % steps.inputs.parameters["block_id"], "collect-data-train"]
+        ),
+        executor=collect_data_executor,
+        **collect_data_config,
     )
-    steps.add([inference_train, inference_test])
+    steps.add(collect_data_train)
 
     prep_run_dp = Step(
         name + "-prep-run-dp",
@@ -304,7 +310,7 @@ def _expl_dist_cl(
         },
         artifacts={
             "init_data": steps.inputs.artifacts["init_data"],
-            "iter_data": inference_train.outputs.artifacts["root_labeled_systems"],
+            "iter_data": collect_data_train.outputs.artifacts["multi_systems"],
         },
         key="--".join(["%s" % steps.inputs.parameters["block_id"], "prep-run-train"]),
     )
@@ -325,7 +331,7 @@ def _expl_dist_cl(
             "type_map": steps.inputs.parameters["type_map"],
         },
         artifacts={
-            "systems": inference_test.outputs.artifacts["labeled_systems"],
+            "systems": collect_data_train.outputs.artifacts["test_systems"],
             "model": prep_run_dp.outputs.artifacts["models"][0],
         },
         key="--".join(["%s" % steps.inputs.parameters["block_id"], "validation-test"]),
@@ -344,14 +350,14 @@ def _expl_dist_cl(
             "config": steps.inputs.parameters["converge_config"],
             "test_res": dp_test.outputs.parameters["test_res"],
         },
-        artifacts={"systems": inference_test.outputs.artifacts["labeled_systems"]},
+        artifacts={"systems": collect_data_train.outputs.artifacts["test_systems"]},
         key="--".join(
             ["%s" % steps.inputs.parameters["block_id"], "evaluate-converge"]
         ),
         **collect_data_config,
     )
     steps.add(evaluate)
-    steps.outputs.artifacts["iter_data"]._from = collect_data.outputs.artifacts[
+    steps.outputs.artifacts["iter_data"]._from = collect_data_train.outputs.artifacts[
         "multi_systems"
     ]
     steps.outputs.artifacts["dist_model"]._from = prep_run_dp.outputs.artifacts[
@@ -425,7 +431,7 @@ def _loop(
             "inference_config": loop.inputs.parameters["inference_config"],
             "type_map_train": loop.inputs.parameters["type_map_train"],
             "collect_data_config": {
-                "labeled_data": False,
+                "labeled_data": True,
                 "test_size": loop.inputs.parameters["test_size"],
                 "multi_sys_name": blk_counter.outputs.parameters["iter_id"],
             },
