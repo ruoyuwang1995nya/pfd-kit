@@ -1,6 +1,21 @@
 # CHANGELOG
 
 
+## v0.0.10 (2024-10-22)
+
+### Bug Fixes
+
+* fix: bug with distillation workflow ([`f28acfc`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/f28acfc26391ddf2dde91e33074a5a5353a64a89))
+
+* fix: logging for convergence mudolue ([`e523b17`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/e523b17e07dfbf3ea85f7a355c5eaaa0a924389f))
+
+### Unknown
+
+* Merge pull request #53 from ruoyuwang1995nya/devel
+
+fix issues with distillation iteration ([`c2109f3`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/c2109f3bdf7530d0cdb299b8e2e2253940c728e7))
+
+
 ## v0.0.9 (2024-10-20)
 
 ### Bug Fixes
