@@ -1,6 +1,23 @@
 # CHANGELOG
 
 
+## v0.0.11 (2024-10-25)
+
+### Bug Fixes
+
+* fix: add filter test ([`5afb27e`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/5afb27e561d31a1bcf967dc0433521522af7b7fe))
+
+* fix: optimize the distance filter ([`4301e92`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/4301e922eb3330eba2615b46d2a3883643e2a4f6))
+
+* fix: miscellaneous updates ([`3f8ae06`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/3f8ae06d4c4bdd3e9add4df11e9d64aa0ebfea74))
+
+### Unknown
+
+* Merge pull request #55 from ruoyuwang1995nya/devel
+
+optimize the distance filter ([`4c27824`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/4c27824a0d78092915213b426ed2c93b1cfe74d3))
+
+
 ## v0.0.10 (2024-10-22)
 
 ### Bug Fixes
