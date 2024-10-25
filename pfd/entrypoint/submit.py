@@ -782,6 +782,7 @@ def get_resubmit_keys(
 
     step_keys = [
         "pert-gen",
+        "sample-aimd",
         "prep-run-train",
         "prep-train",
         "run-train",

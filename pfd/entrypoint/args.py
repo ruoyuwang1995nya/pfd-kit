@@ -342,7 +342,7 @@ def fp_args(inputs, run):
             optional=False,
             doc=doc_run_config,
         ),
-        Argument("task_max", int, optional=True, default=50, doc=doc_task_max),
+        Argument("task_max", int, optional=True, default=100, doc=doc_task_max),
     ]
 
 
