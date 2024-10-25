@@ -153,7 +153,6 @@ class DistanceConfFilter(ConfFilter):
         for k in safe_dist:
             # bohr -> ang and multiply by a relaxation ratio
             safe_dist[k] *= 0.529 / 1.2 * self.safe_dist_ratio
-
         atom_names = list(safe_dist)
         structure = Atoms(
             positions=frame["coords"][0],
@@ -175,7 +174,7 @@ class DistanceConfFilter(ConfFilter):
                 dist = distances[i, j]
                 type_i = symbols[i]
                 type_j = symbols[j]
-                dr = safe_dist_dict[type_i] + safe_dist_dict[type_j]
+                dr = safe_dist[type_i] + safe_dist[type_j]
                 if dist < dr:
                     logging.warning(
                         f"Dangerous close for {type_i} - {type_j}, {dist:.5f} less than {dr:.5f}"
