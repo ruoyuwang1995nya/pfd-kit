@@ -167,18 +167,15 @@ class DistanceConfFilter(ConfFilter):
 
         P = [[2, 0, 0], [0, 2, 0], [0, 0, 2]]
         extended_structure = make_supercell(structure, P)
-
-        coords = extended_structure.positions
         symbols = extended_structure.get_chemical_symbols()
 
-        num_atoms = len(coords)
-        for i in range(num_atoms):
-            for j in range(i + 1, num_atoms):
-                dist = extended_structure.get_distance(i, j, mic=True)
+        distances = extended_structure.get_all_distances(mic=True)
+        for i in range(distances.shape[0]):
+            for j in range(i + 1, distances.shape[0]):
+                dist = distances[i, j]
                 type_i = symbols[i]
                 type_j = symbols[j]
-                dr = safe_dist[type_i] + safe_dist[type_j]
-
+                dr = safe_dist_dict[type_i] + safe_dist_dict[type_j]
                 if dist < dr:
                     logging.warning(
                         f"Dangerous close for {type_i} - {type_j}, {dist:.5f} less than {dr:.5f}"
