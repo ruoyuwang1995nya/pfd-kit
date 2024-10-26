@@ -1,6 +1,37 @@
 # CHANGELOG
 
 
+## v0.0.12 (2024-10-26)
+
+### Bug Fixes
+
+* fix: add doc build to release workflow ([`0a33c42`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/0a33c426ca37e369854903261ef2fd732d9cda61))
+
+* fix: update docs ([`75fab5d`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/75fab5d31daaa7d9909112d7b3820ebd5c15fc0f))
+
+* fix: update docs ([`14d99fd`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/14d99fda5c7dab4478399fcddc37f0b21b3a2b14))
+
+* fix: update docs ([`d0ff959`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/d0ff95951b6e4081cdb35366d4d41e8c4e27479c))
+
+* fix: update docs ([`f94cc82`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/f94cc828130f9ba43f76f1bd6762175062e0433d))
+
+* fix: update build dependency ([`3d5c2cc`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/3d5c2cc56e2b892e4e38aba85a5091f57eabe31b))
+
+* fix: update docs ([`4cb7605`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/4cb76058db64e4b82cf7160f36b7c0a2bd3b8198))
+
+* fix: update docs ([`a886db4`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/a886db4652971ef3af189a3d5b0d40d850f2f079))
+
+* fix: update doc ([`38e61fb`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/38e61fb0dce1b4f75aedd30dd5230837fd99aaba))
+
+* fix: set up doc pages ([`80682f9`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/80682f9a208895201dc0a0134518b33477863d76))
+
+### Unknown
+
+* Merge pull request #56 from ruoyuwang1995nya/devel
+
+Set up docmentation website ([`53dcd1b`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/53dcd1b7da27e7415800bfe583c4b78bea02fd21))
+
+
 ## v0.0.11 (2024-10-25)
 
 ### Bug Fixes
