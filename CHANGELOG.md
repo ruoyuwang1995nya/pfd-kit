@@ -1,6 +1,39 @@
 # CHANGELOG
 
 
+## v0.0.13 (2024-10-26)
+
+### Bug Fixes
+
+* fix: update ci-test rule ([`53bef9a`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/53bef9aa9d87804768ccc65b01595854f0c7ee90))
+
+* fix: modified release rule ([`14fbdd0`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/14fbdd07fda36511ad20ddf8f637ebe92705c45c))
+
+* fix: modify release rule ([`9d1cb28`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/9d1cb282e34e5030201f312888ad4593f98c94f9))
+
+* fix: modify rules ([`bde47c6`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/bde47c6df92033bf3b6c25bda64ecdb1b64c3b52))
+
+* fix: modify rule for release workflow ([`4d3644e`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/4d3644e0275d0c99651f691e67b5810ac247bc58))
+
+### Unknown
+
+* Merge pull request #61 from ruoyuwang1995nya/devel
+
+fix: update workflow rule ([`14e97ad`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/14e97ad52e842a672130d21be9d06f0e093486e2))
+
+* Merge pull request #60 from ruoyuwang1995nya/devel
+
+fix: modify release rule ([`8007fcb`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/8007fcb9a5e12f4eff13d65c61cc5e5e93e4847e))
+
+* Merge pull request #59 from ruoyuwang1995nya/devel
+
+fix: modify rules ([`3e8fae3`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/3e8fae304b8972b40e0c5b9aeaa9de63026629e1))
+
+* Merge pull request #57 from ruoyuwang1995nya/devel
+
+fix: modify rule for release workflow ([`fe2486d`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/fe2486d67fe09d16c47fd37f8888fea2949030bd))
+
+
 ## v0.0.12 (2024-10-26)
 
 ### Bug Fixes
