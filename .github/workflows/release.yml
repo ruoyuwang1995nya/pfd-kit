@@ -1,8 +1,9 @@
 name: Release
 on:
-  pull-request:
+  push:
     branches:
       - main
+      - devel
 
 jobs:
   release:
