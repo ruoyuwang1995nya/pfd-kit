@@ -20,7 +20,17 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Install dependencies
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential  # Install build tools
+
+      - name: Install project dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .  # Install dependencies from setup.py
+
+      - name: Install documentation dependencies
         run: |
           python -m pip install --upgrade pip
           pip install sphinx sphinx_rtd_theme recommonmark
