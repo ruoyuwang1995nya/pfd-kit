@@ -1,6 +1,23 @@
 # CHANGELOG
 
 
+## v0.0.14 (2024-10-27)
+
+### Bug Fixes
+
+* fix: update readme ([`050de0e`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/050de0e249d8e4c312c97c402dd3af02a9137e13))
+
+* fix: update cli docs ([`d7881e5`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/d7881e5f8fe9555f0620941045b95975e7e2c46f))
+
+* fix: add download end results ([`8d0c502`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/8d0c502d6be6b342d45859fc2714a5f2c629f188))
+
+### Unknown
+
+* Merge pull request #62 from ruoyuwang1995nya/devel
+
+update command guide ([`bdfa012`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/bdfa012c5d33646e8f90011bc0444c7c95c6ba2f))
+
+
 ## v0.0.13 (2024-10-26)
 
 ### Bug Fixes
