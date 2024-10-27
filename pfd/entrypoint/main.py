@@ -11,10 +11,7 @@ from pfd.utils.download_pfd_artifacts import (
     print_op_download_setting,
 )
 from pfd import __version__
-from .download import (
-    download,
-    download_by_def,
-)
+from .download import download, download_by_def, download_end_result
 
 from .submit import FlowGen, resubmit_workflow
 from .common import (
@@ -100,7 +97,9 @@ def main_parser() -> argparse.ArgumentParser:
     # download
     parser_download = subparsers.add_parser(
         "download",
-        help=("Download the artifacts of PFD workflow steps.\n"),
+        help=(
+            "Download the artifacts of PFD workflow steps. User needs to provide the input json file as well as the workflow ID. The command would then download the end model if workflow is successfully completed.\n"
+        ),
         description=(
             textwrap.dedent(
                 """
@@ -218,7 +217,7 @@ def main():
                 prefix=args.prefix,
                 chk_pnt=args.no_check_point,
             )
-        else:
+        elif args.step_definitions:
             download_by_def(
                 wfid,
                 config,
@@ -229,6 +228,8 @@ def main():
                 prefix=args.prefix,
                 chk_pnt=args.no_check_point,
             )
+        else:
+            download_end_result(wfid, config, prefix=args.prefix)
 
     elif args.command is None:
         pass
