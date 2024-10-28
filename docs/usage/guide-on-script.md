@@ -96,6 +96,7 @@ to corresponding element name.
     "type_map":["Li","..."]
 }
 ```
+
 The `conf_generation` section defines how perturbed structures are generated from initial structure files. Multiple input structure files can be 
 present in the `init_configuration` sub-section, and the `pert_generation` defines the rule for generating perturbed structures.
 ```json
@@ -112,23 +113,13 @@ present in the `init_configuration` sub-section, and the `pert_generation` defin
         "pert_num": 5}]
 }
 ```
-The `exploration` section defines the 
+The `exploration` section defines the parameters for molecular dynamics (MD) simulations, which iteratively add new data to the fine-tune training set. In this example, the MD exploration is performed using the LAMMPS package. Multiple exploration `stages` can be specified, each executed sequentially. Within each stage, various task groups with different settings can be defined. In this case, the workflow consists of a single stage with one task group.
 ```json
 "exploration": {
-        "max_iter":2,
-        "convergence":{
-            "type":"energy_rmse",
-            "RMSE":0.01},
-        "filter":[{
-            "type":"distance"
-        }],
-        "type": "lmp",
-        "config": {
-            "command": "lmp -var restart 0",
-            "shuffle_models": false, 
-            "head": null},
-        "stages":[[
-            {  "_comment": "group 1 stage 1 of finetune-exploration",
+    "type": "lmp",
+    "config": {"command": "lmp -var restart 0"},
+    "stages":[[
+            { "_comment": "group 1 stage 1 of finetune-exploration",
                 "conf_idx": [0],
                 "n_sample":3,
                 "exploration":{
@@ -139,63 +130,71 @@ The `exploration` section defines the
                 "temps": [500],
                 "press":[1],
                 "trj_freq": 200},
-                "max_sample": 10000
-                    }]]},
-
-    "fp": {
-        "type": "fpop_abacus",
-        "task_max": 50,
-        "extra_output_files:":[],
-        "run_config": {
-            "command": "OMP_NUM_THREADS=4 mpirun -np 8 abacus | tee log"
-        },
-        "inputs_config": {
-            "input_file": "INPUT.scf",
-            "pp_files": {
-                "Li": "./pp/Li_ONCV_PBE-1.0.upf",
-                "S":"./pp/S_ONCV_PBE-1.0.upf",
-                "Ge": "./pp/Ge_ONCV_PBE-1.0.upf",
-                "P": "./pp/P_ONCV_PBE-1.0.upf"
-            },
-            "orb_files":{
-                "Li": "./orb/Li_gga_9au_100Ry_6s2p.orb",
-                "S":"./orb/S_gga_9au_100Ry_3s3p2d.orb",
-                "Ge": "./orb/Ge_gga_9au_100Ry_3s3p3d2f.orb",
-                "P": "./orb/P_gga_9au_100Ry_3s3p2d.orb"
-            }
-        },
-        "_comment": "fp parameters for calculation"
-    },
-    "train": {
-        "comment":"Training script for downstream DeePMD model",
-        "type": "dp",
-        "config": {
-            "impl": "pytorch",
-            "init_model_policy": "no",
-            "init_model_with_finetune":true,
-            "_comment": "all"
-        },
-        "template_script": "train.json",
-        "init_models_paths":["OpenLAM_2.1.0_27heads_2024Q1.pt"],
-        "numb_models":1,
-        "_comment": "the initial pre-trained model at 'init_models_paths'"
+                "max_sample": 10000}]
+                ],
+    "max_iter":2,
+    "convergence":{
+        "type":"energy_rmse",
+        "RMSE":0.01},
+    "filter":[{"type":"distance"}]
     }
 ```
-The workflow type is specified in the `task` entry. The `inputs` entry defines key user inputs. 
+Within the task group settings, you define the configuration index number, the number of samples, simulation temperatures, pressures, time step, number of simulation steps, etc. In the mentioned task group, each MD simulation starts from 3 randomly chosen frames of the perturbed structures of the first initial configuration, as indicated in the `conf_idx` setting.
+
+
+The `fp` part sets the first principle calculation. Detailed parameters can be referenced in the DPGEN2 documentation. Below is an example configuration for running ABACUS:
+
 ```json
-"inputs":{
-    "type_map":["Li","..."]
-}
+"fp": {
+    "type": "fpop_abacus",
+    "task_max": 50,
+    "extra_output_files:":[],
+    "run_config": {
+        "command": "OMP_NUM_THREADS=4 mpirun -np 8 abacus | tee log"
+        },
+    "inputs_config": {
+        "input_file": "INPUT.scf",
+        "pp_files": {
+            "Li": "./pp/Li_ONCV_PBE-1.0.upf",
+            "S":"./pp/S_ONCV_PBE-1.0.upf",
+            "Ge": "./pp/Ge_ONCV_PBE-1.0.upf",
+            "P": "./pp/P_ONCV_PBE-1.0.upf"
+            }}
+    }
+```
+You need to specify the path to the ABACUS input file and the pseudopotential file for each element. The ABACUS command should be configured according to the machine type for optimal performance.
+
+The `train` section defines the type of pretrained model and the specific training configuration. The detailed training script can be provided either as a `dict` or in an additional script (as shown below). It is crucial to provide the path to the pretrained model in the `init_models_paths` entry.
+```json
+"train": {
+    "type": "dp",
+    "config": {
+        "impl": "pytorch",
+        "init_model_policy": "no",
+        "init_model_with_finetune":true,
+        },
+    "template_script": "train.json",
+    "init_models_paths":["OpenLAM_2.1.0_27heads_2024Q1.pt"],
+    }
 ```
 
-### `conf_generation`
-
-
-
-
-
 ## Distillation task
-The setting for the distillation tasks are very similar. 
-
-
-# Arguments of input script
+The input script for tdistillation is actually very similar to that of fine-tune, but there all a few difference:
+```json
+"task":{"type":"dist"},
+"inputs":{
+    "type_map":["..."],
+    "teacher_models_paths":"path_to_teacher_model",
+    "teacher_models_styles":"dp"
+    },
+"conf_generation":{...},
+"train":{
+    "type": "dp",
+    "config": {
+        "init_model_policy": "no",
+            },
+    "template_script": "train.json"
+},
+"exploration":{...}
+```
+You need to specify the teacher model style and path to the teacher model file at the `inputs` part. Moreover, the relevant setting in the training configuration also needs to be modified, as the distilled model is essentially a simpler model trained from scratch instead of fine-tune.
