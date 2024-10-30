@@ -29,7 +29,7 @@ from dflow.python import (
     OP,
     PythonOPTemplate,
 )
-from dpgen2.utils.step_config import init_executor
+from pfd.utils.step_config import init_executor
 from pfd.op import EvalConv, NextLoop, IterCounter, ModelTestOP, StageScheduler
 
 
@@ -61,6 +61,7 @@ class ExplFinetuneBlock(Steps):
             "collect_data_config": InputParameter(),
             "dp_test_validation_config": InputParameter(),
             "conf_selector": InputParameter(),
+            "conf_filters_conv": InputParameter(value=None),
             "converge_config": InputParameter(value={}),
         }
         self._input_artifacts = {
@@ -135,6 +136,7 @@ class ExplFinetuneLoop(Steps):
             # "init_expl_model": InputParameter(type=bool),
             "expl_stages": InputParameter(),  # Total input parameter file: to be changed in the future
             "conf_selector": InputParameter(),
+            "conf_filters_conv": InputParameter(value=None),
             "fp_config": InputParameter(),
             "numb_models": InputParameter(type=int),
             "template_script": InputParameter(),
@@ -304,6 +306,7 @@ def _expl_ft_blk(
         parameters={
             "config": steps.inputs.parameters["converge_config"],
             "test_res": dp_test.outputs.parameters["test_res"],
+            "conf_filters_conv": steps.inputs.parameters["conf_filters_conv"],
         },
         artifacts={"systems": prep_run_fp.outputs.artifacts["labeled_data"]},
         key="--".join(
@@ -432,6 +435,7 @@ def _loop(
             "expl_tasks": stage_scheduler.outputs.parameters["task_grp"],
             "converge_config": loop.inputs.parameters["converge_config"],
             "conf_selector": loop.inputs.parameters["conf_selector"],
+            "conf_filters_conv": loop.inputs.parameters["conf_filters_conv"],
             "numb_models": loop.inputs.parameters["numb_models"],
             "template_script": loop.inputs.parameters["template_script"],
             "train_config": loop.inputs.parameters["train_config"],
@@ -493,6 +497,7 @@ def _loop(
             "expl_stages"
         ],  # Total input parameter file: to be changed in the future
         "conf_selector": loop.inputs.parameters["conf_selector"],
+        "conf_filters_conv": loop.inputs.parameters["conf_filters_conv"],
         "idx_stage": next_loop.outputs.parameters["idx_stage"],
         "converge_config": loop.inputs.parameters[
             "converge_config"

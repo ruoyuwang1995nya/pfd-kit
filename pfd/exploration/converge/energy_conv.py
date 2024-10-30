@@ -1,24 +1,39 @@
 from .check_conv import CheckConv
 from dargs import Argument
-from typing import List, Dict
-from pathlib import Path
+from pfd.exploration.inference import TestReports
+import logging
 
 
+@CheckConv.register("energy_rmse")
 class EnerConvRMSE(CheckConv):
-    def check_conv(self, test_res_ls, conv_config: dict, systems: List[Path], **kwargs):
-        numb_frame = []
-        rmse_e = []
-        for res in test_res_ls:
-            numb_frame.append(res["numb_frame"])
-            rmse_e.append(res["RMSE_energy_per_at"])
-        conv_rmse = conv_config["RMSE"]
-        weighted_rmse = sum(n * rmse for n, rmse in zip(numb_frame, rmse_e)) / sum(
-            numb_frame
-        )
+    def check_conv(self, reports: TestReports, config: dict):
+        """
+        Check convergence, and selected systems for following iterations
+        Args:
+            reports (TestReports): reports of the model test
+            config (dict):
+        Returns:
+            converged(): _description_
+        """
+        conv_rmse = config["RMSE"]
         converged = False
-        if weighted_rmse < conv_rmse:
-            converged = True
-        return converged, systems
+        # select
+        if config.get("adaptive"):
+            logging.info("Adaptively add new training samples")
+            selected_reports = TestReports()
+            for res in reports:
+                selection_thr = config.get("thr", conv_rmse)
+                if res.rmse_f > selection_thr:
+                    selected_reports.add_report(res)
+            prec = config["adaptive"]["prec"]
+            if len(reports) > 0:
+                if len(selected_reports) / len(reports) > prec:
+                    converged = True
+        else:
+            weighted_rmse = reports.get_weighted_rmse_e_atom()
+            if weighted_rmse < conv_rmse:
+                converged = True
+        return converged, reports
 
     @classmethod
     def args(cls):

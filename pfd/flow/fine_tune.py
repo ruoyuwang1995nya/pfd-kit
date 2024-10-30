@@ -58,6 +58,7 @@ class FineTune(Steps):
             "max_iter": InputParameter(),
             "explore_config": InputParameter(),
             "conf_selector": InputParameter(),
+            "conf_filters_conv": InputParameter(),
             # training
             "template_script": InputParameter(),
             "train_config": InputParameter(),
@@ -264,6 +265,7 @@ def _fine_tune_cl(
             "mass_map": ft_steps.inputs.parameters["mass_map"],
             "expl_stages": ft_steps.inputs.parameters["expl_stages"],
             "conf_selector": ft_steps.inputs.parameters["conf_selector"],
+            "conf_filters_conv": ft_steps.inputs.parameters["conf_filters_conv"],
             "numb_models": ft_steps.inputs.parameters["numb_models"],
             "template_script": ft_steps.inputs.parameters["template_script"],
             "train_config": ft_steps.inputs.parameters["train_config"],

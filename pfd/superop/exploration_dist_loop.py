@@ -59,6 +59,7 @@ class ExplDistBlock(Steps):
             "explore_config": InputParameter(),
             "inference_config": InputParameter(),
             "converge_config": InputParameter(value={}),
+            "conf_filters_conv": InputParameter(),
             "collect_data_config": InputParameter(value={}),
             "type_map_train": InputParameter(),
         }
@@ -138,6 +139,7 @@ class ExplDistLoop(Steps):
             "idx_stage": InputParameter(value=0),
             "max_iter": InputParameter(),
             "converge_config": InputParameter(value={}),
+            "conf_filters_conv": InputParameter(),
             "inference_config": InputParameter(),
             "test_size": InputParameter(value=0.1),
             "type_map_train": InputParameter(),
@@ -424,6 +426,7 @@ def _loop(
             "mass_map": loop.inputs.parameters["mass_map"],
             "expl_tasks": stage_scheduler.outputs.parameters["task_grp"],
             "converge_config": loop.inputs.parameters["converge_config"],
+            "conf_filters_conv": loop.inputs.parameters["conf_filters_conv"],
             "numb_models": loop.inputs.parameters["numb_models"],
             "template_script": loop.inputs.parameters["template_script"],
             "train_config": loop.inputs.parameters["train_config"],
@@ -481,9 +484,8 @@ def _loop(
             "expl_stages"
         ],  # Total input parameter file: to be changed in the future
         "idx_stage": next_loop.outputs.parameters["idx_stage"],
-        "converge_config": loop.inputs.parameters[
-            "converge_config"
-        ],  # Total input parameter file: to be changed in the future
+        "converge_config": loop.inputs.parameters["converge_config"],
+        "conf_filters_conv": loop.inputs.parameters["conf_filters_conv"],
         "numb_models": loop.inputs.parameters["numb_models"],
         "template_script": loop.inputs.parameters["template_script"],
         "train_config": loop.inputs.parameters["train_config"],

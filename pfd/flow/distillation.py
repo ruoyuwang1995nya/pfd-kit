@@ -59,6 +59,7 @@ class Distillation(Steps):
             "max_iter": InputParameter(),
             "explore_config": InputParameter(),
             "converge_config": InputParameter(),
+            "conf_filters_conv": InputParameter(),
             "test_size": InputParameter(),
             # training
             "template_script": InputParameter(),
@@ -161,6 +162,7 @@ def _dist_cl(
             "explore_config": steps.inputs.parameters["explore_config"],
             "max_iter": steps.inputs.parameters["max_iter"],
             "converge_config": steps.inputs.parameters["converge_config"],
+            "conf_filters_conv": steps.inputs.parameters["conf_filters_conv"],
             "scheduler_config": steps.inputs.parameters["scheduler_config"],
             "inference_config": steps.inputs.parameters["inference_config"],
             "test_size": steps.inputs.parameters["test_size"],

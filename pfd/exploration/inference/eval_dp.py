@@ -7,6 +7,7 @@ import copy
 from typing import Union, Optional
 import logging
 import os
+from .eval_model import TestReport
 
 
 @EvalModel.register("dp")
@@ -33,20 +34,13 @@ class DPTest(EvalModel):
     ):
         if isinstance(prefix, str):
             prefix = Path(prefix)
-        res = {}
-        res["name"] = name
+
+        res = TestReport
         new_labeled_data = self._data.predict(self.model, **kwargs)
         atom_num = self._data.get_natoms()
-        res["atom_numb"] = atom_num
-        logging.info("#### atom numbers: %d" % res["atom_numb"])
-        res["numb_frame"] = self._data.get_nframes()
-        logging.info("#### number of frames: %d" % res["numb_frame"])
-        res["details"] = {}
         # get energy prediction
         new_labeled_e = new_labeled_data.data["energies"].flatten()
         orig_labeled_e = self._data.data["energies"].flatten()
-        res["details"]["train_e"] = (orig_labeled_e,)
-        res["details"]["pred_e"] = (new_labeled_e,)
         np.savetxt(
             str(prefix / (name + ".energy.txt")),
             np.column_stack((orig_labeled_e, new_labeled_e)),
@@ -57,45 +51,54 @@ class DPTest(EvalModel):
             np.column_stack((orig_labeled_e / atom_num, new_labeled_e / atom_num)),
             fmt="%.6f",
         )
-        res["MAE_energy"] = get_mae(new_labeled_e, orig_labeled_e)
-        res["RMSE_energy"] = get_rmse(new_labeled_e, orig_labeled_e)
-        res["MAE_energy_per_at"] = get_mae(new_labeled_e, orig_labeled_e) / atom_num
-        res["RMSE_energy_per_at"] = get_rmse(new_labeled_e, orig_labeled_e) / atom_num
-        logging.info("#### Energy MAE: %.06f" % res["MAE_energy"])
-        logging.info("#### Energy RMSE: %.06f" % res["RMSE_energy"])
-        logging.info("#### Energy MAE per atom: %.06f" % res["MAE_energy_per_at"])
-        logging.info("#### Energy RMSE per atom: %.06f" % res["RMSE_energy_per_at"])
+
         # get force error
         new_labeled_f = new_labeled_data.data["forces"].flatten()
         orig_labeled_f = self._data.data["forces"].flatten()
-        res["details"]["train_f"] = (orig_labeled_f,)
-        res["details"]["pred_f"] = (new_labeled_f,)
         np.savetxt(
             str(prefix / (name + ".force.txt")),
             np.column_stack((orig_labeled_f, new_labeled_f)),
             fmt="%.6f",
         )
-        res["MAE_force"] = get_mae(new_labeled_f, orig_labeled_f)
-        res["RMSE_force"] = get_rmse(new_labeled_f, orig_labeled_f)
-        logging.info("#### Force MAE: %.06f" % res["MAE_force"])
-        logging.info("#### Force RMSE: %.06f" % res["RMSE_force"])
+        res = TestReport(
+            name=name,
+            system=self._data,
+            numb_frame=self._data.get_nframes(),
+            atom_numb=atom_num,
+            mae_e=get_mae(new_labeled_e, orig_labeled_e),
+            rmse_e=get_rmse(new_labeled_e, orig_labeled_e),
+            mae_e_atom=get_mae(new_labeled_e, orig_labeled_e) / atom_num,
+            rmse_e_atom=get_rmse(new_labeled_e, orig_labeled_e) / atom_num,
+            mae_f=get_mae(new_labeled_f, orig_labeled_f),
+            rmse_f=get_rmse(new_labeled_f, orig_labeled_f),
+            lab_e=orig_labeled_e,
+            pred_e=new_labeled_e,
+            lab_f=orig_labeled_f,
+            pred_f=new_labeled_f,
+        )
+
+        logging.info("#### atom numbers: %d" % res.atom_numb)
+        logging.info("#### number of frames: %d" % res.numb_frame)
+        logging.info("#### Energy MAE: %.06f" % res.mae_e)
+        logging.info("#### Energy RMSE: %.06f" % res.rmse_e)
+        logging.info("#### Energy MAE per atom: %.06f" % res.mae_e_atom)
+        logging.info("#### Energy RMSE per atom: %.06f" % res.rmse_e_atom)
+        logging.info("#### Force MAE: %.06f" % res.mae_f)
+        logging.info("#### Force RMSE: %.06f" % res.rmse_f)
         # get virial prediction
         if self._data.has_virial():
             new_labeled_v = new_labeled_data.data["virials"].flatten()
             orig_labeled_v = self._data.data["virials"].flatten()
-            res["details"]["train_v"] = (orig_labeled_v,)
-            res["details"]["pred_v"] = (new_labeled_v,)
+            res.lab_v = orig_labeled_v
+            res.pred_v = new_labeled_v
             np.savetxt(
                 str(prefix / (name + ".virial.txt")),
                 np.column_stack((orig_labeled_f, new_labeled_f)),
                 fmt="%.6f",
             )
-            res["MAE_virial"] = get_mae(new_labeled_v, orig_labeled_v)
-            res["RMSE_virial"] = get_rmse(new_labeled_v, orig_labeled_v)
-            logging.info("#### Virial MAE: %.06f" % res["MAE_virial"])
-            logging.info("#### Force RMSE: %.06f" % res["RMSE_virial"])
-        report = copy.copy(res)
-        report.pop("details")
+            logging.info("#### Virial MAE: %.06f" % res.mae_v)
+            logging.info("#### Force RMSE: %.06f" % res.rmse_v)
+        report = res.report()
         return res, report
 
     def inference(

@@ -9,7 +9,7 @@ from dargs import (
     Variant,
 )
 
-from pfd.exploration.converge import ConvTypes as conv_styles
+from pfd.exploration.converge import CheckConv
 
 from dpgen2.fp import (
     fp_styles,
@@ -158,15 +158,8 @@ def variant_train():
 def variant_conv():
     doc = "the type of the condidate selection and convergence check method."
     var_list = []
-    for kk in conv_styles.keys():
-        var_list.append(
-            Argument(
-                kk,
-                dict,
-                conv_styles[kk].args(),
-                doc=conv_styles[kk].doc(),
-            )
-        )
+    for kk, vv in CheckConv.get_checkers().items():
+        var_list.append(Argument(kk, dict, vv.args(), doc=vv.doc()))
     return Variant(
         "type",
         var_list,
@@ -189,6 +182,9 @@ def lmp_args():
         "Each task group is described in :ref:`the task group definition<task_group_sec>` "
     )
     doc_filter = "Filter configuration for DFT calculation"
+    doc_conf_filter = (
+        "Filtering configurations with too larger or too small prediction error"
+    )
 
     return [
         Argument(
@@ -216,7 +212,15 @@ def lmp_args():
         Argument(
             "convergence",
             dict,
-            [],
+            [
+                Argument(
+                    "conf_filter",
+                    List[dict],
+                    optional=True,
+                    default=[],
+                    doc=doc_conf_filter,
+                )
+            ],
             [variant_conv()],
             optional=False,
             doc=doc_convergence,
