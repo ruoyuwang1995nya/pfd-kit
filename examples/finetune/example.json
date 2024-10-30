@@ -274,7 +274,19 @@
         "max_iter":2,
         "convergence":{
             "type":"energy_rmse",
-            "RMSE":0.01},
+            "RMSE":0.01,
+            
+            "conf_filter":[
+                {"type":"force_delta",
+                    "thr_l": 0.05,
+                    "thr_h": 0.2 
+                },
+                 {"type":"energy_delta",
+                    "thr_l": 0.001,
+                    "thr_h": 0.1
+                }
+            ]
+        },
         "filter":[{
             "type":"distance"
         }],

@@ -234,7 +234,8 @@
         "max_iter":2,
         "converge_config":{
             "type":"energy_rmse",
-            "RMSE":0.01},
+            "RMSE":0.01
+        },
         "test_set_config":{
             "test_size":0.1
         }
