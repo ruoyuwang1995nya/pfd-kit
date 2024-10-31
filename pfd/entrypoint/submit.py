@@ -46,6 +46,8 @@ from pfd.exploration.selector import (
     conf_filter_styles,
 )
 
+from pfd.exploration.converge import ConfFiltersConv, ConfFilterConv
+
 from pfd.exploration.render import TrajRenderLammps
 
 from pfd.flow import Distillation
@@ -72,6 +74,16 @@ def get_conf_filters(config):
             conf_filter = conf_filter_styles[c.pop("type")](**c)
             conf_filters.add(conf_filter)
     return conf_filters
+
+
+def get_conf_filters_conv(config):
+    conf_filters_conv = ConfFiltersConv()
+    if len(config) > 0:
+        for c in config:
+            c = deepcopy(c)
+            conf_filter_conv = ConfFilterConv.get_filter(c.pop("type"))(**c)
+            conf_filters_conv.add(conf_filter_conv)
+    return conf_filters_conv
 
 
 def make_dist_op(
@@ -338,6 +350,8 @@ class FlowGen:
         expl_stages = config["exploration"]["stages"]
         converge_config = config["exploration"]["convergence"]
         max_iter = config["exploration"]["max_numb_iter"]
+        conf_filters_conv = get_conf_filters_conv(converge_config.pop("conf_filter"))
+
         # train (student model) style
         train_style = config["train"]["type"]
         train_config = config["train"]["config"]
@@ -428,6 +442,7 @@ class FlowGen:
                 "numb_models": numb_models,
                 "explore_config": explore_config,
                 "converge_config": converge_config,
+                "conf_filters_conv": conf_filters_conv,
                 "scheduler_config": scheduler_config,
                 "max_iter": max_iter,
                 "template_script": template_script,
@@ -506,6 +521,9 @@ class FlowGen:
         conf_selector = ConfSelectorFrames(
             render, config["fp"]["task_max"], conf_filters
         )
+        print(converge_config)
+        conf_filters_conv = get_conf_filters_conv(converge_config.pop("conf_filter"))
+        print(len(conf_filters_conv._filters))
         # task
         init_training = config["task"]["init_training"]
         if init_training is False:
@@ -620,6 +638,7 @@ class FlowGen:
                 "numb_models": numb_models,
                 "expl_stages": expl_stages,
                 "conf_selector": conf_selector,
+                "conf_filters_conv": conf_filters_conv,
                 "converge_config": converge_config,
                 "scheduler_config": scheduler_config,
                 "max_iter": max_iter,

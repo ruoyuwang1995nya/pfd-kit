@@ -6,7 +6,7 @@ from typing import (
 )
 
 from dflow.python import OP, OPIO, Artifact, BigParameter, OPIOSign, Parameter
-from pfd.exploration.inference import EvalModel
+from pfd.exploration.inference import EvalModel, TestReports
 import logging
 
 logging.basicConfig(
@@ -34,7 +34,7 @@ class ModelTestOP(OP):
         return OPIOSign(
             {
                 "test_report": Artifact(Path),
-                "test_res": BigParameter(List[dict]),
+                "test_res": BigParameter(TestReports),
                 "test_res_dir": Artifact(Path),
             }
         )
@@ -57,12 +57,13 @@ class ModelTestOP(OP):
         res_dir.mkdir(exist_ok=True)
         evaluator = Eval(model=model_path)
         logging.info("##### Number of systems: %03d" % len(systems))
+        res_total = TestReports()
         for idx, sys in enumerate(systems):
             name = "sys_%03d_%s" % (idx, sys.name)
             logging.info("##### Testing: %s" % name)
             evaluator.read_data(data=sys, type_map=type_map)
             res, rep = evaluator.evaluate(name, prefix=str(res_dir))
-            res_total.append(res)
+            res_total.add_report(res)
             logging.info("##### Testing ends, : writing to report...")
             report[name] = rep
         with open("report.json", "w") as fp:

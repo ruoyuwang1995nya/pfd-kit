@@ -1,6 +1,100 @@
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional, Union
+import dpdata
+import numpy as np
+
+
+@dataclass
+class TestReport:
+    name: str = "default_system"
+    system: Optional[dpdata.System] = None
+    atom_numb: int = 0
+    numb_frame: int = 0
+    mae_f: float = 0
+    rmse_f: float = 0
+    mae_e: float = 0
+    rmse_e: float = 0
+    mae_e_atom: float = 0
+    rmse_e_atom: float = 0
+    mae_v: float = 0
+    rmse_v: float = 0
+    lab_e: Optional[np.ndarray] = None
+    pred_e: Optional[np.ndarray] = None
+    lab_f: Optional[np.ndarray] = None
+    pred_f: Optional[np.ndarray] = None
+    lab_v: Optional[np.ndarray] = None
+    pred_v: Optional[np.ndarray] = None
+
+    def report(self):
+        return {
+            "name": self.name,
+            "atom_numb": self.atom_numb,
+            "numb_frame": self.numb_frame,
+            "MAE_force": self.mae_f,
+            "RMSE_force": self.rmse_f,
+            "MAE_energy": self.mae_e,
+            "RMSE_energy": self.rmse_e,
+            "MAE_energy_per_at": self.mae_e_atom,
+            "RMSE_energy_per_at": self.rmse_e_atom,
+            "MAE_virial": self.mae_v,
+            "RMSE_virial": self.rmse_v,
+        }
+
+
+class TestReports:
+    def __init__(self, name: str = "default_reports"):
+        self._reports = []
+        self.name = name
+
+    def __iter__(self):
+        return iter(self._reports)
+
+    def __getitem__(self, index):
+        return self._reports[index]
+
+    def __len__(self):
+        return len(self._reports)
+
+    def add_report(self, report: TestReport):
+        self._reports.append(report)
+
+    def get_weighted_rmse_f(self):
+        if len(self._reports) > 0:
+            return sum(res.numb_frame * res.rmse_f for res in self._reports) / sum(
+                res.numb_frame for res in self._reports
+            )
+
+    def get_weighted_rmse_e_atom(self):
+        if len(self._reports) > 0:
+            return sum(res.numb_frame * res.rmse_e_atom for res in self._reports) / sum(
+                res.numb_frame for res in self._reports
+            )
+
+    def get_systems(self):
+        if len(self._reports) > 0:
+            return [res.system for res in self._reports]
+        else:
+            return []
+
+    def get_and_output_systems(self, prefix: Union[Path, str] = "."):
+        if isinstance(prefix, str):
+            prefix = Path(prefix)
+        prefix.mkdir(exist_ok=True)
+        systems = []
+        for res in self._reports:
+            path = prefix / res.name
+            res.system.to("deepmd/npy", path)
+            systems.append(path)
+        return systems
+
+    def sub_reports(self, index):
+        reports = TestReports()
+        if len(self._reports) > 0:
+            for ii in index:
+                reports.add_report(self._reports[ii])
+        return reports
 
 
 class EvalModel(ABC):

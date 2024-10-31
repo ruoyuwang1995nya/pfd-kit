@@ -6,7 +6,8 @@ from pathlib import (
 from typing import List, Dict
 
 from dflow.python import OP, OPIO, Artifact, BigParameter, OPIOSign, Parameter
-from pfd.exploration.converge import ConvTypes
+from pfd.exploration.converge import CheckConv, ConfFiltersConv
+from pfd.exploration.inference import TestReport, TestReports
 import logging
 
 logging.basicConfig(
@@ -34,7 +35,8 @@ class EvalConv(OP):
                 "converged": Parameter(bool, default=False),
                 "config": Parameter(dict, default={}),
                 "systems": Artifact(List[Path], optional=True),
-                "test_res": BigParameter(List[Dict]),
+                "test_res": BigParameter(TestReports),
+                "conf_filters_conv": BigParameter(ConfFiltersConv, default=None),
             }
         )
 
@@ -54,14 +56,25 @@ class EvalConv(OP):
     ) -> OPIO:
         config = ip["config"]
         conv_type = config.pop("type")
+        test_res = ip["test_res"]
         systems = ip["systems"]
-        if conv_type in ConvTypes:
-            conv = ConvTypes[conv_type]()
-        else:
-            raise NotImplementedError("%s is not implemented!" % conv_type)
-        converged, selected_systems = conv.check_conv(ip["test_res"], config, systems)
+        # for rep in test_res:
+
+        # conf_filters = ip["conf_filters_conv"]
+        conv = CheckConv.get_checker(conv_type)()
+        converged, selected_reports = conv.check_conv(test_res, config)
         logging.info("Converged: %s" % converged)
-        return OPIO({"converged": converged, "selected_systems": selected_systems})
+        if conf_filters := ip["conf_filters_conv"]:
+            logging.info("Checking filters...")
+            selected_reports = conf_filters.check(selected_reports)
+        return OPIO(
+            {
+                "converged": converged,
+                "selected_systems": selected_reports.get_and_output_systems(
+                    "./systems"
+                ),
+            }
+        )
 
 
 class NextLoop(OP):

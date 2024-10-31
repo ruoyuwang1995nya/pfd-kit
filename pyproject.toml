@@ -30,7 +30,7 @@ dependencies = [
     "cp2kdata",
     "periodictable",
     "ase",
-    "dpgen2 @ git+https://github.com/deepmodeling/dpgen2.git"
+    "dpgen2 @ git+https://github.com/ruoyuwang1995nya/dpgen2.git"
 ]
 
 [project.urls]
