@@ -31,8 +31,20 @@ class EnerConvRMSE(CheckConv):
                     converged = True
         else:
             weighted_rmse = reports.get_weighted_rmse_e_atom()
+            logging.info(
+                "#### The weighted average of energy RMSE per atom is %.6f eV/atom"
+                % weighted_rmse
+            )
             if weighted_rmse < conv_rmse:
+                logging.info(
+                    "#### Iteration converged! The converge criteria is %.6f eV/atom"
+                    % conv_rmse
+                )
                 converged = True
+            else:
+                logging.info(
+                    "#### Iteration not converged! Continue to the next iteration..."
+                )
         return converged, reports
 
     @classmethod

@@ -347,6 +347,7 @@ def fp_args(inputs, run):
             doc=doc_run_config,
         ),
         Argument("task_max", int, optional=True, default=100, doc=doc_task_max),
+        Argument("extra_output_files", List, optional=True, default=[]),
     ]
 
 

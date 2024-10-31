@@ -1,8 +1,6 @@
 from .conf_filter_conv import ConfFilterConv
 from pfd.exploration.inference import TestReport
-import dpdata
-import numpy as np
-from typing import Dict
+import logging
 
 
 @ConfFilterConv.register("energy_delta")
@@ -13,6 +11,7 @@ class EnerConfFilter(ConfFilterConv):
 
     def check(self, rep: TestReport):
         if rep.mae_e > self.thr_h or rep.mae_e < self.thr_l:
+            logging.warning("#### Energy predition error out of threshold!")
             return False
         return True
 
@@ -24,6 +23,7 @@ class ForceConfFilter(ConfFilterConv):
         self.thr_h = thr_h
 
     def check(self, rep: TestReport):
-        if rep.mae_f > self.thr_h or rep.mae_f < self.thr_l:
+        if rep.rmse_f > self.thr_h or rep.rmse_f < self.thr_l:
+            logging.warning("#### Force predition error out of threshold!")
             return False
         return True

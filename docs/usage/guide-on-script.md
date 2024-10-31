@@ -60,7 +60,7 @@ Similary, to set the step performing, say, the DFT calculation with ABACUS softw
 "step_configs": {
         "run_fp_config": {
             "template_config": {
-                "image": "registry.dp.tech/dptech/abacus:3.6.1",
+                "image": "registry.dp.tech/dptech/vasp:5.4.4",
             },
             "continue_on_success_ratio": 0.9,
             "executor": {
@@ -77,7 +77,7 @@ Similary, to set the step performing, say, the DFT calculation with ABACUS softw
                             }
 ```
 
-One can see that an ABACUS image  and a more powerful machine with 32 cores and 64GB memories are selected.  
+One can see that the VASP image and a more powerful machine with 32 cores and 64GB memories are selected.  
 
 ## Fine-tune task
 A model fine-tune workflow is defined by the following paramters. One first specifies the workflow type in the `task` section,
@@ -142,7 +142,7 @@ The `exploration` section defines the parameters for molecular dynamics (MD) sim
 Within the task group settings, you define the configuration index number, the number of samples, simulation temperatures, pressures, time step, number of simulation steps, etc. In the mentioned task group, each MD simulation starts from 3 randomly chosen frames of the perturbed structures of the first initial configuration, as indicated in the `conf_idx` setting.
 
 
-The `fp` part sets the first principle calculation. Detailed parameters can be referenced in the DPGEN2 documentation. Below is an example configuration for running ABACUS:
+The `fp` part sets the first principle calculation. Detailed parameters can be referenced in the DPGEN2 documentation. Below is an example configuration for running VASP:
 
 ```json
 "fp": {
@@ -150,15 +150,15 @@ The `fp` part sets the first principle calculation. Detailed parameters can be r
     "task_max": 50,
     "extra_output_files:":[],
     "run_config": {
-        "command": "OMP_NUM_THREADS=4 mpirun -np 8 abacus | tee log"
+        "command": "source /opt/intel/oneapi/setvars.sh && mpirun -n 32 vasp_std"
         },
     "inputs_config": {
-        "input_file": "INPUT.scf",
+        "incar": "INPUT.scf",
         "pp_files": {
-            "Li": "./pp/Li_ONCV_PBE-1.0.upf",
-            "S":"./pp/S_ONCV_PBE-1.0.upf",
-            "Ge": "./pp/Ge_ONCV_PBE-1.0.upf",
-            "P": "./pp/P_ONCV_PBE-1.0.upf"
+            "Li": "POTCAR-Li",
+            "S":"POTCAR-S",
+            "Ge": "POTCAR-Ge",
+            "P": "POTCAR-P"
             }}
     }
 ```
@@ -195,6 +195,15 @@ The input script for tdistillation is actually very similar to that of fine-tune
             },
     "template_script": "train.json"
 },
-"exploration":{...}
+"exploration":{
+    ...,
+    "test_set_config":{
+        "test_size":0.2
+    }
+    }
 ```
-You need to specify the teacher model style and path to the teacher model file at the `inputs` part. Moreover, the relevant setting in the training configuration also needs to be modified, as the distilled model is essentially a simpler model trained from scratch instead of fine-tune.
+You need to specify the teacher model style and path to the teacher model file at the `inputs` part. The relevant setting in the training configuration also needs to be modified, as the distilled model is essentially a simpler model trained from scratch instead of fine-tune. 
+
+Moreover, a new entry `test_set_config` would be available in the `exploration` section, this setting determines how many labeled frame would serve as the test set (20 % in this case). 
+
+

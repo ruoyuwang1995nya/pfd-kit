@@ -521,7 +521,9 @@ class FlowGen:
         conf_selector = ConfSelectorFrames(
             render, config["fp"]["task_max"], conf_filters
         )
+        print(converge_config)
         conf_filters_conv = get_conf_filters_conv(converge_config.pop("conf_filter"))
+        print(len(conf_filters_conv._filters))
         # task
         init_training = config["task"]["init_training"]
         if init_training is False:

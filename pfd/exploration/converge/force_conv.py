@@ -35,8 +35,18 @@ class ForceConvRMSE(CheckConv):
                     converged = True
         else:
             weighted_rmse = reports.get_weighted_rmse_f()
+            logging.info(
+                "#### The weighted average of force RMSE is %.6f eV/Angstrom"
+                % weighted_rmse
+            )
             if weighted_rmse < conv_rmse:
+                logging.info(
+                    "#### Iteration converged! The converge criteria is %.6f eV/Angstrom"
+                    % conv_rmse
+                )
                 converged = True
+            else:
+                logging.info("#### Continue to the next iteration!")
         return converged, reports
 
     @classmethod
