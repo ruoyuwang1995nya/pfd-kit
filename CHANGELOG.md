@@ -1,6 +1,31 @@
 # CHANGELOG
 
 
+## v0.1.0 (2024-10-31)
+
+### Bug Fixes
+
+* fix: update I/O of steps ([`47da0d8`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/47da0d80e2f8eecbf6d0ac31a5c0da67de6116d3))
+
+* fix: update examples ([`9e2bf7e`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/9e2bf7e87c3b108c7cd7b13fc239584d98649a90))
+
+* fix: update package info ([`929a2fd`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/929a2fd02ab90b107d8c9277e59e2288b0ceb2d8))
+
+* fix: update script doc ([`c51cb80`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/c51cb808034f6865d706c089c749c36a8058be14))
+
+* fix: update input script doc ([`50196e9`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/50196e977f768e7204ba6761af903f61be3046de))
+
+### Features
+
+* feat: add conf filter in the check converge step ([`bddd99f`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/bddd99f590cf7b99bfebb16b26b6d123ff9deab7))
+
+### Unknown
+
+* Merge pull request #63 from ruoyuwang1995nya/devel
+
+feat: add conf filter in converge step ([`c8cd672`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/c8cd6726d589e385f41b4d396d05e170ffdbe252))
+
+
 ## v0.0.14 (2024-10-27)
 
 ### Bug Fixes
