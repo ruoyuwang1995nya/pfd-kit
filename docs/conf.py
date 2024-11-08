@@ -1,5 +1,11 @@
 from recommonmark.parser import CommonMarkParser
 from importlib.metadata import version as get_version
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath("."))
+# sys.path.insert(1, os.path.abspath('../'))
+import custom_directives
 
 project = "pfd-kit"
 copyright = "2024, Ruoyu Wang, Hongyu Wu"
@@ -34,3 +40,7 @@ source_suffix = {
 html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static", "images"]
 # html_css_files = ['custom.css']
+
+# Register the custom directives
+def setup(app):
+    custom_directives.setup(app)

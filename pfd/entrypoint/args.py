@@ -19,7 +19,7 @@ from pfd.train import train_styles
 from dpgen2.op.run_lmp import (
     RunLmp,
 )
-from dpgen2.utils import (
+from pfd.utils import (
     normalize_step_dict,
     step_conf_args,
 )
@@ -30,10 +30,6 @@ def make_link(content, ref_key):
     return (
         f"`{content} <{ref_key}_>`_" if not raw_anchor else f"`{content} <#{ref_key}>`_"
     )
-
-
-def task_dist():
-    return []
 
 
 def task_finetune():
@@ -48,7 +44,6 @@ def task_finetune():
 
 
 def variant_task():
-    doc = "Select task type"
     return Variant(
         "type",
         [Argument("finetune", dict, task_finetune()), Argument("dist", dict, [])],
@@ -79,7 +74,7 @@ def pert_gen():
             doc=doc_atom_pert_distance,
         ),
         Argument("atom_pert_fraction", float, optional=True, default=0.03),
-        Argument("pert_num", int, optional=True, default=1, doc=doc_atom_pert_distance),
+        Argument("pert_num", int, optional=True, default=1, doc=doc_pert_num),
     ]
 
 
@@ -89,7 +84,7 @@ def conf_gen_args():
         Argument(
             "init_configurations", dict, conf_args(), alias=["confs", "init_confs"]
         ),
-        Argument("pert_generation", List[dict], pert_gen()),
+        Argument("pert_generation", [dict, List[dict]], pert_gen()),
     ]
 
 
@@ -237,90 +232,13 @@ def lmp_args():
     ]
 
 
-def run_expl_caly_conf_args():
-    doc_caly_model_devi_group_size = "group size for model deviation."
-    doc_run_calypso_command = "command of running calypso."
-    doc_caly_run_dp_opt_command = "command of running optimization with dp."
-    return [
-        Argument(
-            "model_devi_group_size",
-            int,
-            optional=True,
-            doc=doc_caly_model_devi_group_size,
-        ),
-        Argument(
-            "run_calypso_command",
-            str,
-            optional=True,
-            default="calypso.x",
-            doc=doc_run_calypso_command,
-        ),
-        Argument(
-            "run_opt_command",
-            str,
-            optional=True,
-            doc=doc_caly_run_dp_opt_command,
-        ),
-    ]
-
-
-def caly_args():
-    doc_config = "Configuration of calypso exploration"
-    doc_max_numb_iter = "Maximum number of iterations per stage"
-    doc_fatal_at_max = (
-        "Fatal when the number of iteration per stage reaches the `max_numb_iter`"
-    )
-    doc_output_nopbc = "Remove pbc of the output configurations"
-    doc_convergence = "The method of convergence check."
-    doc_configuration = "A list of initial configurations."
-    doc_stages = (
-        "The definition of exploration stages of type `List[List[ExplorationTaskGroup]`. "
-        "The outer list provides the enumeration of the exploration stages. "
-        "Then each stage is defined by a list of exploration task groups. "
-        "Each task group is described in :ref:`the task group definition<task_group_sec>` "
-    )
-
-    return [
-        Argument(
-            "config",
-            dict,
-            run_expl_caly_conf_args(),
-            optional=True,
-            default=RunLmp.normalize_config({}),
-            doc=doc_config,
-        ),
-        Argument(
-            "max_numb_iter", int, optional=True, default=10, doc=doc_max_numb_iter
-        ),
-        Argument(
-            "fatal_at_max", bool, optional=True, default=True, doc=doc_fatal_at_max
-        ),
-        Argument(
-            "output_nopbc", bool, optional=True, default=False, doc=doc_output_nopbc
-        ),
-        Argument(
-            "convergence",
-            dict,
-            [],
-            [variant_conv()],
-            optional=False,
-            doc=doc_convergence,
-        ),
-        Argument("stages", List[List[dict]], optional=False, doc=doc_stages),
-    ]
-
-
 def variant_explore():
     doc = "The type of the exploration"
     doc_lmp = "The exploration by LAMMPS simulations"
-    doc_calypso = "The exploration by CALYPSO structure prediction"
     return Variant(
         "type",
         [
             Argument("lmp", dict, lmp_args(), doc=doc_lmp),
-            Argument("calypso", dict, caly_args(), doc=doc_calypso),
-            Argument("calypso:default", dict, caly_args(), doc=doc_calypso),
-            Argument("calypso:merge", dict, caly_args(), doc=doc_calypso),
         ],
         doc=doc,
     )
@@ -395,6 +313,9 @@ def input_args():
     doc_valid_data_prefix = "The prefix of validation data systems"
     doc_valid_sys = "The validation data systems"
     doc_valid_data_uri = "The URI of validation data"
+    doc_teacher_model_paths = "Path(s) for the teacher model"
+    doc_teacher_model_uri = "URI of the teacher model"
+    doc_teacher_model_style = "Type of the teacher model"
 
     return [
         Argument("type_map", List[str], optional=False, doc=doc_type_map),
@@ -472,6 +393,28 @@ def input_args():
             optional=True,
             default=None,
             doc=doc_valid_data_uri,
+        ),
+        Argument(
+            "teacher_models_paths",
+            [List[str], str],
+            optional=True,
+            default=None,
+            doc=doc_teacher_model_paths,
+        ),
+        Argument(
+            "teacher_models_uri",
+            str,
+            optional=True,
+            default=None,
+            doc=doc_teacher_model_uri,
+        ),
+        Argument(
+            "teacher_model_style",
+            str,
+            optional=True,
+            default="dp",
+            doc=doc_teacher_model_style,
+            alias=["teacher_stype", "teacher_models_stype"],
         ),
     ]
 
@@ -654,6 +597,7 @@ def submit_args(default_step_config=normalize_step_dict({})):
     doc_fp = "The configuration for FP"
     doc_name = "The workflow name, 'pfd' for default"
     doc_parallelism = "The parallelism for the workflow. Accept an int that stands for the maximum number of running pods for the workflow. None for default"
+    doc_test_set = "Set the portion of test set. Only available for `dist`"
 
     return (
         dflow_conf_args()
@@ -701,146 +645,6 @@ def submit_args(default_step_config=normalize_step_dict({})):
             Argument(
                 "exploration",
                 dict,
-                [],
-                [variant_explore()],
-                optional=False,
-                doc=doc_explore,
-                alias=["explore"],
-            ),
-            Argument("fp", dict, [], [variant_fp()], optional=True, doc=doc_fp),
-            Argument("name", str, optional=True, default="pfd", doc=doc_name),
-            Argument(
-                "parallelism", int, optional=True, default=None, doc=doc_parallelism
-            ),
-        ]
-    )
-
-
-def normalize(data, task: str):
-    default_step_config = normalize_step_dict(data.get("default_step_config", {}))
-    # nested arguments formatter
-    if task in ["ft", "finetune"]:
-        defs = submit_args(default_step_config)
-    elif task in ["dist", "distilllation"]:
-        defs = submit_dist_args(default_step_config)
-    else:
-        raise ValueError(
-            f"Invalid task type {task}. Only `finetune` and `distillation is allowed`"
-        )
-    base = Argument("base", dict, defs)
-    data = base.normalize_value(data, trim_pattern="_*")
-    # not possible to strictly check arguments, dirty hack!
-    base.check_value(data, strict=False)
-    return data
-
-
-def gen_doc(*, make_anchor=True, make_link=True, **kwargs):
-    if make_link:
-        make_anchor = True
-    sca = submit_args()
-    base = Argument("submit", dict, sca)
-    ptr = []
-    ptr.append(base.gen_doc(make_anchor=make_anchor, make_link=make_link, **kwargs))
-
-    key_words = []
-    for ii in "\n\n".join(ptr).split("\n"):
-        if "argument path" in ii:
-            key_words.append(ii.split(":")[1].replace("`", "").strip())
-    return "\n\n".join(ptr)
-
-
-def input_dist_args():
-    doc_teacher_model_paths = "Path(s) for the teacher model"
-    doc_teacher_model_uri = "URI of the teacher model"
-    doc_teacher_model_style = "Type of the teacher model"
-    op = input_args()
-    op.extend(
-        [
-            Argument(
-                "teacher_models_paths",
-                [List[str], str],
-                optional=True,
-                default=None,
-                doc=doc_teacher_model_paths,
-            ),
-            Argument(
-                "teacher_models_uri",
-                str,
-                optional=True,
-                default=None,
-                doc=doc_teacher_model_uri,
-            ),
-            Argument(
-                "teacher_model_style",
-                str,
-                optional=True,
-                default="dp",
-                doc=doc_teacher_model_style,
-                alias=["teacher_stype", "teacher_models_stype"],
-            ),
-        ]
-    )
-    return op
-
-
-## specifics to dist workflow
-def submit_dist_args(default_step_config=normalize_step_dict({})):
-    doc_bohrium_config = "Configurations for the Bohrium platform."
-    doc_step_configs = "Configurations for executing dflow steps"
-    doc_upload_python_packages = "Upload python package, for debug purpose"
-    doc_task = "Task type, `finetune` or `dist`"
-    doc_conf_gen = "The inputparameter and artifacts for confs generation"
-    doc_inputs = "The input parameter and artifacts for pfd"
-    doc_train = "The configuration for training"
-    doc_explore = "The configuration for exploration"
-    doc_name = "The workflow name, 'pfd' for default"
-    doc_parallelism = "The parallelism for the workflow. Accept an int that stands for the maximum number of running pods for the workflow. None for default"
-    doc_test_set = "Set the portion of test set"
-    return (
-        dflow_conf_args()
-        + default_step_config_args()
-        + [
-            Argument(
-                "bohrium_config",
-                dict,
-                bohrium_conf_args(),
-                optional=True,
-                default=None,
-                doc=doc_bohrium_config,
-            ),
-            Argument(
-                "step_configs",
-                dict,
-                pfd_step_config_args(default_step_config),
-                optional=True,
-                default={},
-                doc=doc_step_configs,
-            ),
-            Argument(
-                "upload_python_packages",
-                [List[str], str],
-                optional=True,
-                default=None,
-                doc=doc_upload_python_packages,
-                alias=["upload_python_package"],
-            ),
-            Argument(
-                "conf_generation",
-                dict,
-                conf_gen_args(),
-                optional=False,
-                doc=doc_conf_gen,
-            ),
-            # task formatter
-            Argument("task", dict, [], [variant_task()], optional=False, doc=doc_task),
-            # formatter for `input` section
-            Argument("inputs", dict, input_dist_args(), optional=False, doc=doc_inputs),
-            Argument(
-                "train", dict, [], [variant_train()], optional=False, doc=doc_train
-            ),
-            Argument(
-                "exploration",
-                dict,
                 [
                     Argument(
                         "test_set_config",
@@ -856,9 +660,34 @@ def submit_dist_args(default_step_config=normalize_step_dict({})):
                 doc=doc_explore,
                 alias=["explore"],
             ),
-            Argument("name", str, optional=True, default="pfd-dist", doc=doc_name),
+            Argument("fp", dict, [], [variant_fp()], optional=True, doc=doc_fp),
+            Argument("name", str, optional=True, default="pfd", doc=doc_name),
             Argument(
                 "parallelism", int, optional=True, default=None, doc=doc_parallelism
             ),
         ]
     )
+
+
+def normalize(data):
+    default_step_config = normalize_step_dict(data.get("default_step_config", {}))
+    defs = submit_args(default_step_config)
+    base = Argument("base", dict, defs)
+    data = base.normalize_value(data, trim_pattern="_*")
+    # not possible to strictly check arguments, dirty hack!
+    base.check_value(data, strict=False)
+    return data
+
+
+def gen_doc(*, make_anchor=True, make_link=True, **kwargs):
+    if make_link:
+        make_anchor = True
+    sca = submit_args()
+    base = Argument("submit", dict, sca)
+    ptr = []
+    ptr.append(base.gen_doc(make_anchor=make_anchor, make_link=make_link, **kwargs))
+    key_words = []
+    for ii in "\n\n".join(ptr).split("\n"):
+        if "argument path" in ii:
+            key_words.append(ii.split(":")[1].replace("`", "").strip())
+    return "\n\n".join(ptr)
