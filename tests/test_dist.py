@@ -3,7 +3,7 @@ import os
 import json
 import sys
 
-sys.path.append("../")
+# sys.path.append("../")
 import tempfile
 from pfd.entrypoint.submit import FlowGen
 from dflow.python import OPIO
@@ -26,9 +26,7 @@ class TestWorkDist(unittest.TestCase):
             json.dump({"foo": "foo"}, f, indent=4)
         self.config_param = {
             "default_step_config": {
-                "template_config": {
-                    "image": "registry.dp.tech/dptech/deepmd-kit:2024Q1-d23cf3e"
-                },
+                "template_config": {},
             },
             "task": {"type": "dist"},
             "inputs": {
@@ -91,10 +89,8 @@ class TestWorkDist(unittest.TestCase):
             },
         }
 
-    os.environ["DFLOW_DEBUG"] = "1"
-
     def test_wf_io(self):
-        assert FlowGen(self.config_param).submit(no_submission=True)
+        assert FlowGen(self.config_param, debug=True).submit(no_submission=True)
 
 
 if __name__ == "__main__":
