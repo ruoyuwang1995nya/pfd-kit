@@ -157,7 +157,6 @@ def make_dist_op(
     expl_dist_loop_op = ExplDistLoop(
         "expl-dist-loop", expl_dist_blk_op, upload_python_packages
     )
-
     dist_op = Distillation(
         "distillation",
         PertGen,
@@ -277,16 +276,16 @@ class FlowGen:
         debug: bool = False,
         download_path: Union[Path, str] = Path("./"),
     ):
-        self._wf_type = config["task"].get("type")
         self._download_path = download_path
         if debug is True:
             os.environ["DFLOW_DEBUG"] = "1"
-        if self._wf_type in ["dist", "finetune"]:
-            self._config = normalize_args(config, self._wf_type)
-            global_config_workflow(self._config)
-        else:
-            raise NotImplemented("Workflow types must be 'dist' or 'finetune'")
+        elif os.environ.get("DFLOW_DEBUG"):
+            del os.environ["DFLOW_DEBUG"]
+        self._config = normalize_args(config)
+        global_config_workflow(self._config)
+        print("dflow mode: %s" % dflow.config["mode"])
         self.workflow = Workflow(name=self._config["name"])
+        self._wf_type = config["task"].get("type")
         if self._wf_type == "dist":
             self._set_dist_wf(self._config)
         elif self.wf_type == "finetune":
@@ -362,9 +361,12 @@ class FlowGen:
             "labeled_data", False
         )
         collect_data_config["test_size"] = collect_data_config.get("test_size", 0.1)
-        inference_config = {"model": train_style}  # config["inference"]
-        dp_test_config = deepcopy(inference_config)
-        dp_test_config["task"] = "dp_test"
+        # inference_config = {"model": train_style}  # config["inference"]
+        # dp_test_config = deepcopy(inference_config)
+        # dp_test_config["task"] = "dp_test"
+        inference_config = config["inference"]
+        inference_config.update({"model": train_style})
+
         ## prepare artifacts
         # read training template
         if isinstance(config["train"]["template_script"], str):
@@ -412,7 +414,6 @@ class FlowGen:
             init_data = upload_artifact_and_print_uri(init_data, "init_data")
         else:
             init_data = upload_artifact([])
-
         # make distillation op
         dist_op = make_dist_op(
             teacher_model_style=teacher_model_style,
@@ -521,9 +522,7 @@ class FlowGen:
         conf_selector = ConfSelectorFrames(
             render, config["fp"]["task_max"], conf_filters
         )
-        print(converge_config)
         conf_filters_conv = get_conf_filters_conv(converge_config.pop("conf_filter"))
-        print(len(conf_filters_conv._filters))
         # task
         init_training = config["task"]["init_training"]
         if init_training is False:
@@ -727,14 +726,18 @@ class FlowGen:
                 self._moniter_ft()
 
 
-def successful_step_keys(wf):
+def successful_step_keys(wf, unsuccessful_step_keys: bool = False):
     all_step_keys = []
     steps = wf.query_step()
     # For reused steps whose startedAt are identical, sort them by key
     steps.sort(key=lambda x: "%s-%s" % (x.startedAt, x.key))
     for step in steps:
-        if step.key is not None and step.phase == "Succeeded":
-            all_step_keys.append(step.key)
+        if not unsuccessful_step_keys:
+            if step.key is not None and step.phase == "Succeeded":
+                all_step_keys.append(step.key)
+        else:
+            if step.key is not None:
+                all_step_keys.append(step.key)
     return all_step_keys
 
 
@@ -794,10 +797,8 @@ def fold_keys(all_step_keys):
     return folded_keys
 
 
-def get_resubmit_keys(
-    wf,
-):
-    all_step_keys = successful_step_keys(wf)
+def get_resubmit_keys(wf, unsuccessful_step_keys: bool = False):
+    all_step_keys = successful_step_keys(wf, unsuccessful_step_keys)
 
     step_keys = [
         "pert-gen",
@@ -842,16 +843,12 @@ def resubmit_workflow(
     list_steps=False,
     reuse=None,
     fold=False,
+    unsuccessful_step_keys: bool = False,
     **kwargs,
 ):
-    try:
-        wf_type = wf_config["task"]["type"]
-    except KeyError:
-        print("Invalid config file! Must specify task type!")
-        return
-    global_config_workflow(normalize_args(wf_config, wf_type))
+    global_config_workflow(normalize_args(wf_config))
     old_wf = Workflow(id=wfid)
-    folded_keys = get_resubmit_keys(old_wf)
+    folded_keys = get_resubmit_keys(old_wf, unsuccessful_step_keys)
     all_step_keys = sum(folded_keys.values(), [])
     if list_steps:
         prt_str = print_keys_in_nice_format(

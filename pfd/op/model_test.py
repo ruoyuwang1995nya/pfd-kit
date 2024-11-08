@@ -10,11 +10,8 @@ from pfd.exploration.inference import EvalModel, TestReports
 import logging
 
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[logging.FileHandler("test.log"), logging.StreamHandler()],
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
-logger = logging.getLogger(__name__)
 
 
 class ModelTestOP(OP):
@@ -44,11 +41,11 @@ class ModelTestOP(OP):
         self,
         ip: OPIO,
     ) -> OPIO:
+
         systems = ip["systems"]
         model_path = ip["model"]
         type_map = ip["type_map"]
         config = ip["inference_config"]
-
         model_type = config["model"]
         Eval = EvalModel.get_driver(model_type)
         res_total = []
@@ -56,7 +53,8 @@ class ModelTestOP(OP):
         res_dir = Path("result")
         res_dir.mkdir(exist_ok=True)
         evaluator = Eval(model=model_path)
-        logging.info("##### Number of systems: %03d" % len(systems))
+        print("handler", logging.getHandlerNames())
+        logging.info("##### Number of systems: %d" % len(systems))
         res_total = TestReports()
         for idx, sys in enumerate(systems):
             name = "sys_%03d_%s" % (idx, sys.name)

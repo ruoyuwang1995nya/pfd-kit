@@ -46,7 +46,10 @@ def task_finetune():
 def variant_task():
     return Variant(
         "type",
-        [Argument("finetune", dict, task_finetune()), Argument("dist", dict, [])],
+        [
+            Argument("finetune", dict, task_finetune(), alias=["ft"]),
+            Argument("dist", dict, [], alias=["distillation"]),
+        ],
     )
 
 

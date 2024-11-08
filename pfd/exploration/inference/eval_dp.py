@@ -97,13 +97,14 @@ class DPTest(EvalModel):
                 fmt="%.6f",
             )
             logging.info("#### Virial MAE: %.06f" % res.mae_v)
-            logging.info("#### Force RMSE: %.06f" % res.rmse_v)
+            logging.info("#### Virial RMSE: %.06f" % res.rmse_v)
         report = res.report()
         return res, report
 
     def inference(
         self, name: str = "default", prefix: Union[Path, str] = "./", **kwargs
     ):
+        max_force = kwargs.pop("max_force", None)
         if isinstance(prefix, str):
             prefix = Path(prefix)
         labeled_data = self._data.predict(self.model, **kwargs)
@@ -117,7 +118,7 @@ class DPTest(EvalModel):
         n_frame = cells.shape[0]
         clean_ls = [i for i in range(n_frame)]
         logging.info("#### Number of frames: %d" % n_frame)
-        if max_force := kwargs.get("max_force"):
+        if max_force:
             logging.info("#### Filtering by max force")
             for frame in range(n_frame):
                 if abs(forces[frame]).max() > max_force:
