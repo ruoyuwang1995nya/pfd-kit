@@ -1,6 +1,23 @@
 # CHANGELOG
 
 
+## v0.1.1 (2024-11-08)
+
+### Bug Fixes
+
+* fix: minor bugs ([`7e23548`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/7e235483ad0f9fb8cfbabc0d51862201f2989937))
+
+* fix: micelaneous ([`bb05c85`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/bb05c859bc6623e9821fd110bfcc78ef59e43388))
+
+* fix: add argument list for input script ([`0431790`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/0431790afe0d6d8e6369b2f2cc121f0816b6407b))
+
+### Unknown
+
+* Merge pull request #64 from ruoyuwang1995nya/devel
+
+fix: add argument doc for input script ([`47a3f77`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/47a3f7723fa9f4842fb40e5382b58bcef217dd09))
+
+
 ## v0.1.0 (2024-10-31)
 
 ### Bug Fixes
