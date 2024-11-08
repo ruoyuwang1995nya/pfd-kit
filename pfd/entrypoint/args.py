@@ -433,6 +433,13 @@ def aimd_args():
     ]
 
 
+def infer_args():
+    doc_max_force = "The max value of allowed atomic force"
+    return [
+        Argument("max_force", float, optional=True, default=None, doc=doc_max_force)
+    ]
+
+
 def dflow_conf_args():
     doc_dflow_config = "The configuration passed to dflow"
     doc_dflow_s3_config = "The S3 configuration passed to dflow"
@@ -595,6 +602,7 @@ def submit_args(default_step_config=normalize_step_dict({})):
     doc_conf_gen = "The inputparameter and artifacts for confs generation"
     doc_aimd = "The parameter for initial fp calculation"
     doc_inputs = "The input parameter and artifacts for pfd"
+    doc_infer = "The parameters for inference settings"
     doc_train = "The configuration for training"
     doc_explore = "The configuration for exploration"
     doc_fp = "The configuration for FP"
@@ -642,6 +650,14 @@ def submit_args(default_step_config=normalize_step_dict({})):
             # formatter for `input` section
             Argument("inputs", dict, input_args(), optional=False, doc=doc_inputs),
             Argument("aimd", dict, aimd_args(), optional=True, doc=doc_aimd),
+            Argument(
+                "inference",
+                dict,
+                infer_args(),
+                optional=True,
+                default={},
+                doc=doc_infer,
+            ),
             Argument(
                 "train", dict, [], [variant_train()], optional=False, doc=doc_train
             ),
