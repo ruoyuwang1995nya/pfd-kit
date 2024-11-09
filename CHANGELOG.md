@@ -1,6 +1,19 @@
 # CHANGELOG
 
 
+## v0.1.3 (2024-11-09)
+
+### Bug Fixes
+
+* fix: update examples ([`e403a41`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/e403a417317ec74e202315da18de62d09f8eaa73))
+
+### Unknown
+
+* Merge pull request #66 from ruoyuwang1995nya/devel
+
+fix: update examples ([`f1f0342`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/f1f03422949a89d09538e0baa2ae23c6da61576c))
+
+
 ## v0.1.2 (2024-11-09)
 
 ### Bug Fixes
