@@ -53,7 +53,6 @@ class ModelTestOP(OP):
         res_dir = Path("result")
         res_dir.mkdir(exist_ok=True)
         evaluator = Eval(model=model_path)
-        print("handler", logging.getHandlerNames())
         logging.info("##### Number of systems: %d" % len(systems))
         res_total = TestReports()
         for idx, sys in enumerate(systems):
