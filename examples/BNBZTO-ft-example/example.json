@@ -268,6 +268,7 @@
             "Ts",
             "Og"
         ],
+        "base_model_path": "YOURMODEL_NAME",
         "_comment": "you can set 'init_data_sys' or 'init_data_url'"
     },
     "conf_generation": {
@@ -383,14 +384,9 @@
         "comment":"Training script for downstream DeePMD model",
         "type": "dp",
         "config": {
-            "impl": "pytorch",
-            "init_model_policy": "no",
-            "init_model_with_finetune":true,
-            "_comment": "all"
+            "impl": "pytorch"
         },
         "template_script": "train.json",
-        "init_models_paths":["YOURMODEL_NAME"],
-        "numb_models":1,
         "_comment": "the initial pre-trained model at 'init_models_paths'"
     }
 }

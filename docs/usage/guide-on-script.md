@@ -89,12 +89,12 @@ which is `finetune` in this case.
     }
 ```
 The `inputs` section includes essential user input parameters. Here one needs to specify `type_map`, which maps the type embedding of pretrained model 
-to corresponding element name.
+to corresponding element name. The path to pretrained base model also needs to be provided.
 
 ```json
 "inputs":{
     "type_map":["Li","..."],
-    "base_model_path":["path_to_teacher_model"]
+    "base_model_path":["path_to_base_model"]
 }
 ```
 
@@ -185,7 +185,7 @@ The input script for tdistillation is actually very similar to that of fine-tune
 "task":{"type":"dist"},
 "inputs":{
     "type_map":["..."],
-    "teacher_models_paths":"path_to_teacher_model",
+    "teacher_model_path":"path_to_teacher_model",
     "teacher_model_style":"dp"
     },
 "conf_generation":{...},

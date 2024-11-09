@@ -33,9 +33,9 @@ cd pfd-kit && pip install .
 ## 3. Quick start
 PFD-kit comes with a simple CLI interface. For instance, a finetune workflow can be submitted using following command:
 ```shell
-pfd submit finetune.json -t finetune
+pfd submit finetune.json
 ```
-The `finetune.json` specifies imput parameters of the finetune task, whose details can be found in the `examples` directory. 
+The `finetune.json` specifies imput parameters of the finetune task, whose details can be found in the online [documentation](https://ruoyuwang1995nya.github.io/pfd-kit/). 
 
 ## 4. Userguide
 Examples of json input file for model fine-tune and distillation can be found in the `examples` directory. The complete documentation of the latest version PFD-kit can be found [here](https://ruoyuwang1995nya.github.io/pfd-kit/)
