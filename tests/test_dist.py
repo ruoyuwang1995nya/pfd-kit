@@ -3,7 +3,7 @@ import os
 import json
 import sys
 
-# sys.path.append("../")
+sys.path.append("../")
 import tempfile
 from pfd.entrypoint.submit import FlowGen
 from dflow.python import OPIO
@@ -32,11 +32,10 @@ class TestWorkDist(unittest.TestCase):
             "inputs": {
                 "type_map": ["foo"],
                 "mass_map": [1.0],
-                "teacher_models_paths": [self.model],
+                "base_model_path": [self.model],
             },
-            "conf_generation": {
-                "init_configurations": {
-                    "type": "file",
+            "configurations": {
+                "init_confs": {
                     "prefix": "./",
                     "fmt": "vasp/poscar",
                     "files": [self.poscar],
@@ -51,8 +50,6 @@ class TestWorkDist(unittest.TestCase):
                 ],
             },
             "exploration": {
-                "init_training": True,
-                "skip_aimd": True,
                 "max_iter": 1,
                 "converge_config": {"type": "energy_rmse", "RMSE": 0.01},
                 "filter": [{"type": "distance"}],
@@ -82,9 +79,8 @@ class TestWorkDist(unittest.TestCase):
                 ],
             },
             "train": {
-                "comment": "Training script for downstream DeePMD model",
                 "type": "dp",
-                "config": {"impl": "pytorch", "init_model_policy": "no"},
+                "config": {"impl": "pytorch"},
                 "template_script": self.train_script,
             },
         }

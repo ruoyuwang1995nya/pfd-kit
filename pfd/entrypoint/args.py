@@ -56,10 +56,10 @@ def variant_task():
 def conf_args():
     doc_fmt = "Format of input structure files"
     return [
-        Argument("type", str, optional=True, default="file"),
+        # Argument("type", str, optional=True, default="file"),
         Argument("prefix", str, optional=True, default=None),
         Argument("fmt", str, optional=True, default="vasp/poscar", doc=doc_fmt),
-        Argument("files", [str, List[str]], optional=True),
+        Argument("confs_paths", [str, List[str]], optional=True, alias=["files"]),
         Argument("confs_uri", [str, List[str]], optional=True, default=None),
     ]
 
@@ -82,12 +82,17 @@ def pert_gen():
 
 
 def conf_gen_args():
-    doc = "Generation of atomic configuration for pfd exploration"
+    doc_init_conf = "The initial configurations for PFD workflow"
+    doc_pert_gen = "Generation of perturbed structures for PFD exploration"
     return [
         Argument(
-            "init_configurations", dict, conf_args(), alias=["confs", "init_confs"]
+            "init_confs",
+            dict,
+            conf_args(),
+            alias=["confs", "init_configurations"],
+            doc=doc_init_conf,
         ),
-        Argument("pert_generation", [dict, List[dict]], pert_gen()),
+        Argument("pert_generation", [dict, List[dict]], pert_gen(), doc=doc_pert_gen),
     ]
 
 
@@ -289,36 +294,35 @@ def variant_fp():
 
 
 def input_args():
-    doc_type_map = 'The type map. e.g. ["Al", "Mg"]. Al and Mg will have type 0 and 1, respectively.'
+    """
+    The input parameters and artifacts of PFD workflow
+    """
+    doc_type_map = 'The type map. e.g. ["Al", "Mg"]. Element in dpdata format.'
     doc_mass_map = "The mass map. e.g. [27., 24.]. Al and Mg will be set with mass 27. and 24. amu, respectively."
-    doc_mixed_type = "Use `deepmd/npy/mixed` format for storing training data."
-    doc_do_finetune = (
-        "Finetune the pretrained model before the first iteration. If it is set to True, then an additional step, finetune-step, "
-        'which is based on a branch of "PrepRunDPTrain," will be added before the dpgen_step. In the '
-        'finetune-step, the internal flag finetune_mode is set to "finetune," which means SuperOP "PrepRunDPTrain" '
-        'is now used as the "Finetune." In this step, we finetune the pretrained model in the train step and modify '
-        'the template after training. After that, in the normal dpgen-step, the flag do_finetune is set as "train-init," '
-        'which means we use `--init-frz-model` to train based on models from the previous iteration. The "do_finetune" flag '
-        'is set to False by default, while the internal flag finetune_mode is set to "no," which means anything related '
-        "to finetuning will not be done."
-    )
-    doc_do_finetune = textwrap.dedent(doc_do_finetune)
+    # doc_mixed_type = "Use `deepmd/npy/mixed` format for storing training data."
     doc_init_data_prefix = "The prefix of initial data systems"
     doc_init_sys = "The inital data systems"
     doc_init_data_uri = "The URI of initial data"
-    doc_multitask = "Do multitask training"
-    doc_head = "Head to use in the multitask training"
-    doc_multi_init_data = (
-        "The inital data for multitask, it should be a dict, whose keys are task names and each value is a dict"
-        "containing fields `prefix` and `sys` for initial data of each task"
-    )
-    doc_multi_init_data_uri = "The URI of initial data for multitask"
+    # Hide these settings in the input section
+    # doc_multitask = "Do multitask training"
+    # doc_head = "Head to use in the multitask training"
+    # doc_multi_init_data = (
+    #    "The inital data for multitask, it should be a dict, whose keys are task names and each value is a dict"
+    #    "containing fields `prefix` and `sys` for initial data of each task"
+    # )
+    # doc_multi_init_data_uri = "The URI of initial data for multitask"
     doc_valid_data_prefix = "The prefix of validation data systems"
     doc_valid_sys = "The validation data systems"
     doc_valid_data_uri = "The URI of validation data"
-    doc_teacher_model_paths = "Path(s) for the teacher model"
-    doc_teacher_model_uri = "URI of the teacher model"
-    doc_teacher_model_style = "Type of the teacher model"
+    doc_base_model_paths = (
+        "Path to the base model."
+        "In `finetune` task, this is the path to the pretrained model."
+        "In `distillation` task, this is the path to the teacher model."
+    )
+    doc_base_model_paths = textwrap.dedent(doc_base_model_paths)
+    doc_base_model_uri = "URI of the base model."
+    doc_base_model_style = "Type of the base model"
+    # doc_student_model_style = "Type of the student model in `distillation` task"
 
     return [
         Argument("type_map", List[str], optional=False, doc=doc_type_map),
@@ -330,10 +334,7 @@ def input_args():
             default=None,
             doc=doc_init_data_prefix,
         ),
-        Argument("mixed_type", bool, optional=True, default=False, doc=doc_mixed_type),
-        Argument(
-            "do_finetune", bool, optional=True, default=False, doc=doc_do_finetune
-        ),
+        # Argument("mixed_type", bool, optional=True, default=False, doc=doc_mixed_type),
         Argument(
             "init_data_sys",
             [List[str], str],
@@ -347,34 +348,6 @@ def input_args():
             optional=True,
             default=None,
             doc=doc_init_data_uri,
-        ),
-        Argument(
-            "multitask",
-            bool,
-            optional=True,
-            default=False,
-            doc=doc_multitask,
-        ),
-        Argument(
-            "head",
-            str,
-            optional=True,
-            default=None,
-            doc=doc_head,
-        ),
-        Argument(
-            "multi_init_data",
-            dict,
-            optional=True,
-            default=None,
-            doc=doc_multi_init_data,
-        ),
-        Argument(
-            "multi_init_data_uri",
-            str,
-            optional=True,
-            default=None,
-            doc=doc_multi_init_data_uri,
         ),
         Argument(
             "valid_data_prefix",
@@ -398,26 +371,28 @@ def input_args():
             doc=doc_valid_data_uri,
         ),
         Argument(
-            "teacher_models_paths",
+            "base_model_path",
             [List[str], str],
             optional=True,
             default=None,
-            doc=doc_teacher_model_paths,
+            alias=["teacher_model_path", "pretrain_model_path", "teacher_models_paths"],
+            doc=doc_base_model_paths,
         ),
         Argument(
-            "teacher_models_uri",
+            "base_model_uri",
             str,
             optional=True,
             default=None,
-            doc=doc_teacher_model_uri,
+            alias=["teacher_model_uri", "pretrain_model_uri"],
+            doc=doc_base_model_uri,
         ),
         Argument(
-            "teacher_model_style",
+            "base_model_style",
             str,
             optional=True,
             default="dp",
-            doc=doc_teacher_model_style,
-            alias=["teacher_stype", "teacher_models_stype"],
+            doc=doc_base_model_style,
+            alias=["teacher_model_style"],
         ),
     ]
 
@@ -594,26 +569,20 @@ def pfd_step_config_args(default_config):
     ]
 
 
-def submit_args(default_step_config=normalize_step_dict({})):
+def wf_args(default_step_config=normalize_step_dict({})):
+    doc_name = "The workflow name, 'pfd' for default"
     doc_bohrium_config = "Configurations for the Bohrium platform."
     doc_step_configs = "Configurations for executing dflow steps"
     doc_upload_python_packages = "Upload python package, for debug purpose"
-    doc_task = "Task type, `finetune` or `dist`"
-    doc_conf_gen = "The inputparameter and artifacts for confs generation"
-    doc_aimd = "The parameter for initial fp calculation"
-    doc_inputs = "The input parameter and artifacts for pfd"
-    doc_infer = "The parameters for inference settings"
-    doc_train = "The configuration for training"
-    doc_explore = "The configuration for exploration"
-    doc_fp = "The configuration for FP"
-    doc_name = "The workflow name, 'pfd' for default"
     doc_parallelism = "The parallelism for the workflow. Accept an int that stands for the maximum number of running pods for the workflow. None for default"
-    doc_test_set = "Set the portion of test set. Only available for `dist`"
-
     return (
-        dflow_conf_args()
+        [Argument("name", str, optional=True, default="pfd", doc=doc_name)]
+        + dflow_conf_args()
         + default_step_config_args()
         + [
+            Argument(
+                "parallelism", int, optional=True, default=None, doc=doc_parallelism
+            ),
             Argument(
                 "bohrium_config",
                 dict,
@@ -638,53 +607,92 @@ def submit_args(default_step_config=normalize_step_dict({})):
                 doc=doc_upload_python_packages,
                 alias=["upload_python_package"],
             ),
-            Argument(
-                "conf_generation",
-                dict,
-                conf_gen_args(),
-                optional=False,
-                doc=doc_conf_gen,
-            ),
-            # task formatter
-            Argument("task", dict, [], [variant_task()], optional=False, doc=doc_task),
-            # formatter for `input` section
-            Argument("inputs", dict, input_args(), optional=False, doc=doc_inputs),
-            Argument("aimd", dict, aimd_args(), optional=True, doc=doc_aimd),
-            Argument(
-                "inference",
-                dict,
-                infer_args(),
-                optional=True,
-                default={},
-                doc=doc_infer,
-            ),
-            Argument(
-                "train", dict, [], [variant_train()], optional=False, doc=doc_train
-            ),
-            Argument(
-                "exploration",
-                dict,
-                [
-                    Argument(
-                        "test_set_config",
-                        dict,
-                        optional=True,
-                        default={"test_size": 0.1},
-                        alias=["test_set"],
-                        doc=doc_test_set,
-                    )
-                ],
-                [variant_explore()],
-                optional=False,
-                doc=doc_explore,
-                alias=["explore"],
-            ),
-            Argument("fp", dict, [], [variant_fp()], optional=True, doc=doc_fp),
-            Argument("name", str, optional=True, default="pfd", doc=doc_name),
-            Argument(
-                "parallelism", int, optional=True, default=None, doc=doc_parallelism
-            ),
         ]
+    )
+
+
+def task_args():
+    doc_task = "Task type, `finetune` or `dist`"
+    doc_inputs = "The input parameter and artifacts for pfd"
+    return [
+        Argument("task", dict, [], [variant_task()], optional=False, doc=doc_task),
+        Argument("inputs", dict, input_args(), optional=False, doc=doc_inputs),
+    ]
+
+
+def conf_generation_args():
+    doc_conf_gen = "The inputparameter and artifacts for confs generation"
+    return [
+        Argument(
+            "conf_generation",
+            dict,
+            conf_gen_args(),
+            # pert_gen(),
+            optional=False,
+            alias=["configurations"],
+            doc=doc_conf_gen,
+        ),
+    ]
+
+
+def training_args():
+    doc_train = "The configuration for training"
+    return [
+        Argument("train", dict, [], [variant_train()], optional=False, doc=doc_train),
+    ]
+
+
+def label_args():
+    doc_fp = "The configuration for FP"
+    doc_aimd = "The parameter for initial fp calculation"
+    doc_infer = "The parameters for inference settings"
+    return [
+        Argument("fp", dict, [], [variant_fp()], optional=True, doc=doc_fp),
+        Argument("aimd", dict, aimd_args(), optional=True, doc=doc_aimd),
+        Argument(
+            "inference",
+            dict,
+            infer_args(),
+            optional=True,
+            default={},
+            doc=doc_infer,
+        ),
+    ]
+
+
+def explore_args():
+    doc_test_set = "Set the portion of test set. Only available for `dist`"
+    doc_explore = "The configuration for exploration"
+    return [
+        Argument(
+            "exploration",
+            dict,
+            [
+                Argument(
+                    "test_set_config",
+                    dict,
+                    optional=True,
+                    default={"test_size": 0.1},
+                    alias=["test_set"],
+                    doc=doc_test_set,
+                )
+            ],
+            [variant_explore()],
+            optional=False,
+            doc=doc_explore,
+            alias=["explore"],
+        ),
+    ]
+
+
+def submit_args(default_step_config=normalize_step_dict({})):
+    return (
+        wf_args(default_step_config)
+        + task_args()
+        + conf_generation_args()
+        + training_args()
+        + label_args()
+        + explore_args()
     )
 
 

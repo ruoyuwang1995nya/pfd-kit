@@ -97,7 +97,7 @@ class PertGen(OP):
             pert_num = pert_param.get("pert_num", 200)
             atom_pert_distance = pert_param.get("atom_pert_distance", 0.2)
             atom_pert_style = pert_param.get("atom_pert_style", "normal")
-            fmt = gen_config["init_configurations"]["fmt"]
+            fmt = gen_config["init_confs"]["fmt"]
             print(atom_pert_distance)
             orig_sys = dpdata.System(str(init_confs[ii]), fmt=fmt)
             pert_sys = orig_sys.perturb(

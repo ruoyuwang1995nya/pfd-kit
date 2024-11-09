@@ -354,16 +354,12 @@ class FlowGen:
         # train (student model) style
         train_style = config["train"]["type"]
         train_config = config["train"]["config"]
-        numb_models = config["train"]["numb_models"]
         # others
         collect_data_config = config["exploration"].get("test_set_config", {})
         collect_data_config["labeled_data"] = collect_data_config.get(
             "labeled_data", False
         )
         collect_data_config["test_size"] = collect_data_config.get("test_size", 0.1)
-        # inference_config = {"model": train_style}  # config["inference"]
-        # dp_test_config = deepcopy(inference_config)
-        # dp_test_config["task"] = "dp_test"
         inference_config = config["inference"]
         inference_config.update({"model": train_style})
 
@@ -376,34 +372,38 @@ class FlowGen:
             template_script = config["train"]["template_script"]
         else:
             template_script = {}
+
         # init_confs
-        if config["conf_generation"]["init_configurations"]["confs_uri"] is not None:
+        if config["conf_generation"]["init_confs"]["confs_uri"] is not None:
             init_confs = get_artifact_from_uri(
-                config["conf_generation"]["init_configurations"]["confs_uri"]
+                config["conf_generation"]["init_confs"]["confs_uri"]
             )
-        elif config["conf_generation"]["init_configurations"]["files"] is not None:
-            init_confs_prefix = config["conf_generation"]["init_configurations"][
-                "prefix"
-            ]
-            init_confs = config["conf_generation"]["init_configurations"]["files"]
+        elif config["conf_generation"]["init_confs"]["confs_paths"] is not None:
+            init_confs_prefix = config["conf_generation"]["init_confs"]["prefix"]
+            init_confs = config["conf_generation"]["init_confs"]["confs_paths"]
             init_confs = get_systems_from_data(init_confs, init_confs_prefix)
             init_confs = upload_artifact_and_print_uri(init_confs, "init_confs")
         else:
             raise RuntimeError("init_confs must be provided")
+
         # teacher models
-        teacher_model_style = config["inputs"]["teacher_model_style"]
-        teacher_models_paths = config["inputs"]["teacher_models_paths"]
+        teacher_model_style = config["inputs"]["base_model_style"]
+        print("teacher model style: %s" % teacher_model_style)
+        teacher_models_paths = config["inputs"]["base_model_path"]
         print("Using teacher model at: %s" % teacher_models_paths)
-        if config["inputs"]["teacher_models_uri"] is not None:
-            print("Using uploaded model at: ", config["inputs"]["teacher_models_uri"])
-            teacher_models = get_artifact_from_uri(config["train"]["init_models_uri"])
+        if config["inputs"]["base_model_uri"] is not None:
+            print("Using uploaded model at: ", config["inputs"]["base_model_uri"])
+            teacher_models = get_artifact_from_uri(config["inputs"]["base_model_uri"])
         elif teacher_models_paths is not None:
             teacher_models = upload_artifact_and_print_uri(
                 teacher_models_paths, "teacher_models"
             )
         else:
-            raise FileNotFoundError("Pre-trained model must exist!")
-        scheduler_config = {"model_style": train_style, "explore_style": explore_style}
+            raise FileNotFoundError("Teacher model must exist!")
+        scheduler_config = {
+            "model_style": teacher_model_style,
+            "explore_style": explore_style,
+        }
         # init_data
         if config["inputs"]["init_data_uri"] is not None:
             init_data = get_artifact_from_uri(config["inputs"]["init_data_uri"])
@@ -414,6 +414,7 @@ class FlowGen:
             init_data = upload_artifact_and_print_uri(init_data, "init_data")
         else:
             init_data = upload_artifact([])
+        print("student model style: %s" % train_style)
         # make distillation op
         dist_op = make_dist_op(
             teacher_model_style=teacher_model_style,
@@ -440,7 +441,7 @@ class FlowGen:
                 "mass_map": mass_map,
                 "pert_config": pert_config,
                 "expl_stages": expl_stages,
-                "numb_models": numb_models,
+                "numb_models": 1,
                 "explore_config": explore_config,
                 "converge_config": converge_config,
                 "conf_filters_conv": conf_filters_conv,
@@ -508,7 +509,9 @@ class FlowGen:
             mass_map = [getattr(elements, ii).mass for ii in type_map]
         train_style = config["train"]["type"]
         train_config = config["train"]["config"]
-        numb_models = config["train"]["numb_models"]
+        if train_style == "dp":
+            train_config.update({"init_model_with_finetune": True})
+        numb_models = 1
         pert_config = config["conf_generation"]
         explore_style = config["exploration"]["type"]
         expl_stages = config["exploration"]["stages"]
@@ -542,20 +545,20 @@ class FlowGen:
         # read training template
         with open(config["train"]["template_script"], "r") as fp:
             template_script = json.load(fp)
+
         # init_confs
-        if config["conf_generation"]["init_configurations"]["confs_uri"] is not None:
+        if config["conf_generation"]["init_confs"]["confs_uri"] is not None:
             init_confs = get_artifact_from_uri(
-                config["conf_generation"]["init_configurations"]["confs_uri"]
+                config["conf_generation"]["init_confs"]["confs_uri"]
             )
-        elif config["conf_generation"]["init_configurations"]["files"] is not None:
-            init_confs_prefix = config["conf_generation"]["init_configurations"][
-                "prefix"
-            ]
-            init_confs = config["conf_generation"]["init_configurations"]["files"]
+        elif config["conf_generation"]["init_confs"]["confs_paths"] is not None:
+            init_confs_prefix = config["conf_generation"]["init_confs"]["prefix"]
+            init_confs = config["conf_generation"]["init_confs"]["confs_paths"]
             init_confs = get_systems_from_data(init_confs, init_confs_prefix)
             init_confs = upload_artifact_and_print_uri(init_confs, "init_confs")
         else:
             raise RuntimeError("init_confs must be provided")
+
         # init_data
         if config["inputs"]["init_data_uri"] is not None:
             init_data = get_artifact_from_uri(config["inputs"]["init_data_uri"])
@@ -567,14 +570,12 @@ class FlowGen:
         else:
             init_data = upload_artifact([])
         iter_data = upload_artifact([])
-        init_models_paths = config["train"]["init_models_paths"]
-        if config["train"]["init_models_uri"] is not None:
-            print("Using uploaded model at: ", config["train"]["init_models_uri"])
-            init_models = get_artifact_from_uri(config["train"]["init_models_uri"])
-        elif init_models_paths is not None:
-            init_models = upload_artifact_and_print_uri(
-                init_models_paths, "init_models"
-            )
+        init_models_paths = config["inputs"]["base_model_path"]
+        if config["inputs"]["base_model_uri"] is not None:
+            print("Using uploaded model at: ", config["inputs"]["base_model_uri"])
+            init_models = get_artifact_from_uri(config["inputs"]["base_model_uri"])
+        elif init_models_paths:
+            init_models = upload_artifact_and_print_uri(init_models_paths, "base_model")
         else:
             raise FileNotFoundError("Pre-trained model must exist!")
 

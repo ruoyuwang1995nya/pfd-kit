@@ -241,7 +241,7 @@
             "Ts",
             "Og"
         ],
-        "_comment": "you can set 'init_data_sys' or 'init_data_url'"
+        "base_model_path":"OpenLAM_2.1.0_27heads_2024Q1.pt"
     },
     "conf_generation": {
         "init_configurations":
@@ -338,14 +338,9 @@
         "comment":"Training script for downstream DeePMD model",
         "type": "dp",
         "config": {
-            "impl": "pytorch",
-            "init_model_policy": "no",
-            "init_model_with_finetune":true,
-            "_comment": "all"
+            "impl": "pytorch"
         },
         "template_script": "train.json",
-        "init_models_paths":["OpenLAM_2.1.0_27heads_2024Q1.pt"],
-        "numb_models":1,
         "_comment": "the initial pre-trained model at 'init_models_paths'"
     }
 }

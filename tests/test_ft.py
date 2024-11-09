@@ -3,7 +3,7 @@ import os
 import json
 import sys
 
-# sys.path.append("../")
+sys.path.append("../")
 import tempfile
 from pfd.entrypoint.submit import FlowGen
 from dflow.python import OPIO
@@ -41,10 +41,13 @@ class TestWorkflowFinetune(unittest.TestCase):
                 "template_config": {},
             },
             "task": {"type": "finetune", "init_training": True, "skip_aimd": False},
-            "inputs": {"type_map": ["foo"], "mass_map": [1.0]},
-            "conf_generation": {
-                "init_configurations": {
-                    "type": "file",
+            "inputs": {
+                "type_map": ["foo"],
+                "mass_map": [1.0],
+                "base_model_path": [self.model],
+            },
+            "configurations": {
+                "init_confs": {
                     "prefix": "./",
                     "fmt": "vasp/poscar",
                     "files": [self.poscar],
@@ -110,14 +113,8 @@ class TestWorkflowFinetune(unittest.TestCase):
             "train": {
                 "comment": "Training script for downstream DeePMD model",
                 "type": "dp",
-                "config": {
-                    "impl": "pytorch",
-                    "init_model_policy": "no",
-                    "init_model_with_finetune": True,
-                },
+                "config": {"impl": "pytorch"},
                 "template_script": self.train_script,
-                "init_models_paths": [self.model],
-                "numb_models": 1,
             },
         }
 

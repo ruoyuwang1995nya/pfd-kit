@@ -187,7 +187,7 @@
             "Og"
         ],
         "teacher_models_paths":"path_to_teacher_model",
-        "teacher_models_styles":"dp"
+        "teacher_model_styles":"dp"
     },
     "train": {
         "_comment":"Training setting for Distilled DeePMD model",
