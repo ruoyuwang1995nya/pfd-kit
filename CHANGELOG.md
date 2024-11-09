@@ -1,6 +1,35 @@
 # CHANGELOG
 
 
+## v0.1.2 (2024-11-09)
+
+### Bug Fixes
+
+* fix: update docs ([`a063110`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/a063110dd24868033a0195f43fa0b56fd7d29e1b))
+
+* fix: update an advanced finetune demo —— BNBZTO ([`2afc4c2`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/2afc4c253a5d16d06135f69bedbb45f282546134))
+
+* fix: add new example folder ([`4e2eb4c`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/4e2eb4cf9fd896a900feda3ec12508eec09da34b))
+
+* fix: unit test of pert_gen ([`526b0e9`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/526b0e9ddd39c08323c95cfd40e1c7fdd1cc46a6))
+
+* fix: update docs ([`6f6cae2`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/6f6cae2a912f56ade60e116d437203623cdc71de))
+
+* fix: update input script ([`5ccaf95`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/5ccaf952329c066a42fe87863c98a7c683db5bfc))
+
+* fix: bugs with logging ([`59e4972`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/59e49727fbae8ebe4491231fc7ee7efbc7c2cab6))
+
+### Unknown
+
+* Merge pull request #65 from ruoyuwang1995nya/devel
+
+fix: update input script ([`80008c0`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/80008c06dd631a4253ace4684c659a0af6713aa2))
+
+* Merge pull request #54 from ruoyuwang1995nya/exam
+
+fix: add an advanced finetune demo upadate ([`a5384a4`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/a5384a47bc9c9ca27d48a54534852430a8feacbd))
+
+
 ## v0.1.1 (2024-11-08)
 
 ### Bug Fixes
