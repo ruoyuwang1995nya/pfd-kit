@@ -1,0 +1,396 @@
+{
+    "name":"test-interface",
+    "bohrium_config": {
+        "username": "",
+        "password": "",
+        "project_id": 1111,
+        "_comment": "all"
+    },
+    "default_step_config": {
+        "template_config": {
+            "image": "registry.dp.tech/dptech/deepmd-kit:2024Q1-d23cf3e"
+        },
+        "executor": {
+            "type": "dispatcher",
+            "image_pull_policy": "IfNotPresent",
+            "machine_dict": {
+                "batch_type": "Bohrium",
+                "context_type": "Bohrium",
+                "remote_profile": {
+                    "input_data": {
+                        "job_type": "container",
+                        "platform": "ali",
+                        "scass_type": "c2_m4_cpu"
+                    }
+                }
+            }
+        }
+    },
+    "step_configs": {
+        "run_fp_config": {
+            "template_config": {
+                "image": "registry.dp.tech/dptech/vasp:5.4.4",
+                "_comment": "all"
+            },
+            "continue_on_success_ratio": 0.8,
+            "executor": {
+                "type": "dispatcher",
+                "retry_on_submission_error": 10,
+                "image_pull_policy": "IfNotPresent",
+                "machine_dict": {
+                    "batch_type": "Bohrium",
+                    "context_type": "Bohrium",
+                    "remote_profile": {
+                        "input_data": {
+                            "job_type": "container",
+                            "platform": "ali",
+                            "scass_type": "c16_m32_cpu"
+                        }
+                    }
+                }
+            },
+            "template_slice_config": {
+                "group_size": 5,
+                "pool_size": 1
+            },
+            "_comment": "all"
+        },
+        "run_explore_config": {
+            "template_config": {
+                "image": "registry.dp.tech/dptech/deepmd-kit:2024Q1-d23cf3e"
+            },
+            "continue_on_success_ratio": 0.8,
+            "executor": {
+                "type": "dispatcher",
+                "image_pull_policy": "IfNotPresent",
+                "machine_dict": {
+                    "batch_type": "Bohrium",
+                    "context_type": "Bohrium",
+                    "remote_profile": {
+                        "input_data": {
+                            "job_type": "container",
+                            "platform": "ali",
+                            "scass_type": "1 * NVIDIA V100_32g"
+                        }
+                    }
+                }
+            }
+        },
+        "run_train_config": { 
+            "template_config": {
+                "image": "registry.dp.tech/dptech/deepmd-kit:2024Q1-d23cf3e"
+            },
+            "executor": {
+                "type": "dispatcher",
+                "retry_on_submission_error": 10,
+                "image_pull_policy": "IfNotPresent",
+                "machine_dict": {
+                    "batch_type": "Bohrium",
+                    "context_type": "Bohrium",
+                    "remote_profile": {
+                        "input_data": {
+                            "job_type": "container",
+                            "platform": "ali",
+                            "scass_type": "1 * NVIDIA V100_32g"
+                        }
+                    }
+                }
+            }
+        },
+        "select_confs_config": { 
+            "template_config": {
+                "image": "registry.dp.tech/dptech/deepmd-kit:v3.0.0a1-2024Q1"
+            },
+            "executor": {
+                "type": "dispatcher",
+                "retry_on_submission_error": 10,
+                "image_pull_policy": "IfNotPresent",
+                "machine_dict": {
+                    "batch_type": "Bohrium",
+                    "context_type": "Bohrium",
+                    "remote_profile": {
+                        "input_data": {
+                            "job_type": "container",
+                            "platform": "ali",
+                            "scass_type": "c2_m16_cpu"
+                        }
+                    }
+                }
+            }
+        },
+        "inference_config": { 
+            "template_config": {
+                "image": "registry.dp.tech/dptech/deepmd-kit:2024Q1-d23cf3e"
+            },
+            "executor": {
+                "type": "dispatcher",
+                "retry_on_submission_error": 10,
+                "image_pull_policy": "IfNotPresent",
+                "machine_dict": {
+                    "batch_type": "Bohrium",
+                    "context_type": "Bohrium",
+                    "remote_profile": {
+                        "input_data": {
+                            "job_type": "container",
+                            "platform": "ali",
+                            "scass_type": "1 * NVIDIA V100_32g"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "upload_python_packages": [
+    ],
+    "task":{
+        "type":"finetune",
+        "init_training": true,
+        "skip_aimd": true
+    },
+    "inputs": {
+        "type_map": [
+            "H",
+            "He",
+            "Li",
+            "Be",
+            "B",
+            "C",
+            "N",
+            "O",
+            "F",
+            "Ne",
+            "Na",
+            "Mg",
+            "Al",
+            "Si",
+            "P",
+            "S",
+            "Cl",
+            "Ar",
+            "K",
+            "Ca",
+            "Sc",
+            "Ti",
+            "V",
+            "Cr",
+            "Mn",
+            "Fe",
+            "Co",
+            "Ni",
+            "Cu",
+            "Zn",
+            "Ga",
+            "Ge",
+            "As",
+            "Se",
+            "Br",
+            "Kr",
+            "Rb",
+            "Sr",
+            "Y",
+            "Zr",
+            "Nb",
+            "Mo",
+            "Tc",
+            "Ru",
+            "Rh",
+            "Pd",
+            "Ag",
+            "Cd",
+            "In",
+            "Sn",
+            "Sb",
+            "Te",
+            "I",
+            "Xe",
+            "Cs",
+            "Ba",
+            "La",
+            "Ce",
+            "Pr",
+            "Nd",
+            "Pm",
+            "Sm",
+            "Eu",
+            "Gd",
+            "Tb",
+            "Dy",
+            "Ho",
+            "Er",
+            "Tm",
+            "Yb",
+            "Lu",
+            "Hf",
+            "Ta",
+            "W",
+            "Re",
+            "Os",
+            "Ir",
+            "Pt",
+            "Au",
+            "Hg",
+            "Tl",
+            "Pb",
+            "Bi",
+            "Po",
+            "At",
+            "Rn",
+            "Fr",
+            "Ra",
+            "Ac",
+            "Th",
+            "Pa",
+            "U",
+            "Np",
+            "Pu",
+            "Am",
+            "Cm",
+            "Bk",
+            "Cf",
+            "Es",
+            "Fm",
+            "Md",
+            "No",
+            "Lr",
+            "Rf",
+            "Db",
+            "Sg",
+            "Bh",
+            "Hs",
+            "Mt",
+            "Ds",
+            "Rg",
+            "Cn",
+            "Nh",
+            "Fl",
+            "Mc",
+            "Lv",
+            "Ts",
+            "Og"
+        ],
+        "_comment": "you can set 'init_data_sys' or 'init_data_url'"
+    },
+    "conf_generation": {
+        "init_configurations":
+            {
+            "type": "file",
+            "prefix": "./poscar/",
+            "fmt": "vasp/poscar",
+            "files": [
+                    "BNBZT_1.vasp",
+                    "BNBZT_2.vasp",
+                    "BNBZT_3.vasp",
+                    "BNBZT_4.vasp",
+                    "BNBZT_5.vasp",
+                    "POSCAR-01",
+                    "POSCAR-02",
+                    "POSCAR-03",
+                    "POSCAR-04",
+                    "POSCAR-05",
+                    "POSCAR-06",
+                    "POSCAR-07",
+                    "POSCAR-08",
+                    "POSCAR-09",
+                    "POSCAR-10",
+                    "POSCAR-11",
+                    "POSCAR-12",
+                    "POSCAR-13",
+                    "POSCAR-14",
+                    "POSCAR-15",
+                    "POSCAR-16"
+                ]},
+            
+        "pert_generation":[
+            {
+            "conf_idx": "default",
+            "atom_pert_distance":0.15,
+            "cell_pert_fraction":0.03,
+            "pert_num": 5
+            }
+            ]},
+    "exploration": {
+        "max_iter":2,
+        "converge_config":{
+            "type":"energy_rmse",
+            "RMSE":0.01},
+        "filter":[{
+            "type":"distance"
+        }],
+        "type": "lmp",
+        "config":{
+                "command": "lmp -var restart 0",
+                "shuffle_models": false, 
+                "head": null},
+        "stages":[[
+                {   "_comment": "group 1 stage 1 of finetune-exploration",
+                    "conf_idx": [0],
+                    "n_sample":2,
+                    "exploration":{
+                    "type": "lmp-md",
+                    "ensemble": "npt",
+                    "dt":0.001,
+                    "nsteps": 3000,
+                    "temps": [300],
+                    "press":[1],
+                    "trj_freq": 500},
+                    "max_sample": 10000
+                    }]]},
+    "aimd":{
+            "type": "vasp",
+            "task_max": 5,
+            "extra_output_files:":[],
+            "run_config": {
+                            "command": "source /opt/intel/oneapi/setvars.sh && mpirun -n 16 vasp_std"
+                            },
+            "inputs_config": {
+                "incar": "INCAR.md",
+                    "pp_files": {
+                    "Ba": "./POTCAR/POTCAR_Ba",
+                    "Bi": "./POTCAR/POTCAR_Bi",
+                    "Na": "./POTCAR/POTCAR_Na",
+                    "O": "./POTCAR/POTCAR_O",
+                    "Ti": "./POTCAR/POTCAR_Ti",
+                    "Zr": "./POTCAR/POTCAR_Zr"
+                    },
+                    "kspacing": 0.2,
+                    "kgamma": false
+                },
+                "_comment": "fp parameters for AIMD calculation"
+                            },
+    "fp": {
+        "type": "vasp",
+        "task_max": 500,
+        "extra_output_files:":[],
+        "run_config": {
+            "command": "source /opt/intel/oneapi/setvars.sh && mpirun -n 16 vasp_std"
+        },
+        "inputs_config": {
+            "incar": "INCAR.fp",
+            "pp_files": {
+                "Ba": "./POTCAR/POTCAR_Ba",
+                "Bi": "./POTCAR/POTCAR_Bi",
+                "Na": "./POTCAR/POTCAR_Na",
+                "O": "./POTCAR/POTCAR_O",
+                "Ti": "./POTCAR/POTCAR_Ti",
+                "Zr": "./POTCAR/POTCAR_Zr"
+            },
+            "kspacing": 0.2,
+            "kgamma": false
+        },
+        "_comment": "fp parameters for calculation"
+    },
+    "train": {
+        "comment":"Training script for downstream DeePMD model",
+        "type": "dp",
+        "config": {
+            "impl": "pytorch",
+            "init_model_policy": "no",
+            "init_model_with_finetune":true,
+            "_comment": "all"
+        },
+        "template_script": "train.json",
+        "init_models_paths":["YOURMODEL_NAME"],
+        "numb_models":1,
+        "_comment": "the initial pre-trained model at 'init_models_paths'"
+    }
+}
