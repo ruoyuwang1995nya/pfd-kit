@@ -42,7 +42,7 @@ class TestPertGen(unittest.TestCase):
         sys.to("vasp/poscar", "POSCAR", frame_idx=0)
         self.init_confs = [Path("POSCAR")]
         self.config = {
-            "init_configurations": {"type": "file", "fmt": "vasp/poscar"},
+            "init_confs": {"type": "file", "fmt": "vasp/poscar"},
             "pert_generation": [
                 {
                     "conf_idx": [0],
