@@ -1,6 +1,19 @@
 # CHANGELOG
 
 
+## v0.1.4 (2024-11-09)
+
+### Bug Fixes
+
+* fix: modify examples ([`6549e9e`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/6549e9e52ae0ec5fc30625959664013df922e29a))
+
+### Unknown
+
+* Merge pull request #67 from ruoyuwang1995nya/devel
+
+fix: modify examples ([`a5c9cd5`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/a5c9cd553f69ffcdbb80a5888c38ffa955a647b0))
+
+
 ## v0.1.3 (2024-11-09)
 
 ### Bug Fixes
