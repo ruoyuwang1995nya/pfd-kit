@@ -1,8 +1,9 @@
 # PFD-kit: finetune and distillation from pre-trained atomic models
 [PFD-kit](https://github.com/ruoyuwang1995nya/dp-distill) automates the fine-tuning and distillation process of pre-trained atomic models. It enables practical atomistic simualtion with the highly transferable, but computationally expensive pre-trained models. PFD-kit is built upon the [dflow](https://github.com/dptech-corp/dflow.git) package and includes components of [DPGEN2](https://github.com/deepmodeling/dpgen2) workflow. Currently, PFD-kit supports the Deep Potential models.
 
-## Table of Contents
+> Online documentation is [here](https://ruoyuwang1995nya.github.io/pfd-kit/)
 
+## Table of Contents
 - [PDF-kit: Workflow for finetune and fast distillation]
   - [1. Overview](#1-overview)
   - [2. Installation](#2-installation)
@@ -32,9 +33,9 @@ cd pfd-kit && pip install .
 ## 3. Quick start
 PFD-kit comes with a simple CLI interface. For instance, a finetune workflow can be submitted using following command:
 ```shell
-pfd submit finetune.json -t finetune
+pfd submit finetune.json
 ```
-The `finetune.json` specifies imput parameters of the finetune task, whose details can be found in the `examples` directory. 
+The `finetune.json` specifies imput parameters of the finetune task, whose details can be found in the online [documentation](https://ruoyuwang1995nya.github.io/pfd-kit/). 
 
 ## 4. Userguide
 Examples of json input file for model fine-tune and distillation can be found in the `examples` directory. The complete documentation of the latest version PFD-kit can be found [here](https://ruoyuwang1995nya.github.io/pfd-kit/)

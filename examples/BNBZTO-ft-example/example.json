@@ -1,9 +1,9 @@
 {
-    "name":"pfd-finetune",
+    "name":"test-interface",
     "bohrium_config": {
-        "username": "urname",
-        "password": "123456",
-        "project_id": 123456,
+        "username": "",
+        "password": "",
+        "project_id": 1111,
         "_comment": "all"
     },
     "default_step_config": {
@@ -29,13 +29,13 @@
     "step_configs": {
         "run_fp_config": {
             "template_config": {
-                "image": "registry.dp.tech/dptech/abacus:3.6.1",
-                "retry_on_transient_error": 1
+                "image": "registry.dp.tech/dptech/vasp:5.4.4",
+                "_comment": "all"
             },
-            "continue_on_failed":true,
-            "continue_on_success_ratio": 0.9,
+            "continue_on_success_ratio": 0.8,
             "executor": {
                 "type": "dispatcher",
+                "retry_on_submission_error": 10,
                 "image_pull_policy": "IfNotPresent",
                 "machine_dict": {
                     "batch_type": "Bohrium",
@@ -44,11 +44,16 @@
                         "input_data": {
                             "job_type": "container",
                             "platform": "ali",
-                            "scass_type": "c32_m64_cpu"
+                            "scass_type": "c16_m32_cpu"
                         }
                     }
                 }
-            }
+            },
+            "template_slice_config": {
+                "group_size": 5,
+                "pool_size": 1
+            },
+            "_comment": "all"
         },
         "run_explore_config": {
             "template_config": {
@@ -112,14 +117,36 @@
                     }
                 }
             }
+        },
+        "inference_config": { 
+            "template_config": {
+                "image": "registry.dp.tech/dptech/deepmd-kit:2024Q1-d23cf3e"
+            },
+            "executor": {
+                "type": "dispatcher",
+                "retry_on_submission_error": 10,
+                "image_pull_policy": "IfNotPresent",
+                "machine_dict": {
+                    "batch_type": "Bohrium",
+                    "context_type": "Bohrium",
+                    "remote_profile": {
+                        "input_data": {
+                            "job_type": "container",
+                            "platform": "ali",
+                            "scass_type": "1 * NVIDIA V100_32g"
+                        }
+                    }
+                }
+            }
         }
     },
+    "upload_python_packages": [
+    ],
     "task":{
         "type":"finetune",
         "init_training": true,
-        "skip_aimd": false
+        "skip_aimd": true
     },
-    
     "inputs": {
         "type_map": [
             "H",
@@ -241,16 +268,37 @@
             "Ts",
             "Og"
         ],
-        "base_model_path":"OpenLAM_2.1.0_27heads_2024Q1.pt"
+        "base_model_path": "YOURMODEL_NAME",
+        "_comment": "you can set 'init_data_sys' or 'init_data_url'"
     },
     "conf_generation": {
         "init_configurations":
             {
             "type": "file",
-            "prefix": "./",
+            "prefix": "./poscar/",
             "fmt": "vasp/poscar",
             "files": [
-                    "LGPS.vasp"
+                    "BNBZT_1.vasp",
+                    "BNBZT_2.vasp",
+                    "BNBZT_3.vasp",
+                    "BNBZT_4.vasp",
+                    "BNBZT_5.vasp",
+                    "POSCAR-01",
+                    "POSCAR-02",
+                    "POSCAR-03",
+                    "POSCAR-04",
+                    "POSCAR-05",
+                    "POSCAR-06",
+                    "POSCAR-07",
+                    "POSCAR-08",
+                    "POSCAR-09",
+                    "POSCAR-10",
+                    "POSCAR-11",
+                    "POSCAR-12",
+                    "POSCAR-13",
+                    "POSCAR-14",
+                    "POSCAR-15",
+                    "POSCAR-16"
                 ]},
             
         "pert_generation":[
@@ -261,76 +309,74 @@
             "pert_num": 5
             }
             ]},
-    "aimd":{
-            "task_max": 5,
-            "inputs_config": {
-            "input_file": "INPUT.md"
-            },
-            "confs":[0],
-            "n_sample":1,
-            "_comment": "fp parameters for AIMD calculation"
-        },
     "exploration": {
         "max_iter":2,
-        "convergence":{
+        "converge_config":{
             "type":"energy_rmse",
-            "RMSE":0.01,
-            
-            "conf_filter":[
-                {"type":"force_delta",
-                    "thr_l": 0.05,
-                    "thr_h": 0.2 
-                },
-                 {"type":"energy_delta",
-                    "thr_l": 0.001,
-                    "thr_h": 0.1
-                }
-            ]
-        },
+            "RMSE":0.01},
         "filter":[{
             "type":"distance"
         }],
         "type": "lmp",
-        "config": {
-            "command": "lmp -var restart 0",
-            "shuffle_models": false, 
-            "head": null},
+        "config":{
+                "command": "lmp -var restart 0",
+                "shuffle_models": false, 
+                "head": null},
         "stages":[[
-            {  "_comment": "group 1 stage 1 of finetune-exploration",
-                "conf_idx": [0],
-                "n_sample":3,
-                "exploration":{
-                "type": "lmp-md",
-                "ensemble": "npt",
-                "dt":0.005,
-                "nsteps": 2000,
-                "temps": [500],
-                "press":[1],
-                "trj_freq": 200},
-                "max_sample": 10000
+                {   "_comment": "group 1 stage 1 of finetune-exploration",
+                    "conf_idx": [0],
+                    "n_sample":2,
+                    "exploration":{
+                    "type": "lmp-md",
+                    "ensemble": "npt",
+                    "dt":0.001,
+                    "nsteps": 3000,
+                    "temps": [300],
+                    "press":[1],
+                    "trj_freq": 500},
+                    "max_sample": 10000
                     }]]},
-
+    "aimd":{
+            "type": "vasp",
+            "task_max": 5,
+            "extra_output_files:":[],
+            "run_config": {
+                            "command": "source /opt/intel/oneapi/setvars.sh && mpirun -n 16 vasp_std"
+                            },
+            "inputs_config": {
+                "incar": "INCAR.md",
+                    "pp_files": {
+                    "Ba": "./POTCAR/POTCAR_Ba",
+                    "Bi": "./POTCAR/POTCAR_Bi",
+                    "Na": "./POTCAR/POTCAR_Na",
+                    "O": "./POTCAR/POTCAR_O",
+                    "Ti": "./POTCAR/POTCAR_Ti",
+                    "Zr": "./POTCAR/POTCAR_Zr"
+                    },
+                    "kspacing": 0.2,
+                    "kgamma": false
+                },
+                "_comment": "fp parameters for AIMD calculation"
+                            },
     "fp": {
-        "type": "fpop_abacus",
-        "task_max": 50,
+        "type": "vasp",
+        "task_max": 500,
         "extra_output_files:":[],
         "run_config": {
-            "command": "OMP_NUM_THREADS=4 mpirun -np 8 abacus | tee log"
+            "command": "source /opt/intel/oneapi/setvars.sh && mpirun -n 16 vasp_std"
         },
         "inputs_config": {
-            "input_file": "INPUT.scf",
+            "incar": "INCAR.fp",
             "pp_files": {
-                "Li": "./pp/Li_ONCV_PBE-1.0.upf",
-                "S":"./pp/S_ONCV_PBE-1.0.upf",
-                "Ge": "./pp/Ge_ONCV_PBE-1.0.upf",
-                "P": "./pp/P_ONCV_PBE-1.0.upf"
+                "Ba": "./POTCAR/POTCAR_Ba",
+                "Bi": "./POTCAR/POTCAR_Bi",
+                "Na": "./POTCAR/POTCAR_Na",
+                "O": "./POTCAR/POTCAR_O",
+                "Ti": "./POTCAR/POTCAR_Ti",
+                "Zr": "./POTCAR/POTCAR_Zr"
             },
-            "orb_files":{
-                "Li": "./orb/Li_gga_9au_100Ry_6s2p.orb",
-                "S":"./orb/S_gga_9au_100Ry_3s3p2d.orb",
-                "Ge": "./orb/Ge_gga_9au_100Ry_3s3p3d2f.orb",
-                "P": "./orb/P_gga_9au_100Ry_3s3p2d.orb"
-            }
+            "kspacing": 0.2,
+            "kgamma": false
         },
         "_comment": "fp parameters for calculation"
     },
