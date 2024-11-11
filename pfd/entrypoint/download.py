@@ -32,7 +32,7 @@ def download_end_result(
         task_type = wf_config["task"]["type"]
     except KeyError:
         raise RuntimeError("Illegal input file!")
-    wf_config = normalize_args(wf_config, task_type)
+    wf_config = normalize_args(wf_config)
     global_config_workflow(wf_config)
     wf = Workflow(id=workflow_id)
     step_info = wf.query()
@@ -65,7 +65,7 @@ def download_by_def(
     prefix: Optional[str] = None,
     chk_pnt: bool = False,
 ):
-    wf_config = normalize_args(wf_config, wf_config["task"]["type"])
+    wf_config = normalize_args(wf_config)
     global_config_workflow(wf_config)
     wf = Workflow(id=workflow_id)
     download_dpgen2_artifacts_by_def(wf, iterations, step_defs, prefix, chk_pnt)
@@ -78,7 +78,7 @@ def download(
     prefix: Optional[str] = None,
     chk_pnt: bool = False,
 ):
-    wf_config = normalize_args(wf_config, wf_config["task"]["type"])
+    wf_config = normalize_args(wf_config)
     global_config_workflow(wf_config)
     wf = Workflow(id=workflow_id)
     if wf_keys is None:
