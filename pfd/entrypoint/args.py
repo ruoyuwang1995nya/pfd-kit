@@ -49,6 +49,7 @@ def variant_task():
         [
             Argument("finetune", dict, task_finetune(), alias=["ft"]),
             Argument("dist", dict, [], alias=["distillation"]),
+            Argument("data_gen", dict, [], alias=["data generation"]),
         ],
     )
 
@@ -117,7 +118,8 @@ def train_args(run_train):
         Argument(
             "template_script",
             [List[str], str, dict],
-            optional=False,
+            optional=True,
+            default={},
             doc=doc_template_script,
         ),
         Argument(
@@ -256,6 +258,7 @@ def fp_args(inputs, run):
     doc_inputs_config = "Configuration for preparing vasp inputs"
     doc_run_config = "Configuration for running vasp tasks"
     doc_task_max = "Maximum number of vasp tasks for each iteration"
+    doc_extra_output_files = "Extra output file names, support wildcards"
 
     return [
         Argument(
@@ -273,7 +276,13 @@ def fp_args(inputs, run):
             doc=doc_run_config,
         ),
         Argument("task_max", int, optional=True, default=100, doc=doc_task_max),
-        Argument("extra_output_files", List, optional=True, default=[]),
+        Argument(
+            "extra_output_files",
+            List,
+            optional=True,
+            default=[],
+            doc=doc_extra_output_files,
+        ),
     ]
 
 

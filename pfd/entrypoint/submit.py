@@ -24,8 +24,6 @@ from pfd.exploration import explore_styles
 
 from dpgen2.superop import PrepRunDPTrain, PrepRunFp
 
-
-from pfd.flow.fine_tune import FineTune
 from pfd.op import (
     PertGen,
     CollectData,
@@ -50,9 +48,9 @@ from pfd.exploration.converge import ConfFiltersConv, ConfFilterConv
 
 from pfd.exploration.render import TrajRenderLammps
 
-from pfd.flow import Distillation
+from pfd.flow import Distillation, FineTune, DataGen
 from pfd.constants import default_image
-from dpgen2.utils.step_config import normalize as normalize_step_dict
+from pfd.utils.step_config import normalize as normalize_step_dict
 from pfd.utils import (
     upload_artifact_and_print_uri,
     get_artifact_from_uri,
@@ -165,6 +163,53 @@ def make_dist_op(
         upload_python_packages=upload_python_packages,
     )
     return dist_op
+
+
+def make_data_gen_op(
+    fp_style: str = "vasp",
+    prep_fp_config: dict = default_config,
+    run_fp_config: dict = default_config,
+    pert_gen_config: dict = default_config,
+    collect_data_config: dict = default_config,
+    upload_python_packages: Optional[List[os.PathLike]] = None,
+):
+    """
+    Creates a DataGen operation.
+
+    Args:
+        fp_style (str): The style of the force field calculation (default is "vasp").
+        prep_fp_config (dict): Configuration for preparing the force field calculation.
+        run_fp_config (dict): Configuration for running the force field calculation.
+        pert_gen_config (dict): Configuration for perturbation generation.
+        collect_data_config (dict): Configuration for data collection.
+        upload_python_packages (Optional[List[os.PathLike]]): List of Python packages to upload.
+
+    Returns:
+        DataGen: An instance of the DataGen class.
+    """
+
+    ## initiate fp op
+    if fp_style in fp_styles.keys():
+        prep_run_fp_op = PrepRunFp(
+            "prep-run-fp",
+            fp_styles[fp_style]["prep"],
+            fp_styles[fp_style]["run"],
+            prep_config=prep_fp_config,
+            run_config=run_fp_config,
+            upload_python_packages=upload_python_packages,
+        )
+    else:
+        raise RuntimeError(f"unknown fp_style {fp_style}")
+
+    return DataGen(
+        "data-gen",
+        PertGen,
+        prep_run_fp_op,
+        CollectData,
+        pert_gen_config,
+        collect_data_config,
+        upload_python_packages,
+    )
 
 
 def make_ft_op(
@@ -290,6 +335,8 @@ class FlowGen:
             self._set_dist_wf(self._config)
         elif self.wf_type == "finetune":
             self._set_ft_wf(self._config)
+        elif self.wf_type == "data_gen":
+            self._set_data_gen_wf(self._config)
 
     @property
     def wf_type(self):
@@ -301,6 +348,62 @@ class FlowGen:
             return Path(self._download_path)
         else:
             return self._download_path
+
+    def _set_data_gen_wf(self, config):
+        default_config = config["default_step_config"]
+        prep_fp_config = config["step_configs"].get("perp_fp_config", default_config)
+        run_fp_config = config["step_configs"].get("run_fp_config", default_config)
+        run_collect_data_config = config["step_configs"].get(
+            "collect_data_config", default_config
+        )
+
+        upload_python_packages = []
+        if custom_packages := config.get("upload_python_packages"):
+            upload_python_packages.extend(custom_packages)
+        upload_python_packages.extend(list(dpdata.__path__))
+        upload_python_packages.extend(list(dflow.__path__))
+        upload_python_packages.extend(list(pfd.__path__))
+        upload_python_packages.extend(list(dpgen2.__path__))
+        upload_python_packages.extend(list(fpop.__path__))
+
+        pert_config = config["conf_generation"]
+        if config["conf_generation"]["init_confs"]["confs_uri"] is not None:
+            init_confs = get_artifact_from_uri(
+                config["conf_generation"]["init_confs"]["confs_uri"]
+            )
+        elif config["conf_generation"]["init_confs"]["confs_paths"] is not None:
+            init_confs_prefix = config["conf_generation"]["init_confs"]["prefix"]
+            init_confs = config["conf_generation"]["init_confs"]["confs_paths"]
+            init_confs = get_systems_from_data(init_confs, init_confs_prefix)
+            init_confs = upload_artifact_and_print_uri(init_confs, "init_confs")
+        else:
+            raise RuntimeError("init_confs must be provided")
+
+        fp_config = {}
+        fp_inputs_config = config["fp"]["inputs_config"]
+        fp_type = config["fp"]["type"]
+        fp_inputs = fp_styles[fp_type]["inputs"](**fp_inputs_config)
+        fp_config["inputs"] = fp_inputs
+        fp_config["run"] = config["fp"]["run_config"]
+        fp_config["extra_output_files"] = config["fp"].get("extra_output_files")
+
+        data_gen_op = make_data_gen_op(
+            fp_style=fp_type,
+            prep_fp_config=prep_fp_config,
+            run_fp_config=run_fp_config,
+            collect_data_config=run_collect_data_config,
+            upload_python_packages=upload_python_packages,
+        )
+        # type_map = config["inputs"]["type_map"]
+        data_gen_step = Step(
+            "data-gen",
+            template=data_gen_op,
+            parameters={"pert_config": pert_config, "fp_config": fp_config},
+            artifacts={
+                "init_confs": init_confs,
+            },
+        )
+        self.workflow.add(data_gen_step)
 
     def _set_dist_wf(self, config):
         """
