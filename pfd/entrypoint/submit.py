@@ -43,11 +43,9 @@ from pfd.exploration.selector import (
     ConfSelectorFrames,
     conf_filter_styles,
 )
-
 from pfd.exploration.converge import ConfFiltersConv, ConfFilterConv
-
 from pfd.exploration.render import TrajRenderLammps
-
+from pfd.exploration.scheduler import Scheduler
 from pfd.flow import Distillation, FineTune, DataGen
 from pfd.constants import default_image
 from pfd.utils.step_config import normalize as normalize_step_dict
@@ -92,6 +90,7 @@ def make_dist_op(
     run_lmp_config: dict = default_config,
     prep_train_config: dict = default_config,
     run_train_config: dict = default_config,
+    scheduler_config: dict = default_config,
     collect_data_config: dict = default_config,
     pert_gen_config: dict = default_config,
     inference_config: dict = default_config,
@@ -153,7 +152,7 @@ def make_dist_op(
     )
 
     expl_dist_loop_op = ExplDistLoop(
-        "expl-dist-loop", expl_dist_blk_op, upload_python_packages
+        "expl-dist-loop", expl_dist_blk_op, scheduler_config, upload_python_packages
     )
     dist_op = Distillation(
         "distillation",
@@ -223,6 +222,7 @@ def make_ft_op(
     run_train_config: dict = default_config,
     prep_lmp_config: dict = default_config,
     run_lmp_config: dict = default_config,
+    scheduler_config: dict = default_config,
     collect_data_step_config: dict = default_config,
     select_confs_step_config: dict = default_config,
     inference_step_config: dict = default_config,
@@ -287,6 +287,7 @@ def make_ft_op(
     expl_finetune_loop_op = ExplFinetuneLoop(
         name="expl-ft-loop",
         expl_ft_blk_op=expl_ft_blk_op,
+        scheduler_config=scheduler_config,
         upload_python_packages=upload_python_packages,
     )
 
@@ -452,6 +453,10 @@ class FlowGen:
         expl_stages = config["exploration"]["stages"]
         converge_config = config["exploration"]["convergence"]
         max_iter = config["exploration"]["max_numb_iter"]
+        if max_iter < 1:
+            raise RuntimeError(
+                "The max number of iteration must be equal to or larger than 1!"
+            )
         conf_filters_conv = get_conf_filters_conv(converge_config.pop("conf_filter"))
 
         # train (student model) style
@@ -493,7 +498,6 @@ class FlowGen:
         teacher_model_style = config["inputs"]["base_model_style"]
         print("teacher model style: %s" % teacher_model_style)
         teacher_models_paths = config["inputs"]["base_model_path"]
-        print("Using teacher model at: %s" % teacher_models_paths)
         if config["inputs"]["base_model_uri"] is not None:
             print("Using uploaded model at: ", config["inputs"]["base_model_uri"])
             teacher_models = get_artifact_from_uri(config["inputs"]["base_model_uri"])
@@ -503,10 +507,23 @@ class FlowGen:
             )
         else:
             raise FileNotFoundError("Teacher model must exist!")
-        scheduler_config = {
-            "model_style": teacher_model_style,
-            "explore_style": explore_style,
-        }
+
+        expl_args = explore_styles[teacher_model_style][explore_style]["task_args"]
+        for stg in expl_stages:
+            for task_grp in stg:
+                args = expl_args(task_grp)
+                task_grp.clear()
+                task_grp.update(args)
+
+        scheduler = Scheduler(
+            model_style=teacher_model_style,
+            explore_style=explore_style,
+            explore_stages=expl_stages,
+            mass_map=mass_map,
+            type_map=type_map,
+            max_iter=max_iter,
+        )
+
         # init_data
         if config["inputs"]["init_data_uri"] is not None:
             init_data = get_artifact_from_uri(config["inputs"]["init_data_uri"])
@@ -543,18 +560,16 @@ class FlowGen:
                 "type_map": type_map,
                 "mass_map": mass_map,
                 "pert_config": pert_config,
-                "expl_stages": expl_stages,
                 "numb_models": 1,
                 "explore_config": explore_config,
                 "converge_config": converge_config,
                 "conf_filters_conv": conf_filters_conv,
-                "scheduler_config": scheduler_config,
-                "max_iter": max_iter,
                 "template_script": template_script,
                 "train_config": train_config,
                 "inference_config": inference_config,
                 "test_size": collect_data_config["test_size"],
-                "type_map_train": [],  # type_map_train
+                "type_map_train": [],
+                "scheduler": scheduler,
             },
             artifacts={
                 "init_confs": init_confs,
@@ -621,7 +636,6 @@ class FlowGen:
         explore_config = config["exploration"]["config"]
         max_iter = config["exploration"]["max_numb_iter"]
         converge_config = config["exploration"]["convergence"]
-        scheduler_config = {"model_style": train_style, "explore_style": explore_style}
         # conf selectors
         conf_filters = get_conf_filters(config["exploration"]["filter"])
         render = TrajRenderLammps(nopbc=False)
@@ -661,6 +675,22 @@ class FlowGen:
             init_confs = upload_artifact_and_print_uri(init_confs, "init_confs")
         else:
             raise RuntimeError("init_confs must be provided")
+
+        expl_args = explore_styles[train_style][explore_style]["task_args"]
+        for stg in expl_stages:
+            for task_grp in stg:
+                args = expl_args(task_grp)
+                task_grp.clear()
+                task_grp.update(args)
+
+        scheduler = Scheduler(
+            model_style=train_style,
+            explore_style=explore_style,
+            explore_stages=expl_stages,
+            mass_map=mass_map,
+            type_map=type_map,
+            max_iter=max_iter,
+        )
 
         # init_data
         if config["inputs"]["init_data_uri"] is not None:
@@ -739,12 +769,10 @@ class FlowGen:
                 "mass_map": mass_map,
                 "pert_config": pert_config,  # Total input parameter file: to be changed in the future
                 "numb_models": numb_models,
-                "expl_stages": expl_stages,
                 "conf_selector": conf_selector,
                 "conf_filters_conv": conf_filters_conv,
                 "converge_config": converge_config,
-                "scheduler_config": scheduler_config,
-                "max_iter": max_iter,
+                "scheduler": scheduler,
                 "explore_config": explore_config,
                 "template_script": template_script,
                 "train_config": train_config,

@@ -7,6 +7,8 @@ import dpdata
 from pathlib import Path
 import numpy as np
 from dflow.python import OPIO
+from pfd.exploration import explore_styles
+from pfd.exploration.scheduler import Scheduler
 
 
 class TestStageScheduler(unittest.TestCase):
@@ -50,42 +52,52 @@ class TestStageScheduler(unittest.TestCase):
         )
         pert_sys.to("deepmd/npy", "Si")
         self.systems = [Path("Si")]
+
         self.stages = [
             [
                 {
                     "_comment": "group 1 stage 1 of finetune-exploration",
                     "conf_idx": [0],
                     "n_sample": 2,
-                    "exploration": {
-                        "type": "lmp-md",
-                        "ensemble": "npt",
-                        "dt": 0.005,
-                        "nsteps": 100,
-                        "temps": [500],
-                        "press": [1],
-                        "trj_freq": 20,
-                    },
-                    "max_sample": 10000,
+                    "type": "lmp-md",
+                    "ensemble": "npt",
+                    "dt": 0.005,
+                    "nsteps": 100,
+                    "temps": [500],
+                    "press": [1],
+                    "trj_freq": 20,
                 }
             ]
         ]
+
+        expl_args = explore_styles["dp"]["lmp"]["task_args"]
+
+        for stg in self.stages:
+            for task_grp in stg:
+                args = expl_args(task_grp)
+                task_grp.clear()
+                task_grp.update(args)
+
+        self.scheduler = Scheduler(
+            model_style="dp",
+            explore_style="lmp",
+            explore_stages=self.stages,
+            mass_map=[1],
+            type_map=["Si"],
+            max_iter=1,
+        )
 
     def test_dp_lmp(self):
         op = StageScheduler()
         out = op.execute(
             OPIO(
                 {
-                    "stages": self.stages,
-                    "idx_stage": 0,
                     "systems": self.systems,
-                    "type_map": ["Si"],
-                    "mass_map": [28.09],
-                    "scheduler_config": {"model_style": "dp", "explore_style": "lmp"},
+                    "scheduler": self.scheduler,
+                    "converged": False,
                 }
             )
         )
-        # [print(ii.files()) for ii in out["task_grp"].task_list]
-        # sys = dpdata.System(out["pert_sys"][0], fmt="deepmd/npy")
         self.assertEqual(len(out["task_grp"]), 2)
         self.assertNotEqual(out["task_grp"][0].files(), out["task_grp"][1].files())
 

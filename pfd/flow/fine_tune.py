@@ -54,11 +54,10 @@ class FineTune(Steps):
             "pert_config": InputParameter(),  # Total input parameter file: to be changed in the future
             # md exploration
             "numb_models": InputParameter(type=int),
-            "expl_stages": InputParameter(),
-            "max_iter": InputParameter(),
             "explore_config": InputParameter(),
             "conf_selector": InputParameter(),
             "conf_filters_conv": InputParameter(),
+            "scheduler": InputParameter(),
             # training
             "template_script": InputParameter(),
             "train_config": InputParameter(),
@@ -69,7 +68,6 @@ class FineTune(Steps):
             "aimd_sample_conf": InputParameter(type=Optional[Dict], value={}),
             "collect_data_config": InputParameter(),
             "converge_config": InputParameter(),
-            "scheduler_config": InputParameter(),
         }
         self._input_artifacts = {
             "init_confs": InputArtifact(),
@@ -263,7 +261,6 @@ def _fine_tune_cl(
             "fp_config": ft_steps.inputs.parameters["fp_config"],
             "type_map": ft_steps.inputs.parameters["type_map"],
             "mass_map": ft_steps.inputs.parameters["mass_map"],
-            "expl_stages": ft_steps.inputs.parameters["expl_stages"],
             "conf_selector": ft_steps.inputs.parameters["conf_selector"],
             "conf_filters_conv": ft_steps.inputs.parameters["conf_filters_conv"],
             "numb_models": ft_steps.inputs.parameters["numb_models"],
@@ -271,9 +268,8 @@ def _fine_tune_cl(
             "train_config": ft_steps.inputs.parameters["train_config"],
             "explore_config": ft_steps.inputs.parameters["explore_config"],
             "dp_test_validation_config": {},
-            "max_iter": ft_steps.inputs.parameters["max_iter"],
             "converge_config": ft_steps.inputs.parameters["converge_config"],
-            "scheduler_config": ft_steps.inputs.parameters["scheduler_config"],
+            "scheduler": ft_steps.inputs.parameters["scheduler"],
         },
         artifacts={
             "systems": pert_gen.outputs.artifacts[

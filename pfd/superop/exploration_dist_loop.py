@@ -25,6 +25,7 @@ from dflow import (
     Outputs,
     Step,
     Steps,
+    if_expression,
 )
 from dflow.python import (
     OP,
@@ -124,26 +125,25 @@ class ExplDistLoop(Steps):
         self,
         name: str,
         expl_dist_blk_op: OPTemplate,
+        scheduler_config: dict,
         upload_python_packages: Optional[List[os.PathLike]] = None,
     ):
         self._input_parameters = {
-            "block_id": InputParameter(value=0),
+            "block_id": InputParameter(value="000"),
             "type_map": InputParameter(),
             "mass_map": InputParameter(),
-            "expl_stages": InputParameter(),  # Total input parameter file: to be changed in the future
             "conf_selector": InputParameter(value={}),
             "numb_models": InputParameter(type=int),
             "template_script": InputParameter(),
             "train_config": InputParameter(),
             "explore_config": InputParameter(),
-            "idx_stage": InputParameter(value=0),
-            "max_iter": InputParameter(),
             "converge_config": InputParameter(value={}),
             "conf_filters_conv": InputParameter(),
             "inference_config": InputParameter(),
             "test_size": InputParameter(value=0.1),
             "type_map_train": InputParameter(),
-            "scheduler_config": InputParameter(value={}),
+            "scheduler": InputParameter(),
+            "converged": InputParameter(value=False),
         }
         self._input_artifacts = {
             "systems": InputArtifact(),  # starting systems for model deviation
@@ -153,12 +153,11 @@ class ExplDistLoop(Steps):
                 optional=True
             ),  # datas collected during previous exploration
         }
-        self._output_parameters = {"idx_stage": OutputParameter()}
+        self._output_parameters = {}
+
         self._output_artifacts = {
             "dist_model": OutputArtifact(),
-            # "dp_test_report": OutputArtifact(),
-            # "dp_test_detail_files": OutputArtifact(),
-            "iter_data": OutputArtifact(),  # data collected after exploration
+            "iter_data": OutputArtifact(),
         }
 
         super().__init__(
@@ -175,6 +174,7 @@ class ExplDistLoop(Steps):
             self,
             name=name,
             expl_dist_blk_op=expl_dist_blk_op,
+            scheduler_config=scheduler_config,
             upload_python_packages=upload_python_packages,
         )
 
@@ -378,42 +378,32 @@ def _loop(
     loop,  # the loop Steps
     name: str,
     expl_dist_blk_op: OPTemplate,
+    scheduler_config: dict,
     upload_python_packages: Optional[List[os.PathLike]] = None,
 ):
-    # we just need a counter which supplies the iteration
-    blk_counter = Step(
-        name="iter-counter",
-        template=PythonOPTemplate(
-            IterCounter,
-            image="registry.dp.tech/dptech/ubuntu:22.04-py3.10",
-            python_packages=upload_python_packages,
-        ),
-        parameters={"iter_numb": loop.inputs.parameters["block_id"]},
-        key="--".join(["%s" % "iter-end", "%s" % loop.inputs.parameters["block_id"]]),
-    )
-    loop.add(blk_counter)
+
+    scheduler_config = deepcopy(scheduler_config)
+    scheduler_template_config = scheduler_config.pop("template_config")
+    scheduler_executor = init_executor(scheduler_config.pop("executor"))
 
     # add a stage counter
     stage_scheduler = Step(
         name="stage-scheduler",
         template=PythonOPTemplate(
             StageScheduler,
-            image="registry.dp.tech/dptech/ubuntu:22.04-py3.10",
             python_packages=upload_python_packages,
+            **scheduler_template_config,
         ),
         parameters={
-            "stages": loop.inputs.parameters["expl_stages"],
-            "idx_stage": loop.inputs.parameters["idx_stage"],
-            "type_map": loop.inputs.parameters["type_map"],
-            "mass_map": loop.inputs.parameters["mass_map"],
-            "scheduler_config": loop.inputs.parameters["scheduler_config"],
+            "converged": loop.inputs.parameters["converged"],
+            "scheduler": loop.inputs.parameters["scheduler"],
         },
         artifacts={
             "systems": loop.inputs.artifacts["systems"],
         },
-        key="--".join(
-            ["iter-%s" % blk_counter.outputs.parameters["iter_id"], "stage-schedule"]
-        ),
+        key="--".join(["iter-%s" % loop.inputs.parameters["block_id"], "scheduler"]),
+        executor=scheduler_executor,
+        **scheduler_config,
     )
     loop.add(stage_scheduler)
 
@@ -421,7 +411,7 @@ def _loop(
         name=name + "-exploration-dist",
         template=expl_dist_blk_op,
         parameters={
-            "block_id": "iter-%s" % blk_counter.outputs.parameters["iter_id"],
+            "block_id": "iter-%s" % stage_scheduler.outputs.parameters["iter_id"],
             "type_map": loop.inputs.parameters["type_map"],
             "mass_map": loop.inputs.parameters["mass_map"],
             "expl_tasks": stage_scheduler.outputs.parameters["task_grp"],
@@ -436,7 +426,7 @@ def _loop(
             "collect_data_config": {
                 "labeled_data": True,
                 "test_size": loop.inputs.parameters["test_size"],
-                "multi_sys_name": blk_counter.outputs.parameters["iter_id"],
+                "multi_sys_name": stage_scheduler.outputs.parameters["iter_id"],
             },
         },
         artifacts={
@@ -450,50 +440,28 @@ def _loop(
             "iter_data": loop.inputs.artifacts["iter_data"],
         },
         key="--".join(
-            ["iter-%s" % blk_counter.outputs.parameters["iter_id"], "expl-ft-loop"]
+            ["iter-%s" % stage_scheduler.outputs.parameters["iter_id"], "explore-block"]
         ),
+        # when="%s == false" % (stage_scheduler.outputs.parameters["converged"]),
     )
     loop.add(expl_dist_blk)
 
-    # a evaluation step: to be added
-    next_loop = Step(
-        name="next-loop",
-        template=PythonOPTemplate(
-            NextLoop,
-            image="registry.dp.tech/dptech/ubuntu:22.04-py3.10",
-            python_packages=upload_python_packages,
-        ),
-        parameters={
-            "converged": expl_dist_blk.outputs.parameters["converged"],
-            "iter_numb": blk_counter.outputs.parameters["next_iter_numb"],
-            "max_iter": loop.inputs.parameters["max_iter"],
-            "stages": loop.inputs.parameters["expl_stages"],
-            "idx_stage": loop.inputs.parameters["idx_stage"],
-        },
-        key="--".join(
-            ["iter-%s" % blk_counter.outputs.parameters["iter_id"], "next-loop"]
-        ),
-    )
-    loop.add(next_loop)
     # next iteration
     next_parameters = {
-        "block_id": blk_counter.outputs.parameters["next_iter_numb"],
+        "converged": stage_scheduler.outputs.parameters["converged"],
+        "block_id": stage_scheduler.outputs.parameters["next_iter_id"],
         "type_map": loop.inputs.parameters["type_map"],
         "mass_map": loop.inputs.parameters["mass_map"],
-        "expl_stages": loop.inputs.parameters[
-            "expl_stages"
-        ],  # Total input parameter file: to be changed in the future
-        "idx_stage": next_loop.outputs.parameters["idx_stage"],
         "converge_config": loop.inputs.parameters["converge_config"],
         "conf_filters_conv": loop.inputs.parameters["conf_filters_conv"],
         "numb_models": loop.inputs.parameters["numb_models"],
         "template_script": loop.inputs.parameters["template_script"],
         "train_config": loop.inputs.parameters["train_config"],
-        "max_iter": loop.inputs.parameters["max_iter"],
         "explore_config": loop.inputs.parameters["explore_config"],
         "inference_config": loop.inputs.parameters["inference_config"],
         "type_map_train": loop.inputs.parameters["type_map_train"],
-        "scheduler_config": loop.inputs.parameters["scheduler_config"],
+        "scheduler": stage_scheduler.outputs.parameters["scheduler"],
+        "converged": expl_dist_blk.outputs.parameters["converged"],
     }
     next_step = Step(
         name=name + "-exploration-finetune-next",
@@ -505,19 +473,25 @@ def _loop(
             "iter_data": expl_dist_blk.outputs.artifacts["iter_data"],
             "init_data": loop.inputs.artifacts["init_data"],
         },
-        when="%s == false" % (next_loop.outputs.parameters["converged"],),
+        when="%s == false" % (stage_scheduler.outputs.parameters["converged"],),
         key="--".join(
-            ["iter-%s" % blk_counter.outputs.parameters["next_iter_id"], "expl-ft-loop"]
+            [
+                "iter-%s" % stage_scheduler.outputs.parameters["next_iter_id"],
+                "expl-ft-loop",
+            ]
         ),
     )
     loop.add(next_step)
-    loop.outputs.parameters[
-        "idx_stage"
-    ].value_from_parameter = next_loop.outputs.parameters["idx_stage"]
-    loop.outputs.artifacts["dist_model"]._from = expl_dist_blk.outputs.artifacts[
-        "dist_model"
-    ]
-    loop.outputs.artifacts["iter_data"]._from = expl_dist_blk.outputs.artifacts[
-        "iter_data"
-    ]
+    loop.outputs.artifacts["dist_model"].from_expression = if_expression(
+        _if=stage_scheduler.outputs.parameters["converged"],
+        _then=expl_dist_blk.outputs.artifacts["dist_model"],
+        _else=next_step.outputs.artifacts["dist_model"],
+    )
+
+    loop.outputs.artifacts["iter_data"].from_expression = if_expression(
+        _if=stage_scheduler.outputs.parameters["converged"],
+        _then=expl_dist_blk.outputs.artifacts["iter_data"],
+        _else=next_step.outputs.artifacts["iter_data"],
+    )
+
     return loop

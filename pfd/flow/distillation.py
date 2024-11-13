@@ -54,9 +54,8 @@ class Distillation(Steps):
             # pert_gen
             "pert_config": InputParameter(),
             # exploration
-            "expl_stages": InputParameter(),
+            "scheduler": InputParameter(),
             "numb_models": InputParameter(type=int),
-            "max_iter": InputParameter(),
             "explore_config": InputParameter(),
             "converge_config": InputParameter(),
             "conf_filters_conv": InputParameter(),
@@ -67,7 +66,6 @@ class Distillation(Steps):
             "type_map_train": InputParameter(),
             # other configurations
             "inference_config": InputParameter(),
-            "scheduler_config": InputParameter(),
         }
         self._input_artifacts = {
             "init_confs": InputArtifact(),
@@ -150,23 +148,21 @@ def _dist_cl(
     steps.add(pert_gen)
 
     loop = Step(
-        name="ft-loop",
+        name="loop",
         template=expl_dist_loop_op,
         parameters={
             "type_map": steps.inputs.parameters["type_map"],
             "mass_map": steps.inputs.parameters["mass_map"],
-            "expl_stages": steps.inputs.parameters["expl_stages"],
             "numb_models": steps.inputs.parameters["numb_models"],
             "template_script": steps.inputs.parameters["template_script"],
             "train_config": steps.inputs.parameters["train_config"],
             "explore_config": steps.inputs.parameters["explore_config"],
-            "max_iter": steps.inputs.parameters["max_iter"],
             "converge_config": steps.inputs.parameters["converge_config"],
             "conf_filters_conv": steps.inputs.parameters["conf_filters_conv"],
-            "scheduler_config": steps.inputs.parameters["scheduler_config"],
             "inference_config": steps.inputs.parameters["inference_config"],
             "test_size": steps.inputs.parameters["test_size"],
             "type_map_train": steps.inputs.parameters["type_map_train"],
+            "scheduler": steps.inputs.parameters["scheduler"],
         },
         artifacts={
             "systems": pert_gen.outputs.artifacts[

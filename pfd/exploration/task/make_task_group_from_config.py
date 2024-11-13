@@ -275,10 +275,10 @@ def lmp_task_group_args():
     return Argument("task_group", dict, [], [variant_task_group()])
 
 
-def lmp_normalize(data):
+def lmp_normalize(data, strict: bool = False):
     args = lmp_task_group_args()
     data = args.normalize_value(data, trim_pattern="_*")
-    args.check_value(data, strict=False)
+    args.check_value(data, strict=strict)
     return data
 
 
@@ -515,8 +515,9 @@ def make_lmp_task_group_from_config(
 ):
     # Work around the required conf_idx.
     # May not be a good design!!!
-    config["conf_idx"] = [] if "conf_idx" not in config else None
-    config = lmp_normalize(config)
+    # config["conf_idx"] = [] if "conf_idx" not in config else None
+    # config = lmp_normalize(config)
+
     config = config_strip_confidx(config)
     if config["type"] == "lmp-md":
         tgroup = NPTTaskGroup()
@@ -529,7 +530,7 @@ def make_lmp_task_group_from_config(
     elif config["type"] == "lmp-template":
         tgroup = LmpTemplateTaskGroup()
         config.pop("type")
-        lmp_template = config.pop("lmp_template_fname")
+        lmp_template = config.pop("lmp_template")
         tgroup.set_lmp(
             numb_models,
             lmp_template,

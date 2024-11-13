@@ -39,12 +39,14 @@ class LmpTemplateTaskGroup(ConfSamplingTaskGroup):
     def set_lmp(
         self,
         numb_models: int,
-        lmp_template_fname: str,
-        plm_template_fname: Optional[str] = None,
+        lmp_template: List[str],
+        plm_template: Optional[List[str]] = None,
         revisions: dict = {},
         traj_freq: int = 10,
     ) -> None:
-        self.lmp_template = Path(lmp_template_fname).read_text().split("\n")
+        self.lmp_template = (
+            lmp_template  # Path(lmp_template_fname).read_text().split("\n")
+        )
         self.revisions = revisions
         self.traj_freq = traj_freq
         self.lmp_set = True
@@ -53,8 +55,10 @@ class LmpTemplateTaskGroup(ConfSamplingTaskGroup):
             self.lmp_template, self.model_list, self.traj_freq
         )
         self.lmp_template = revise_lmp_input_dump(self.lmp_template, self.traj_freq)
-        if plm_template_fname is not None:
-            self.plm_template = Path(plm_template_fname).read_text().split("\n")
+        if plm_template is not None:
+            self.plm_template = (
+                plm_template  # Path(plm_template_fname).read_text().split("\n")
+            )
             self.plm_set = True
 
     def make_task(
