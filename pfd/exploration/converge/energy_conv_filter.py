@@ -1,6 +1,7 @@
 from .conf_filter_conv import ConfFilterConv
 from pfd.exploration.inference import TestReport
 import logging
+from dargs import Argument
 
 
 @ConfFilterConv.register("energy_delta")
@@ -15,6 +16,19 @@ class EnerConfFilter(ConfFilterConv):
             return False
         return True
 
+    @classmethod
+    def args(cls):
+        doc_thr_l = "The lower threshold of the energy/atom prediction error"
+        doc_thr_h = "The higher threshold of the energy/atom prediction error"
+        return [
+            Argument("thr_l", float, optional=True, default=0.0, doc=doc_thr_l),
+            Argument("thr_h", float, optional=True, default=1.0, doc=doc_thr_h),
+        ]
+
+    @classmethod
+    def doc(cls):
+        return "allowed prediction error of energy/atom, in eV/atom"
+
 
 @ConfFilterConv.register("force_delta")
 class ForceConfFilter(ConfFilterConv):
@@ -27,3 +41,16 @@ class ForceConfFilter(ConfFilterConv):
             logging.warning("#### Force predition error out of threshold!")
             return False
         return True
+
+    @classmethod
+    def args(cls):
+        doc_thr_l = "The lower threshold of the atomic forces prediction error"
+        doc_thr_h = "The higher threshold of the atomic forces prediction error"
+        return [
+            Argument("thr_l", float, optional=True, default=0.0, doc=doc_thr_l),
+            Argument("thr_h", float, optional=True, default=0.3, doc=doc_thr_h),
+        ]
+
+    @classmethod
+    def doc(cls):
+        return "allowed prediction error of average atomic forces, in eV/Angstrom"

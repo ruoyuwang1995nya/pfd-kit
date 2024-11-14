@@ -212,6 +212,10 @@ class DistanceConfFilter(ConfFilter):
             ),
         ]
 
+    @staticmethod
+    def doc() -> str:
+        return "The parameters of atom distance filter"
+
 
 class BoxSkewnessConfFilter(ConfFilter):
     def __init__(self, theta=60.0):
@@ -268,6 +272,10 @@ class BoxSkewnessConfFilter(ConfFilter):
             ),
         ]
 
+    @staticmethod
+    def doc() -> str:
+        return "The parameters of box skewness filter"
+
 
 class BoxLengthFilter(ConfFilter):
     def __init__(self, length_ratio=5.0):
@@ -323,3 +331,7 @@ class BoxLengthFilter(ConfFilter):
                 doc=doc_length_ratio,
             ),
         ]
+
+    @staticmethod
+    def doc() -> str:
+        return "The parameters of box length filter"

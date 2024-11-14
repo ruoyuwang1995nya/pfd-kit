@@ -9,8 +9,8 @@ from dargs import (
     Variant,
 )
 
-from pfd.exploration.converge import CheckConv
-
+from pfd.exploration.converge import CheckConv, ConfFilterConv
+from pfd.exploration.selector import conf_filter_styles
 from dpgen2.fp import (
     fp_styles,
 )
@@ -172,6 +172,22 @@ def variant_conv():
     )
 
 
+def variant_frame_selector():
+    doc = "the type of the frame selector"
+    var_list = []
+    for kk, vv in conf_filter_styles.items():
+        var_list.append(Argument(kk, dict, vv.args(), doc=vv.doc()))
+    return Variant("type", var_list, doc=doc)
+
+
+def variant_conv_filter():
+    doc = "frame filters based on model test"
+    var_list = []
+    for kk, vv in ConfFilterConv.get_filters().items():
+        var_list.append(Argument(kk, dict, vv.args(), doc=vv.doc()))
+    return Variant("type", var_list, doc=doc)
+
+
 def lmp_args():
     doc_config = "Configuration of lmp exploration"
     doc_max_numb_iter = "Maximum number of iterations per stage"
@@ -221,6 +237,8 @@ def lmp_args():
                 Argument(
                     "conf_filter",
                     List[dict],
+                    [],
+                    [variant_conv_filter()],
                     optional=True,
                     default=[],
                     doc=doc_conf_filter,
@@ -234,6 +252,8 @@ def lmp_args():
         Argument(
             "filter",
             List[dict],
+            [],
+            [variant_frame_selector()],
             optional=True,
             default=[{"type": "distance"}],
             doc=doc_filter,

@@ -1,7 +1,8 @@
-from typing import List
+from typing import List, Dict
 from dflow.python import OP, OPIO, Artifact, BigParameter, OPIOSign, Parameter
 from pathlib import Path
-from pfd.exploration.task import ExplorationStage, BaseExplorationTaskGroup
+from pfd.exploration.scheduler.sheduler import Scheduler
+from pfd.exploration.task import ExplorationStage, BaseExplorationTaskGroup, task_group
 from pfd.exploration import explore_styles
 
 
@@ -13,12 +14,9 @@ class StageScheduler(OP):
     def get_input_sign(cls):
         return OPIOSign(
             {
-                "stages": Parameter(List[List[dict]]),
-                "idx_stage": Parameter(int, default=0),
+                "scheduler": BigParameter(Scheduler),
                 "systems": Artifact(List[Path]),
-                "type_map": Parameter(List[str]),
-                "mass_map": Parameter(List[float]),
-                "scheduler_config": BigParameter(dict),
+                "converged": Parameter(bool, value=False),
             }
         )
 
@@ -26,8 +24,12 @@ class StageScheduler(OP):
     def get_output_sign(cls):
         return OPIOSign(
             {
-                "tasks": Parameter(List[dict]),
-                "task_grp": BigParameter(BaseExplorationTaskGroup),
+                "scheduler": BigParameter(Scheduler),
+                "task_grp": BigParameter(BaseExplorationTaskGroup, default=None),
+                "iter_numb": Parameter(int),
+                "iter_id": Parameter(str),
+                "next_iter_id": Parameter(str),
+                "converged": Parameter(bool),
             }
         )
 
@@ -40,24 +42,26 @@ class StageScheduler(OP):
         Generate exploration tasks based on model and exploration styles
         """
         systems = ip["systems"]
-        expl_stage_config = ip["stages"][ip["idx_stage"]]
-        type_map = ip["type_map"]
-        mass_map = ip["mass_map"]
-        config = ip["scheduler_config"]
-        expl_stage = ExplorationStage()
-        model_style = config["model_style"]
-        explore_style = config["explore_style"]
+        scheduler = ip["scheduler"]
+        converged = ip["converged"]
 
-        for task_grp in expl_stage_config:
-            for idx in task_grp["conf_idx"]:
-                expl_stage.add_task_group(
-                    explore_styles[model_style][explore_style]["task"](
-                        systems[idx],
-                        type_map,
-                        mass_map,
-                        task_grp,
-                    )
-                )
-        return OPIO(
-            {"tasks": ip["stages"][ip["idx_stage"]], "task_grp": expl_stage.make_task()}
+        # check convergence
+        scheduler.set_convergence(convergence_stage=converged)
+
+        ret = {}
+        # if not converged
+        if not scheduler.convergence:
+            task_grp = scheduler.set_explore_tasks(systems)
+            ret["task_grp"] = task_grp
+
+        ret.update(
+            {
+                "scheduler": scheduler,
+                "iter_numb": scheduler.iter_numb,
+                "iter_id": "%03d" % scheduler.iter_numb,
+                "next_iter_id": "%03d" % (scheduler.iter_numb + 1),
+                "converged": scheduler.convergence,
+            }
         )
+
+        return OPIO(ret)

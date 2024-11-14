@@ -221,15 +221,14 @@
             [{ "_comment": "group 1 stage 1 of finetune-exploration",
                 "conf_idx": [0],
                 "n_sample":3,
-                "exploration":{
                 "type": "lmp-md",
                 "ensemble": "npt",
                 "dt":0.005,
                 "nsteps": 100,
                 "temps": [500],
                 "press":[1],
-                "trj_freq": 20},
-            "max_sample": 10000}
+                "trj_freq": 20
+        }
             ]],
         "max_iter":2,
         "converge_config":{

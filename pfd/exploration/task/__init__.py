@@ -36,4 +36,4 @@ from .task_group import (
     BaseExplorationTaskGroup,
     ExplorationTaskGroup,
 )
-from .gen_task_group import gen_expl_grp_lmps
+from .gen_task_group import gen_expl_grp_lmps, expl_grp_args_lmps

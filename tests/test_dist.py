@@ -64,16 +64,13 @@ class TestWorkDist(unittest.TestCase):
                         {
                             "conf_idx": [0],
                             "n_sample": 1,
-                            "exploration": {
-                                "type": "lmp-md",
-                                "ensemble": "npt",
-                                "dt": 0.005,
-                                "nsteps": 100,
-                                "temps": [300],
-                                "press": [1],
-                                "trj_freq": 1,
-                            },
-                            "max_sample": 100,
+                            "type": "lmp-md",
+                            "ensemble": "npt",
+                            "dt": 0.005,
+                            "nsteps": 100,
+                            "temps": [300],
+                            "press": [1],
+                            "trj_freq": 1,
                         }
                     ]
                 ],
