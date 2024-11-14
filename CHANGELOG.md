@@ -1,6 +1,19 @@
 # CHANGELOG
 
 
+## v0.3.0 (2024-11-14)
+
+### Bug Fixes
+
+- Update docs
+  ([`dc6b76b`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/dc6b76b29375dbcd3852fa705366076973daa773))
+
+### Features
+
+- Reformulating loop structures
+  ([`fd3622c`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/fd3622cae85d69b93a13e3f4e25f5c05bda21961))
+
+
 ## v0.2.0 (2024-11-11)
 
 ### Bug Fixes
@@ -650,7 +663,7 @@ fix: modify the pylint setting
 
 ### Chores
 
-- 1.0.0 [skip ci]
+- **release**: 1.0.0 [skip ci]
   ([`450c658`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/450c6588aa7deaa6d0736b5dc8c61578d1b6d672))
 
 # 1.0.0 (2024-09-28)
