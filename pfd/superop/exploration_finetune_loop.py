@@ -63,6 +63,7 @@ class ExplFinetuneBlock(Steps):
             "conf_selector": InputParameter(),
             "conf_filters_conv": InputParameter(value=None),
             "converge_config": InputParameter(value={}),
+            "inference_config": InputParameter(),
         }
         self._input_artifacts = {
             "systems": InputArtifact(),  # starting systems for model deviation
@@ -145,6 +146,7 @@ class ExplFinetuneLoop(Steps):
             "converge_config": InputParameter(value={}),
             "scheduler": InputParameter(),
             "converged": InputParameter(value=False),
+            "inference_config": InputParameter(),
         }
         self._input_artifacts = {
             "systems": InputArtifact(),  # starting systems for model deviation
@@ -282,7 +284,7 @@ def _expl_ft_blk(
             **inference_template_config,
         ),
         parameters={
-            "inference_config": {"model": "dp"},
+            "inference_config": steps.inputs.parameters["inference_config"],
             "type_map": steps.inputs.parameters["type_map"],
         },
         artifacts={
@@ -426,6 +428,7 @@ def _loop(
             "template_script": loop.inputs.parameters["template_script"],
             "train_config": loop.inputs.parameters["train_config"],
             "explore_config": loop.inputs.parameters["explore_config"],
+            "inference_config": loop.inputs.parameters["inference_config"],
             "fp_config": loop.inputs.parameters["fp_config"],
             "collect_data_config": {
                 "labeled_data": True,
@@ -467,6 +470,7 @@ def _loop(
         "template_script": loop.inputs.parameters["template_script"],
         "train_config": loop.inputs.parameters["train_config"],
         "explore_config": loop.inputs.parameters["explore_config"],
+        "inference_config": loop.inputs.parameters["inference_config"],
         "fp_config": loop.inputs.parameters["fp_config"],
         "dp_test_validation_config": loop.inputs.parameters[
             "dp_test_validation_config"

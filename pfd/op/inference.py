@@ -44,19 +44,21 @@ class InferenceOP(OP):
         model_path = ip["model"]
         type_map = ip["type_map"]
         config = ip["inference_config"]
-
         model_type = config.pop("model")
+        max_force = config.pop("max_force")
         Eval = EvalModel.get_driver(model_type)
         res_dir = Path("inference")
         res_dir.mkdir(exist_ok=True)
         labeled_systems = []
-        evaluator = Eval(model=model_path)
+        evaluator = Eval(model=model_path, **config)
         logging.info("##### Number of systems: %03d" % len(systems))
         for idx, sys in enumerate(systems):
             name = "sys_%03d_%s" % (idx, sys.name)
             logging.info("##### Predicting: %s" % name)
             evaluator.read_data_unlabeled(data=sys, type_map=type_map)
-            _, labeled_sys = evaluator.inference(name, prefix=str(res_dir), **config)
+            _, labeled_sys = evaluator.inference(
+                name, prefix=str(res_dir), max_force=max_force
+            )
             logging.info("##### Prediction ends")
             labeled_systems.append(labeled_sys)
         return OPIO(

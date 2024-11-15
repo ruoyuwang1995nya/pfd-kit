@@ -162,7 +162,7 @@ def main_parser() -> argparse.ArgumentParser:
 
 
 def parse_args(args: Optional[List[str]] = None):
-    """DP-DISTILL commandline options argument parsing.
+    """PFD-kit commandline options argument parsing.
 
     Parameters
     ----------
@@ -182,7 +182,14 @@ def parse_args(args: Optional[List[str]] = None):
 def main():
     # logging
     logging.basicConfig(level=logging.INFO)
-
+    logo = r"""
+    ____  _____ ____    _  __ _ _   
+   |  _ \|  ___|  _ \  | |/ /(_) |_ 
+   | |_) | |_  | | | | | / / | | __|
+   |  __/|  _| | |_| | |  /\ | | |_ 
+   |_|   |_|   |____/  |_|\_\|_|\__|
+    """
+    print(logo)
     args = parse_args()
     if args.command == "submit":
         print("Submitting workflow")
