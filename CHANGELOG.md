@@ -1,6 +1,17 @@
 # CHANGELOG
 
 
+## v0.3.1 (2024-11-15)
+
+### Bug Fixes
+
+- Add api docs
+  ([`ec8bb74`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/ec8bb74b4c1853065dbe2719f22bf7a402177b61))
+
+- Issues with multi-head fine-tune
+  ([`cd10fa3`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/cd10fa30f824f18b0e583e84408df88ae7ae4e3c))
+
+
 ## v0.3.0 (2024-11-14)
 
 ### Bug Fixes
