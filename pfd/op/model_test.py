@@ -46,13 +46,13 @@ class ModelTestOP(OP):
         model_path = ip["model"]
         type_map = ip["type_map"]
         config = ip["inference_config"]
-        model_type = config["model"]
+        model_type = config.pop("model")
         Eval = EvalModel.get_driver(model_type)
         res_total = []
         report = {}
         res_dir = Path("result")
         res_dir.mkdir(exist_ok=True)
-        evaluator = Eval(model=model_path)
+        evaluator = Eval(model=model_path, **config)
         logging.info("##### Number of systems: %d" % len(systems))
         res_total = TestReports()
         for idx, sys in enumerate(systems):

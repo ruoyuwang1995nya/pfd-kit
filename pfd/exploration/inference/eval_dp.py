@@ -8,19 +8,20 @@ from typing import Union, Optional
 import logging
 import os
 from .eval_model import TestReport
+from dargs import Argument
 
 
 @EvalModel.register("dp")
 @EvalModel.register("deepmd")
 class DPTest(EvalModel):
-    def load_model(self, model: Union[Path, str]):
+    def load_model(self, model: Union[Path, str], **kwargs):
         if isinstance(model, str):
             model = Path(model)
         self.model_path = model
         from deepmd.infer import DeepPot
 
         print("Loading model")
-        self._model = DeepPot(model)
+        self._model = DeepPot(model, **kwargs)
         print("Model loaded")
 
     def read_data(self, data, fmt="deepmd/npy", **kwargs):
@@ -143,3 +144,12 @@ class DPTest(EvalModel):
         labeled_data_cl.to("deepmd/npy", str(prefix / name))
 
         return prefix, prefix / name
+
+    @classmethod
+    def args(cls):
+        doc_head = "The head of model in multi_task mode"
+        return [Argument("head", str, optional=True, default=None, doc=doc_head)]
+
+    @classmethod
+    def doc(cls):
+        return "Additional parameters for inference with Deep Potential models"

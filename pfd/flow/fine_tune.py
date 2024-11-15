@@ -61,6 +61,8 @@ class FineTune(Steps):
             # training
             "template_script": InputParameter(),
             "train_config": InputParameter(),
+            # test
+            "inference_config": InputParameter(),
             # fp calculation for labeling
             "fp_config": InputParameter(),
             # fp exploration
@@ -266,6 +268,7 @@ def _fine_tune_cl(
             "numb_models": ft_steps.inputs.parameters["numb_models"],
             "template_script": ft_steps.inputs.parameters["template_script"],
             "train_config": ft_steps.inputs.parameters["train_config"],
+            "inference_config": ft_steps.inputs.parameters["inference_config"],
             "explore_config": ft_steps.inputs.parameters["explore_config"],
             "dp_test_validation_config": {},
             "converge_config": ft_steps.inputs.parameters["converge_config"],

@@ -119,9 +119,9 @@ class EvalModel(ABC):
         self._model = None
 
         if model:
-            self.load_model(model)
+            self.load_model(model, **kwargs)
         if data:
-            self.read_data(data, **kwargs)
+            self.read_data(data)
 
     @property
     def model(self):

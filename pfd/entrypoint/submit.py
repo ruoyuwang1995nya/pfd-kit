@@ -15,7 +15,7 @@ import time
 from dflow import ArgoStep, Step, Steps, Workflow, upload_artifact, download_artifact
 
 
-from pfd.entrypoint.args import normalize as normalize_args
+from pfd.entrypoint.args import normalize_infer_args, normalize as normalize_args
 from pfd.entrypoint.common import global_config_workflow, expand_idx
 
 from dpgen2.fp import fp_styles
@@ -468,8 +468,6 @@ class FlowGen:
             "labeled_data", False
         )
         collect_data_config["test_size"] = collect_data_config.get("test_size", 0.1)
-        inference_config = config["inference"]
-        inference_config.update({"model": train_style})
 
         ## prepare artifacts
         # read training template
@@ -507,6 +505,10 @@ class FlowGen:
             )
         else:
             raise FileNotFoundError("Teacher model must exist!")
+
+        inference_config = config["inference"]
+        inference_config.update({"model": teacher_model_style})
+        inference_config = normalize_infer_args(inference_config)
 
         expl_args = explore_styles[teacher_model_style][explore_style]["task_args"]
         for stg in expl_stages:
@@ -740,6 +742,12 @@ class FlowGen:
                 }
             )
 
+        inference_config = config["inference"]
+        inference_config.update({"model": train_style})
+        inference_config = normalize_infer_args(inference_config)
+        # get rid of irrelevant argument
+        inference_config.pop("max_force")
+
         # make distillation op
         ft_op = make_ft_op(
             fp_style=fp_type,
@@ -780,6 +788,7 @@ class FlowGen:
                 "aimd_config": aimd_config,
                 "aimd_sample_conf": aimd_sample_conf,
                 "collect_data_config": collect_data_config,
+                "inference_config": inference_config,
             },
             artifacts={
                 "init_models": init_models,

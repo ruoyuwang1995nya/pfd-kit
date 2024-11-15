@@ -11,6 +11,7 @@ from dargs import (
 
 from pfd.exploration.converge import CheckConv, ConfFilterConv
 from pfd.exploration.selector import conf_filter_styles
+from pfd.exploration.inference import EvalModel
 from dpgen2.fp import (
     fp_styles,
 )
@@ -440,8 +441,23 @@ def aimd_args():
 def infer_args():
     doc_max_force = "The max value of allowed atomic force"
     return [
-        Argument("max_force", float, optional=True, default=None, doc=doc_max_force)
+        Argument("max_force", float, optional=True, default=None, doc=doc_max_force),
     ]
+
+
+def variant_infer():
+    doc_model_type = "The supported model type for inference"
+    var = []
+    for kk, vv in EvalModel.get_drivers().items():
+        var.append(Argument(kk, dict, vv.args(), doc=vv.doc()))
+    return Variant("model", var, doc=doc_model_type)
+
+
+def normalize_infer_args(data):
+    base = Argument("base", dict, infer_args(), [variant_infer()])
+    data = base.normalize_value(data, trim_pattern="_*")
+    base.check_value(data)
+    return data
 
 
 def dflow_conf_args():
