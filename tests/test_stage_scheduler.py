@@ -9,6 +9,7 @@ import numpy as np
 from dflow.python import OPIO
 from pfd.exploration import explore_styles
 from pfd.exploration.scheduler import Scheduler
+from pfd.exploration.converge import ConvReport
 
 
 class TestStageScheduler(unittest.TestCase):
@@ -87,6 +88,11 @@ class TestStageScheduler(unittest.TestCase):
             max_iter=1,
         )
 
+        report = {
+            "type": "Energy_RMSE",
+        }
+        self.report = ConvReport(**report)
+
     def test_dp_lmp(self):
         op = StageScheduler()
         out = op.execute(
@@ -95,11 +101,15 @@ class TestStageScheduler(unittest.TestCase):
                     "systems": self.systems,
                     "scheduler": self.scheduler,
                     "converged": False,
+                    "report": self.report,
                 }
             )
         )
+        scheduler = out["scheduler"]
+        print(scheduler.get_status())
         self.assertEqual(len(out["task_grp"]), 2)
         self.assertNotEqual(out["task_grp"][0].files(), out["task_grp"][1].files())
+        self.assertEqual(len(scheduler.log), 1)
 
 
 if __name__ == "__main__":

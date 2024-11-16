@@ -33,7 +33,7 @@ from dflow.python import (
 )
 
 from dpgen2.utils.step_config import init_executor
-from pfd.op import ModelTestOP, EvalConv, IterCounter, StageScheduler, NextLoop
+from pfd.op import ModelTestOP, EvalConv, StageScheduler
 
 
 class ExplDistBlock(Steps):
@@ -71,7 +71,10 @@ class ExplDistBlock(Steps):
             "iter_data": InputArtifact(optional=True),  # empty list
             "validation_data": InputArtifact(optional=True),
         }
-        self._output_parameters = {"converged": OutputParameter()}
+        self._output_parameters = {
+            "converged": OutputParameter(),
+            "report": OutputParameter(default=None),
+        }
         self._output_artifacts = {
             "iter_data": OutputArtifact(),
             "dist_model": OutputArtifact(),
@@ -144,6 +147,7 @@ class ExplDistLoop(Steps):
             "type_map_train": InputParameter(),
             "scheduler": InputParameter(),
             "converged": InputParameter(value=False),
+            "report": InputParameter(value=None),
         }
         self._input_artifacts = {
             "systems": InputArtifact(),  # starting systems for model deviation
@@ -153,7 +157,7 @@ class ExplDistLoop(Steps):
                 optional=True
             ),  # datas collected during previous exploration
         }
-        self._output_parameters = {}
+        self._output_parameters = {"report": OutputParameter(default=None)}
 
         self._output_artifacts = {
             "dist_model": OutputArtifact(),
@@ -371,6 +375,9 @@ def _expl_dist_cl(
     steps.outputs.parameters[
         "converged"
     ].value_from_parameter = evaluate.outputs.parameters["converged"]
+    steps.outputs.parameters[
+        "report"
+    ].value_from_parameter = evaluate.outputs.parameters["report"]
     return steps
 
 
@@ -397,6 +404,7 @@ def _loop(
         parameters={
             "converged": loop.inputs.parameters["converged"],
             "scheduler": loop.inputs.parameters["scheduler"],
+            "report": loop.inputs.parameters["report"],
         },
         artifacts={
             "systems": loop.inputs.artifacts["systems"],
@@ -462,6 +470,8 @@ def _loop(
         "type_map_train": loop.inputs.parameters["type_map_train"],
         "scheduler": stage_scheduler.outputs.parameters["scheduler"],
         "converged": expl_dist_blk.outputs.parameters["converged"],
+        "report": expl_dist_blk.outputs.parameters["report"],
+        "test_size": loop.inputs.parameters["test_size"],
     }
     next_step = Step(
         name=name + "-exploration-finetune-next",
@@ -482,6 +492,11 @@ def _loop(
         ),
     )
     loop.add(next_step)
+    loop.outputs.parameters["report"].value_from_expression = if_expression(
+        _if=stage_scheduler.outputs.parameters["converged"],
+        _then=loop.inputs.parameters["report"],
+        _else=next_step.outputs.parameters["report"],
+    )
     loop.outputs.artifacts["dist_model"].from_expression = if_expression(
         _if=stage_scheduler.outputs.parameters["converged"],
         _then=expl_dist_blk.outputs.artifacts["dist_model"],

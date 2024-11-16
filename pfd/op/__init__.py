@@ -10,7 +10,7 @@ from .inference import InferenceOP
 
 from .task_gen import TaskGen
 
-from .converge import EvalConv, NextLoop, IterCounter
+from .converge import EvalConv
 
 from .model_test import ModelTestOP
 

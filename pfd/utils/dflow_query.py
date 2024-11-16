@@ -59,12 +59,12 @@ def get_last_scheduler(
     if (
         outputs is not None
         and hasattr(outputs, "parameters")
-        and "exploration_scheduler" in outputs.parameters
-        and hasattr(outputs.parameters["exploration_scheduler"], "value")
+        and "scheduler" in outputs.parameters
+        and hasattr(outputs.parameters["scheduler"], "value")
     ):
-        return outputs.parameters["exploration_scheduler"].value
+        return outputs.parameters["scheduler"].value
 
-    logging.warn("Exploration scheduler not found in the global outputs")
+    logging.warning("Exploration scheduler not found in the global outputs")
     scheduler_keys_ = []
     for ii in keys:
         if get_subkey(ii) == "scheduler":
@@ -79,7 +79,7 @@ def get_last_scheduler(
     else:
         skey = sorted(scheduler_keys)[-1]
         step = [step for step in scheduler_steps if step.key == skey][0]
-        return step.outputs.parameters["exploration_scheduler"].value
+        return step.outputs.parameters["scheduler"].value
 
 
 def get_all_schedulers(

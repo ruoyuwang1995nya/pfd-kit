@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from pathlib import Path
+from typing import Union, Optional
+from dataclasses import dataclass
 
 
 class CheckConv(ABC):
@@ -62,3 +63,16 @@ class CheckConv(ABC):
         The default arguments for the method
         """
         return []
+
+
+@dataclass
+class ConvReport:
+    iteration: str = "000"
+    type: str = "null"
+    criteria: Union[int, float] = 0.0
+    force_rmse: Optional[float] = None
+    energy_rmse: Optional[float] = None
+    frame: int = 0
+    unconverged_frame: Optional[int] = None
+    selected_frame: int = 0
+    converged: bool = False
