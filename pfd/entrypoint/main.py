@@ -12,7 +12,7 @@ from pfd.utils.download_pfd_artifacts import (
 )
 from pfd import __version__
 from .download import download, download_by_def, download_end_result
-
+from .status import status
 from .submit import FlowGen, resubmit_workflow
 from .common import (
     expand_idx,
@@ -149,6 +149,17 @@ def main_parser() -> argparse.ArgumentParser:
         action="store_false",
         help="if specified, download regardless whether check points exist.",
     )
+    #########################################
+    # status
+    parser_status = subparsers.add_parser(
+        "status",
+        help="Check exploration status",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser_status.add_argument(
+        "CONFIG", help="the config file in json format defining the workflow."
+    )
+    parser_status.add_argument("ID", help="the ID of existing workflow")
 
     # Add the version argument
     parser.add_argument(
@@ -237,6 +248,11 @@ def main():
             )
         else:
             download_end_result(wfid, config, prefix=args.prefix)
+    elif args.command == "status":
+        with open(args.CONFIG) as fp:
+            config = json.load(fp)
+        wfid = args.ID
+        status(wfid, config)
 
     elif args.command is None:
         pass

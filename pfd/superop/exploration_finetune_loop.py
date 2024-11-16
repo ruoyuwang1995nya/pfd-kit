@@ -30,7 +30,7 @@ from dflow.python import (
     PythonOPTemplate,
 )
 from pfd.utils.step_config import init_executor
-from pfd.op import EvalConv, NextLoop, IterCounter, ModelTestOP, StageScheduler
+from pfd.op import EvalConv, ModelTestOP, StageScheduler
 
 
 class ExplFinetuneBlock(Steps):
@@ -74,7 +74,10 @@ class ExplFinetuneBlock(Steps):
                 optional=True
             ),  # datas collected during previous exploration
         }
-        self._output_parameters = {"converged": OutputParameter()}
+        self._output_parameters = {
+            "converged": OutputParameter(),
+            "report": OutputParameter(default=None),
+        }
         self._output_artifacts = {
             "ft_model": OutputArtifact(),
             "iter_data": OutputArtifact(),
@@ -147,6 +150,7 @@ class ExplFinetuneLoop(Steps):
             "scheduler": InputParameter(),
             "converged": InputParameter(value=False),
             "inference_config": InputParameter(),
+            "report": InputParameter(value=None),
         }
         self._input_artifacts = {
             "systems": InputArtifact(),  # starting systems for model deviation
@@ -158,7 +162,7 @@ class ExplFinetuneLoop(Steps):
             ),  # datas collected during previous exploration
         }
 
-        self._output_parameters = {}
+        self._output_parameters = {"report": OutputParameter(default=None)}
         self._output_artifacts = {
             "ft_model": OutputArtifact(),
             "iter_data": OutputArtifact(),  # data collected after exploration
@@ -374,6 +378,9 @@ def _expl_ft_blk(
     steps.outputs.parameters[
         "converged"
     ].value_from_parameter = evaluate.outputs.parameters["converged"]
+    steps.outputs.parameters[
+        "report"
+    ].value_from_parameter = evaluate.outputs.parameters["report"]
     steps.outputs.artifacts["iter_data"]._from = collect_data.outputs.artifacts[
         "multi_systems"
     ]
@@ -405,6 +412,7 @@ def _loop(
         parameters={
             "converged": loop.inputs.parameters["converged"],
             "scheduler": loop.inputs.parameters["scheduler"],
+            "report": loop.inputs.parameters["report"],
         },
         artifacts={"systems": loop.inputs.artifacts["systems"]},
         key="--".join(["iter-%s" % loop.inputs.parameters["block_id"], "scheduler"]),
@@ -477,6 +485,7 @@ def _loop(
         ],
         "scheduler": stage_scheduler.outputs.parameters["scheduler"],
         "converged": expl_ft_blk.outputs.parameters["converged"],
+        "report": expl_ft_blk.outputs.parameters["report"],
     }
     next_step = Step(
         name=name + "-exploration-finetune-next",
@@ -498,6 +507,11 @@ def _loop(
         ),
     )
     loop.add(next_step)
+    loop.outputs.parameters["report"].value_from_expression = if_expression(
+        _if=stage_scheduler.outputs.parameters["converged"],
+        _then=loop.inputs.parameters["report"],
+        _else=next_step.outputs.parameters["report"],
+    )
     loop.outputs.artifacts["ft_model"].from_expression = if_expression(
         _if=stage_scheduler.outputs.parameters["converged"],
         _then=loop.inputs.artifacts["current_model"],

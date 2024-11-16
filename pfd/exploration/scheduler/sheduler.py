@@ -1,7 +1,7 @@
 from typing import Dict, List
-import copy
 from pfd.exploration import explore_styles
 from pfd.exploration.task import ExplorationStage, BaseExplorationTaskGroup
+from pfd.exploration.converge import ConvReport
 import logging
 
 
@@ -53,6 +53,9 @@ class Scheduler:
         # first iteration
         self._is_first_iteration = True
 
+        # log record
+        self._log = []
+
     @property
     def model_style(self):
         return self._model_style
@@ -92,6 +95,10 @@ class Scheduler:
     @property
     def is_first_iteration(self):
         return self._is_first_iteration
+
+    @property
+    def log(self):
+        return self._log
 
     @is_first_iteration.setter
     def is_first_iteration(self, value: bool):
@@ -136,5 +143,18 @@ class Scheduler:
     def next_stage(self) -> None:
         self._idx_stage += 1
 
+    def add_report(self, report: ConvReport):
+        report.iteration = "%03d" % self.iter_numb
+        self._log.append(report)
+
     def get_status(self):
-        pass
+        from tabulate import tabulate
+
+        if len(self.log) > 0:
+            return tabulate(self.log, headers="keys", tablefmt="grid")
+        else:
+            return tabulate(
+                self.log,
+                headers=[kk for kk in ConvReport.__annotations__.keys()],
+                tablefmt="grid",
+            )

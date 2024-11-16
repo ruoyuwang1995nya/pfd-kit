@@ -93,11 +93,12 @@ class ConfFiltersConv:
         self._filters.append(conf_filter)
         return self
 
-    def check(self, reports: TestReports) -> TestReports:
+    def check(self, reports: TestReports) -> np.ndarray:
         selected_idx = np.arange(len(reports))
         for ff in self._filters:
             fsel = np.where([ff.check(reports[ii]) for ii in range(len(reports))])[0]
             selected_idx = np.intersect1d(selected_idx, fsel)
-        sub_reports = reports.sub_reports(selected_idx)
-        logging.info("#### %d systems are added to the training set" % len(sub_reports))
-        return sub_reports
+        logging.info(
+            "#### %d systems are added to the training set" % len(selected_idx)
+        )
+        return selected_idx

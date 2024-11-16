@@ -3,6 +3,7 @@ from dflow.python import OP, OPIO, Artifact, BigParameter, OPIOSign, Parameter
 from pathlib import Path
 from pfd.exploration.scheduler.sheduler import Scheduler
 from pfd.exploration.task import ExplorationStage, BaseExplorationTaskGroup, task_group
+from pfd.exploration.converge import ConvReport
 from pfd.exploration import explore_styles
 
 
@@ -14,9 +15,10 @@ class StageScheduler(OP):
     def get_input_sign(cls):
         return OPIOSign(
             {
-                "scheduler": BigParameter(Scheduler),
+                "scheduler": Parameter(Scheduler),
                 "systems": Artifact(List[Path]),
                 "converged": Parameter(bool, value=False),
+                "report": Parameter(ConvReport, value=None),
             }
         )
 
@@ -24,7 +26,7 @@ class StageScheduler(OP):
     def get_output_sign(cls):
         return OPIOSign(
             {
-                "scheduler": BigParameter(Scheduler),
+                "scheduler": Parameter(Scheduler),
                 "task_grp": BigParameter(BaseExplorationTaskGroup, default=None),
                 "iter_numb": Parameter(int),
                 "iter_id": Parameter(str),
@@ -44,6 +46,9 @@ class StageScheduler(OP):
         systems = ip["systems"]
         scheduler = ip["scheduler"]
         converged = ip["converged"]
+
+        if report := ip["report"]:
+            scheduler.add_report(report)
 
         # check convergence
         scheduler.set_convergence(convergence_stage=converged)
