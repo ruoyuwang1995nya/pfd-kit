@@ -1,6 +1,17 @@
 # CHANGELOG
 
 
+## v0.3.2 (2024-11-16)
+
+### Bug Fixes
+
+- Remove POTCAR
+  ([`5ce3541`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/5ce3541da21872159ab4e397a0bf025b25f5d1fa))
+
+- Add status supervisor
+  ([`ac799ba`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/ac799ba1e1a81b53f22a06c3d101cabf0e94754c))
+
+
 ## v0.3.1 (2024-11-15)
 
 ### Bug Fixes
