@@ -44,7 +44,7 @@ class FineTune(Steps):
         pert_gen_step_config: dict,
         collect_data_step_config: dict,
         upload_python_packages: Optional[List[os.PathLike]] = None,
-        init_training=False,
+        skip_exploration=False,
         skip_aimd: bool = True,
     ):
         self._input_parameters = {
@@ -108,7 +108,7 @@ class FineTune(Steps):
             pert_gen_step_config=pert_gen_step_config,
             collect_data_config=collect_data_step_config,
             upload_python_packages=upload_python_packages,
-            init_training=init_training,
+            skip_exploration=skip_exploration,
             skip_aimd=skip_aimd,
         )
 
@@ -140,7 +140,7 @@ def _fine_tune_cl(
     pert_gen_step_config: dict,
     collect_data_config: dict,
     upload_python_packages: Optional[List[os.PathLike]] = None,
-    init_training: bool = True,
+    skip_exploration: bool = True,
     skip_aimd: bool = True,
 ):
     pert_gen_step_config = deepcopy(pert_gen_step_config)
@@ -166,7 +166,7 @@ def _fine_tune_cl(
     )
     ft_steps.add(pert_gen)
 
-    if init_training is True:
+    if skip_exploration is True:
         # if skip AIMD exploration
         if skip_aimd is True:
             loop_iter_data = ft_steps.inputs.artifacts.get("iter_data")
