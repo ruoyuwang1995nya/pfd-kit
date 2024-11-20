@@ -1,6 +1,22 @@
 # CHANGELOG
 
 
+## v0.3.3 (2024-11-20)
+
+### Bug Fixes
+
+- Issue with dist workflow
+  ([`520090e`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/520090ea3ea538b651578bbb3b0f15b22ee9581d))
+
+fix: update docs
+
+- Add quick start example
+  ([`eb97887`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/eb9788768ed64c04dc43002765d32a85e866d047))
+
+- Modify doc hompage, make the scientific purpose more clearly.
+  ([`2fe80f1`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/2fe80f194a56eb592fd5d634ba883cacafbe5253))
+
+
 ## v0.3.2 (2024-11-16)
 
 ### Bug Fixes
