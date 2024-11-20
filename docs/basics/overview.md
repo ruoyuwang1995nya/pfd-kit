@@ -1,5 +1,9 @@
 # Overview
-
+<style>
+  p {
+    text-align: justify;
+  }
+</style>
 [PFD-kit](https://github.com/ruoyuwang1995nya/dp-distill) automates the fine-tuning and distillation process of pre-trained atomic models, such as [DPA-2](https://github.com/deepmodeling/deepmd-kit.git). It enables practical atomistic simualtion with the highly transferable, but computationally expensive pre-trained models. PFD-kit is built upon the  [DPGEN2](https://github.com/deepmodeling/dpgen2) workflow and supports the Deep Potential models. The best experience of PFD-kit is found on Bohrium platform.
 
 ## Workflows 
