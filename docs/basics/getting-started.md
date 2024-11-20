@@ -19,7 +19,7 @@ pfd submit finetune.json -t finetune
 The `finetune.json` specifies imput parameters of the finetune task, whose details can be found in the `examples` directory. 
 It should be noted that PFD-kit is built upon the [dflow](https://github.com/dptech-corp/dflow.git) package and utilized OPs from the [DPGEN2](https://github.com/deepmodeling/dpgen2.git) project, thus it is best to experience PFD-kit on the cloud-based [Bohrium](https://bohrium.dp.tech) platform, though local deployment is also possible.
 
-## Tutorials
+## Tutorial: c-Si
 This tutorial demmonstrates the general workflow of PFD-kit with a simple example of crystal Si in diamond structure. The relevant input files can be found at `/examples/silicon`. In this example, we need a efficient deep potential model of Si crytal with high accuracy for large scale atomic simulation, which can be easily generated from pretrained atomic through fine-tuning and distillation using PFD-kit. 
 
 > **Note**: this tutorial may require [Bohrium](https://bohrium.dp.tech/) account. 

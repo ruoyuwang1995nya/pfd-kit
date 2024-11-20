@@ -156,6 +156,7 @@ class ExplDistLoop(Steps):
             "iter_data": InputArtifact(
                 optional=True
             ),  # datas collected during previous exploration
+            "current_model": InputArtifact(optional=True),
         }
         self._output_parameters = {"report": OutputParameter(default=None)}
 
@@ -450,7 +451,7 @@ def _loop(
         key="--".join(
             ["iter-%s" % stage_scheduler.outputs.parameters["iter_id"], "explore-block"]
         ),
-        # when="%s == false" % (stage_scheduler.outputs.parameters["converged"]),
+        when="%s == false" % (stage_scheduler.outputs.parameters["converged"]),
     )
     loop.add(expl_dist_blk)
 
@@ -480,6 +481,7 @@ def _loop(
         artifacts={
             "systems": loop.inputs.artifacts["systems"],
             "teacher_model": loop.inputs.artifacts["teacher_model"],
+            "current_model": expl_dist_blk.outputs.artifacts["dist_model"],
             "iter_data": expl_dist_blk.outputs.artifacts["iter_data"],
             "init_data": loop.inputs.artifacts["init_data"],
         },
@@ -499,13 +501,13 @@ def _loop(
     )
     loop.outputs.artifacts["dist_model"].from_expression = if_expression(
         _if=stage_scheduler.outputs.parameters["converged"],
-        _then=expl_dist_blk.outputs.artifacts["dist_model"],
+        _then=loop.inputs.artifacts["current_model"],
         _else=next_step.outputs.artifacts["dist_model"],
     )
 
     loop.outputs.artifacts["iter_data"].from_expression = if_expression(
         _if=stage_scheduler.outputs.parameters["converged"],
-        _then=expl_dist_blk.outputs.artifacts["iter_data"],
+        _then=loop.inputs.artifacts["init_data"],
         _else=next_step.outputs.artifacts["iter_data"],
     )
 

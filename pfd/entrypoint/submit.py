@@ -430,8 +430,10 @@ class FlowGen:
         pert_gen_step_config = config["step_configs"].get(
             "pert_gen_config", default_step_config
         )
-        inference_step_config = copy.deepcopy(run_lmp_step_config)
-        model_test_config = copy.deepcopy(run_train_step_config)
+        inference_step_config = config["step_configs"].get(
+            "inference_config", copy.deepcopy(run_train_step_config)
+        )
+        model_test_config = copy.deepcopy(inference_step_config)
         # uploaded python packages
         upload_python_packages = []
         if custom_packages := config.get("upload_python_packages"):
