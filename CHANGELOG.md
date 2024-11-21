@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.3.4 (2024-11-21)
+
+### Bug Fixes
+
+- Miscelaneous
+  ([`2ddffe4`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/2ddffe4813da26e9421eecbb2ac4e3526a8fd5b7))
+
+
 ## v0.3.3 (2024-11-20)
 
 ### Bug Fixes
