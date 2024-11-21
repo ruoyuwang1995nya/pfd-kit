@@ -68,6 +68,7 @@ class CheckConv(ABC):
 @dataclass
 class ConvReport:
     iteration: str = "000"
+    stage: str = "000"
     type: str = "null"
     criteria: Union[int, float] = 0.0
     force_rmse: Optional[float] = None

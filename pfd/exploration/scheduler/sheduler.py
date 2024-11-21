@@ -145,6 +145,7 @@ class Scheduler:
 
     def add_report(self, report: ConvReport):
         report.iteration = "%03d" % self.iter_numb
+        report.stage = "%03d" % self.idx_stage
         self._log.append(report)
 
     def get_status(self):

@@ -30,6 +30,7 @@ dependencies = [
     "cp2kdata",
     "periodictable",
     "ase",
+    "tabulate",
     "dpgen2 @ git+https://github.com/ruoyuwang1995nya/dpgen2.git"
 ]
 

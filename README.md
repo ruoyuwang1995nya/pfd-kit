@@ -1,7 +1,14 @@
 # PFD-kit: finetune and distillation from pre-trained atomic models
-[PFD-kit](https://github.com/ruoyuwang1995nya/dp-distill) automates the fine-tuning and distillation process of pre-trained atomic models. It enables practical atomistic simualtion with the highly transferable, but computationally expensive pre-trained models. PFD-kit is built upon the [dflow](https://github.com/dptech-corp/dflow.git) package and includes components of [DPGEN2](https://github.com/deepmodeling/dpgen2) workflow. Currently, PFD-kit supports the Deep Potential models.
+<style>
+  p {
+    text-align: justify;
+  }
+</style>
+[PFD-kit](https://github.com/ruoyuwang1995nya/dp-distill) is a cloud-base workflow automating the generation of deep-learning based force fields from *pre-trained* atomic models (**P**) through fine-tuning (**F**) and distillation (**D**) for large scale atomic simulation of practical materials. Compared to training force fields from scratch, model generation using PFD workflow requires much less training data by exploiting the transferable knowledge already in the pre-trained model, saving significant time and computational resources by an order of magnitude. This makes the PFD workflow ideal for high-throughput calculations and addresses challenges in training force fields for complex material systems (*e.g.*, high-entropy alloys, surfaces/interfaces) that are previously intractable. With its easy-to-use interface and cloud-base feature, PFD-kit can be a powerful tool for researchers in computational materials science.
 
-> Online documentation is [here](https://ruoyuwang1995nya.github.io/pfd-kit/)
+For complete tutorials and user guide, please refer to our [Online Documentation](https://ruoyuwang1995nya.github.io/pfd-kit/)
+
+> PFD-kit is bulit upon is built upon the [dflow](https://github.com/dptech-corp/dflow.git) package and includes components of [DPGEN2](https://github.com/deepmodeling/dpgen2) workflow. Currently, PFD-kit only supports the **Deep Potential** models.
 
 ## Table of Contents
 - [PDF-kit: Workflow for finetune and fast distillation]
@@ -11,31 +18,24 @@
   - [4. User Guide](#4-user-guide)
 
 ## 1. Overview
-Inspired by DPGEN concurrent learning scheme, PFD-kit provides automated workflow for efficient model fine-tuning and distillation for practical application of pre-trained model in *atomic simulation*. Fig.1 shows the schematic of fine-tuning workflow. Given the initial structures of fine-tuning systems, the workflow generates perturbed structures, and executes a series of short *ab initio* molecular dynamics (AIMD) simulation based upon randomly perturbed structures. The pre-trained model is firstly fine-tuned by the AIMD dataset, then MD simulation with the fine-tuned model searches new configurations, which are then labeled by first-principle calculation softwares. If the fine-tuned model cannot predict the labeled dataset with sufficient accuracy, the collected dataset would be added to the fine-tuning training set, and the *train-search-label* process would iterate until convergence. 
-<div>
-    <img src="./docs/images/fine-tune.png" alt="Fig1" style="zoom: 35%;">
-    <p style='font-size:1.0rem; font-weight:none'>Figure 1. Fine-tune workflow.</p>
+Inspired by DPGEN concurrent learning scheme, PFD-kit provides automated workflow to efficient machine-learning force fields from pre-trained atomic model through fine-tuning and knowledge distillation. A general conception of the PFD workflow is shown below:
+<div style="text-align: center;">
+    <img src="./docs/images/workflow_readme_2.png" alt="Fig1" style="zoom: 60%;">
 </div>
 
-A lightweight model can be generated from a fine-tuned model through distillation, which enables much faster simulation. The distilled model can be generated with training data labeled by the fine-tuned model. Figure 2 shows the schematic of the distillation workflow.
- <div>
-    <img src="./docs/images/distillation.png" alt="Fig2" style="zoom: 35%;">
-    <p style='font-size:1.0rem; font-weight:none'>Figure 2. Distillation workflow.</p>
-</div>
+At the basis of PFD workflow is a large atomic model (LAM) pre-trained on large numbers of quantum mechanical calculation of materials across vast chemical space, such as DPA-2, *etc*. Thanks to the transferable knowledge in the pre-trained LAM, fine-tuning from LAM can achieve high accuracy on user-specific materials domains with much less training data compared to traditional from-scratch method. This not only saves significantly computational resources, but also enable accurate prediction on practical materials of extremely complex structural and chemical compositions.  
+
+Usually, the fine-tuned model inherits the sophiscated structure of the pre-trained LAM, which is largely redundant given the much narrower material domains. Thus a lightweight model with fewer parameters can trained with datas generated and labeled using the fine-tuned model through a process known as *knowledge distillation*. The end model is almost as accurate as the fine-tuned model within the given materials domain, but runs much more efficiently in large scale atomic simulations that are essential to modern material research and development.    
 
 ## 2. Installation
 PFD-kit can be built and installed form the source.
 ```shell
-git clone https://github.com/ruoyuwang1995nya/pfd-kit.git
-cd pfd-kit && pip install .
+pip install git+https://github.com/ruoyuwang1995nya/pfd-kit.git
 ```
 
 ## 3. Quick start
-PFD-kit comes with a simple CLI interface. For instance, a finetune workflow can be submitted using following command:
+PFD jobs can be submittied through command line interface using the `submit` subcommand: 
 ```shell
-pfd submit finetune.json
+pfd submit input.json
 ```
-The `finetune.json` specifies imput parameters of the finetune task, whose details can be found in the online [documentation](https://ruoyuwang1995nya.github.io/pfd-kit/). 
-
-## 4. Userguide
-Examples of json input file for model fine-tune and distillation can be found in the `examples` directory. The complete documentation of the latest version PFD-kit can be found [here](https://ruoyuwang1995nya.github.io/pfd-kit/)
+PFD-kit supports two major types of workflow, **fine-tuning** and **distillation**, and the workflow parameters are defined in the `input.json` script. Users also need to prepare required input files such as pre-trained model files, material structure files, training scripts, *etc*. For a complete guide on the PFD-kit usage and explanation of input script, please refer to the online documentation.  
