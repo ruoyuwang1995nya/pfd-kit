@@ -109,6 +109,7 @@ class TestStageScheduler(unittest.TestCase):
         self.assertEqual(len(out["task_grp"]), 2)
         self.assertNotEqual(out["task_grp"][0].files(), out["task_grp"][1].files())
         self.assertEqual(len(scheduler.log), 1)
+        print(scheduler.get_status())
 
 
 if __name__ == "__main__":
