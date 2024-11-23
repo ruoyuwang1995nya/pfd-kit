@@ -409,6 +409,7 @@ def _loop(
         },
         artifacts={
             "systems": loop.inputs.artifacts["systems"],
+            "init_model": loop.inputs.artifacts["teacher_model"],
         },
         key="--".join(["iter-%s" % loop.inputs.parameters["block_id"], "scheduler"]),
         executor=scheduler_executor,

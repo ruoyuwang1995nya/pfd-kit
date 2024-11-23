@@ -18,6 +18,9 @@ class Scheduler:
         type_map: List = [],
         explore_stages: List[List[Dict]] = [[{}]],
         max_iter: int = 1,
+        train_config: dict = {},
+        finetune: bool = False,
+        recursive_finetune: bool = False,
     ) -> None:
 
         # exploration stages
@@ -55,6 +58,26 @@ class Scheduler:
 
         # log record
         self._log = []
+
+        # finetune from base
+        self._ft = finetune
+        # recursively fintune models
+        self._rec_ft = recursive_finetune
+
+        # train config
+        self._train_config = train_config
+
+    @property
+    def ft(self):
+        return self._ft
+
+    @property
+    def rec_ft(self):
+        return self._rec_ft
+
+    @property
+    def train_config(self):
+        return self._train_config
 
     @property
     def model_style(self):
@@ -119,6 +142,10 @@ class Scheduler:
         return _expl_stage.make_task()
 
     def set_convergence(self, convergence_stage: bool = False) -> None:
+        if not self.is_first_iteration:
+            self.next_iter()
+        else:
+            self.is_first_iteration = False
         if self.iter_numb >= self.max_iteration:
             logging.info("Max number of iteration reached. Stop exploration...")
             self._converge = True
@@ -131,11 +158,6 @@ class Scheduler:
                     "Task %s converged, continue to the next stage..." % self.idx_stage
                 )
                 self.next_stage()
-
-        if not self.is_first_iteration:
-            self.next_iter()
-        else:
-            self.is_first_iteration = False
 
     def next_iter(self) -> None:
         self._iter_numb += 1

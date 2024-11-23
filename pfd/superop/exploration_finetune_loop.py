@@ -64,6 +64,7 @@ class ExplFinetuneBlock(Steps):
             "conf_filters_conv": InputParameter(value=None),
             "converge_config": InputParameter(value={}),
             "inference_config": InputParameter(),
+            "finetune_mode": InputParameter(value="finetune"),
         }
         self._input_artifacts = {
             "systems": InputArtifact(),  # starting systems for model deviation
@@ -354,7 +355,7 @@ def _expl_ft_blk(
             "template_script": steps.inputs.parameters["template_script"],
             "run_optional_parameter": {
                 "mixed_type": False,
-                "finetune_mode": "finetune",
+                "finetune_mode": steps.inputs.parameters["finetune_mode"],
             },
         },
         artifacts={
@@ -414,7 +415,11 @@ def _loop(
             "scheduler": loop.inputs.parameters["scheduler"],
             "report": loop.inputs.parameters["report"],
         },
-        artifacts={"systems": loop.inputs.artifacts["systems"]},
+        artifacts={
+            "systems": loop.inputs.artifacts["systems"],
+            "init_model": loop.inputs.artifacts["init_model"],
+            "current_model": loop.inputs.artifacts["current_model"],
+        },
         key="--".join(["iter-%s" % loop.inputs.parameters["block_id"], "scheduler"]),
         executor=scheduler_executor,
         **scheduler_config,
@@ -434,7 +439,7 @@ def _loop(
             "conf_filters_conv": loop.inputs.parameters["conf_filters_conv"],
             "numb_models": loop.inputs.parameters["numb_models"],
             "template_script": loop.inputs.parameters["template_script"],
-            "train_config": loop.inputs.parameters["train_config"],
+            "train_config": stage_scheduler.outputs.parameters["train_config"],
             "explore_config": loop.inputs.parameters["explore_config"],
             "inference_config": loop.inputs.parameters["inference_config"],
             "fp_config": loop.inputs.parameters["fp_config"],
@@ -445,6 +450,7 @@ def _loop(
             "dp_test_validation_config": loop.inputs.parameters[
                 "dp_test_validation_config"
             ],
+            "finetune_mode": stage_scheduler.outputs.parameters["finetune_mode"],
         },
         artifacts={
             "systems": loop.inputs.artifacts[
@@ -453,8 +459,8 @@ def _loop(
             "current_model": loop.inputs.artifacts[
                 "current_model"
             ],  # model for exploration
-            "init_model": loop.inputs.artifacts[
-                "init_model"
+            "init_model": stage_scheduler.outputs.artifacts[
+                "init_model_next"
             ],  # starting point for finetune
             "init_data": loop.inputs.artifacts["init_data"],
             "iter_data": loop.inputs.artifacts["iter_data"],

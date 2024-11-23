@@ -36,11 +36,13 @@ def make_link(content, ref_key):
 def task_finetune():
     doc_init_train = "Training before exploration"
     doc_skip_aimd = "Skip aimd exploration"
+    doc_rec_ft = "Start training from the output model of the last iteration"
     return [
         Argument(
             "init_training", bool, optional=True, default=False, doc=doc_init_train
         ),
         Argument("skip_aimd", bool, optional=True, default=True, doc=doc_skip_aimd),
+        Argument("recursive", bool, optional=True, default=False, doc=doc_rec_ft),
     ]
 
 
@@ -58,7 +60,6 @@ def variant_task():
 def conf_args():
     doc_fmt = "Format of input structure files"
     return [
-        # Argument("type", str, optional=True, default="file"),
         Argument("prefix", str, optional=True, default=None),
         Argument("fmt", str, optional=True, default="vasp/poscar", doc=doc_fmt),
         Argument("confs_paths", [str, List[str]], optional=True, alias=["files"]),
