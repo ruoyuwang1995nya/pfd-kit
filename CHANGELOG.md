@@ -1,6 +1,22 @@
 # CHANGELOG
 
 
+## v0.4.0 (2024-11-23)
+
+### Bug Fixes
+
+- Miscellaneous
+  ([`a2885fb`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/a2885fb9affa99890e6f6c5c6c6d6ab01acaf346))
+
+- Bugs with energy filter
+  ([`d64dfb7`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/d64dfb7d5f1c29768d6e27dfa2068d85a4ff2c73))
+
+### Features
+
+- Add recursive finetune
+  ([`245487d`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/245487daff2f49f1ecc8032574f7f170121c673d))
+
+
 ## v0.3.5 (2024-11-21)
 
 ### Bug Fixes
