@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.3.5 (2024-11-21)
+
+### Bug Fixes
+
+- Reformatting README
+  ([`038a01f`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/038a01f187f6d478a625fb68759a00b5d8dceb6f))
+
+
 ## v0.3.4 (2024-11-21)
 
 ### Bug Fixes

@@ -11,7 +11,7 @@ class EnerConfFilter(ConfFilterConv):
         self.thr_h = thr_h
 
     def check(self, rep: TestReport):
-        if rep.mae_e > self.thr_h or rep.mae_e < self.thr_l:
+        if rep.mae_e_atom > self.thr_h or rep.mae_e_atom < self.thr_l:
             logging.warning("#### Energy predition error out of threshold!")
             return False
         return True
