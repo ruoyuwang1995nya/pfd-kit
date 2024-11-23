@@ -464,6 +464,11 @@ class FlowGen:
         # train (student model) style
         train_style = config["train"]["type"]
         train_config = config["train"]["config"]
+        train_config.update(
+            {
+                "init_model_policy": "no",
+            }
+        )
         # others
         collect_data_config = config["exploration"].get("test_set_config", {})
         collect_data_config["labeled_data"] = collect_data_config.get(
@@ -613,6 +618,9 @@ class FlowGen:
         run_lmp_config = config["step_configs"].get(
             "run_explore_config", default_config
         )
+
+        scheduler_config = default_config
+
         # uploaded python packages
         upload_python_packages = []
         if custom_packages := config.get("upload_python_packages"):
@@ -631,8 +639,7 @@ class FlowGen:
             mass_map = [getattr(elements, ii).mass for ii in type_map]
         train_style = config["train"]["type"]
         train_config = config["train"]["config"]
-        if train_style == "dp":
-            train_config.update({"init_model_with_finetune": True})
+
         numb_models = 1
         pert_config = config["conf_generation"]
         explore_style = config["exploration"]["type"]
@@ -654,6 +661,16 @@ class FlowGen:
         skip_aimd = config["task"]["skip_aimd"]
         if skip_aimd is True:
             print("AIMD exploration is skipped!")
+        recursive_finetune = config["task"]["recursive"]
+        if recursive_finetune is True:
+            if init_training is False:
+                raise RuntimeError(
+                    "Initial training is required for recursive finetune!"
+                )
+            print("Recursive fine-tune, using init_training policy!")
+
+        # do not use init model policy in the initial training or naive finetuen mode
+        train_config.update({"init_model_policy": "no"})
         collect_data_config = {}
         collect_data_config["test_size"] = config["conf_generation"].get(
             "test_data", 0.05
@@ -694,6 +711,8 @@ class FlowGen:
             mass_map=mass_map,
             type_map=type_map,
             max_iter=max_iter,
+            train_config=train_config,
+            recursive_finetune=recursive_finetune,
         )
 
         # init_data
@@ -762,6 +781,7 @@ class FlowGen:
             run_train_config=run_train_config,
             prep_lmp_config=prep_lmp_config,
             run_lmp_config=run_lmp_config,
+            scheduler_config=scheduler_config,
             collect_data_step_config=run_collect_data_config,
             select_confs_step_config=run_select_confs_config,
             inference_step_config=run_inference_config,
@@ -962,7 +982,7 @@ def get_resubmit_keys(wf, unsuccessful_step_keys: bool = False):
         "run-fp",
         "collect-data",
         "validation-test",
-        "scheduler",
+        # "scheduler",
         "id",
         "inference-test",
         "inference-train",

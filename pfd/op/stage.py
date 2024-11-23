@@ -1,3 +1,4 @@
+from ast import Param
 from typing import List, Dict
 from dflow.python import OP, OPIO, Artifact, BigParameter, OPIOSign, Parameter
 from pathlib import Path
@@ -17,6 +18,8 @@ class StageScheduler(OP):
             {
                 "scheduler": Parameter(Scheduler),
                 "systems": Artifact(List[Path]),
+                "init_model": Artifact(List[Path], optional=True),
+                "current_model": Artifact(List[Path], optional=True),
                 "converged": Parameter(bool, value=False),
                 "report": Parameter(ConvReport, value=None),
             }
@@ -32,6 +35,9 @@ class StageScheduler(OP):
                 "iter_id": Parameter(str),
                 "next_iter_id": Parameter(str),
                 "converged": Parameter(bool),
+                "init_model_next": Artifact(List[Path], optional=True),
+                "train_config": Parameter(Dict),
+                "finetune_mode": Parameter(str, default="finetune"),
             }
         )
 
@@ -46,14 +52,26 @@ class StageScheduler(OP):
         systems = ip["systems"]
         scheduler = ip["scheduler"]
         converged = ip["converged"]
+        init_model = ip["init_model"]
+        current_model = ip["current_model"]
 
         if report := ip["report"]:
             scheduler.add_report(report)
 
+        ret = {}
+        ret.update({"init_model_next": init_model})
+        if scheduler.rec_ft:
+            ret.update({"init_model_next": current_model, "finetune_mode": "no"})
+            scheduler._train_config.update(
+                {
+                    "init_model_with_finetune": False,
+                    "init_model_policy": "yes",
+                }
+            )
+
         # check convergence
         scheduler.set_convergence(convergence_stage=converged)
 
-        ret = {}
         # if not converged
         if not scheduler.convergence:
             task_grp = scheduler.set_explore_tasks(systems)
@@ -66,6 +84,7 @@ class StageScheduler(OP):
                 "iter_id": "%03d" % scheduler.iter_numb,
                 "next_iter_id": "%03d" % (scheduler.iter_numb + 1),
                 "converged": scheduler.convergence,
+                "train_config": scheduler.train_config,
             }
         )
 
