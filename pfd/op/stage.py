@@ -2,8 +2,6 @@ from ast import Param
 from typing import List, Dict
 from dflow.python import OP, OPIO, Artifact, BigParameter, OPIOSign, Parameter
 from pathlib import Path
-
-from traitlets import default
 from pfd.exploration.scheduler.sheduler import Scheduler
 from pfd.exploration.task import ExplorationStage, BaseExplorationTaskGroup, task_group
 from pfd.exploration.converge import ConvReport
