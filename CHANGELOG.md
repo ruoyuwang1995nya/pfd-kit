@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.4.1 (2024-11-26)
+
+### Bug Fixes
+
+- Update examples
+  ([`370e318`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/370e318a49aa159e7c6b77e8ae87014b4351d181))
+
+
 ## v0.4.0 (2024-11-23)
 
 ### Bug Fixes
