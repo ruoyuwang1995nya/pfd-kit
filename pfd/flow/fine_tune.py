@@ -82,7 +82,7 @@ class FineTune(Steps):
         self._output_parameters = {}
         self._output_artifacts = {
             "fine_tuned_model": OutputArtifact(),
-            "fine_tune_report": OutputArtifact(),
+            "iter_data": OutputArtifact(),
         }
         super().__init__(
             name=name,
@@ -173,7 +173,7 @@ def _fine_tune_cl(
         # if execute AIMD exploration
         else:
             sample_conf_aimd = Step(
-                name=name + "-sample-aimd",
+                "init-select-conf",
                 template=PythonOPTemplate(
                     collect_data_op,
                     python_packages=upload_python_packages,
@@ -193,7 +193,7 @@ def _fine_tune_cl(
             ft_steps.add(sample_conf_aimd)
 
             prep_run_fp = Step(
-                name=name + "-prep-run-fp",
+                "init-prep-run-fp",
                 template=prep_run_fp_op,
                 parameters={
                     "block_id": "init",
@@ -207,7 +207,7 @@ def _fine_tune_cl(
             )
             ft_steps.add(prep_run_fp)
             collect_data = Step(
-                name=name + "-collect-aimd",
+                "init-collect-data",
                 template=PythonOPTemplate(
                     collect_data_op,
                     python_packages=upload_python_packages,
@@ -230,7 +230,7 @@ def _fine_tune_cl(
 
         # init model training
         prep_run_ft = Step(
-            name + "-prep-run-dp-train",
+            name + "-prep-run-train",
             template=prep_run_dp_train_op,
             parameters={
                 "block_id": "init",
@@ -257,7 +257,7 @@ def _fine_tune_cl(
         expl_models = ft_steps.inputs.artifacts.get("expl_models")
 
     loop = Step(
-        name="ft-loop",
+        name="finetune-loop",
         template=expl_finetune_loop_op,
         parameters={
             "fp_config": ft_steps.inputs.parameters["fp_config"],
@@ -293,6 +293,4 @@ def _fine_tune_cl(
     ft_steps.outputs.artifacts["fine_tuned_model"]._from = loop.outputs.artifacts[
         "ft_model"
     ][0]
-    ft_steps.outputs.artifacts["fine_tune_report"]._from = loop.outputs.artifacts[
-        "iter_data"
-    ]
+    ft_steps.outputs.artifacts["iter_data"]._from = loop.outputs.artifacts["iter_data"]

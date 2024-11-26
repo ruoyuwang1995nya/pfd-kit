@@ -79,8 +79,7 @@ class Distillation(Steps):
         }
         self._output_artifacts = {
             "dist_model": OutputArtifact(),
-            # "dp_test_report": OutputArtifact(),
-            # "dp_test_detail_files": OutputArtifact()
+            "iter_data": OutputArtifact(),
         }
         super().__init__(
             name=name,
@@ -148,7 +147,7 @@ def _dist_cl(
     steps.add(pert_gen)
 
     loop = Step(
-        name="loop",
+        name="dist-loop",
         template=expl_dist_loop_op,
         parameters={
             "type_map": steps.inputs.parameters["type_map"],
@@ -177,6 +176,6 @@ def _dist_cl(
         key="--".join(["%s" % "test", "-loop"]),
     )
     steps.add(loop)
-
     steps.outputs.artifacts["dist_model"]._from = loop.outputs.artifacts["dist_model"]
+    steps.outputs.artifacts["iter_data"]._from = loop.outputs.artifacts["iter_data"]
     return steps
