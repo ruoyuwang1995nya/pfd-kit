@@ -227,7 +227,7 @@ def _expl_dist_cl(
     collect_data_executor = init_executor(collect_data_config.pop("executor"))
 
     prep_run_explore = Step(
-        name + "prep-run-explore",
+        name + "-prep-run-explore",
         template=prep_run_explore_op,
         parameters={
             "block_id": steps.inputs.parameters["block_id"],
@@ -241,7 +241,7 @@ def _expl_dist_cl(
     steps.add(prep_run_explore)
 
     collect_data = Step(
-        name + "collect-data",
+        name + "-collect-data",
         template=PythonOPTemplate(
             collect_data_op,
             python_packages=upload_python_packages,
@@ -263,7 +263,7 @@ def _expl_dist_cl(
     steps.add(collect_data)
 
     inference_train = Step(
-        name + "-inference-train",
+        name + "-inference",
         template=PythonOPTemplate(
             inference_op,
             python_packages=upload_python_packages,
@@ -277,14 +277,14 @@ def _expl_dist_cl(
             "systems": collect_data.outputs.artifacts["systems"],
             "model": steps.inputs.artifacts["teacher_model"][0],
         },
-        key="--".join(["%s" % steps.inputs.parameters["block_id"], "inference-train"]),
+        key="--".join(["%s" % steps.inputs.parameters["block_id"], "inference"]),
         executor=inference_executor,
     )
 
     steps.add(inference_train)
 
     collect_data_train = Step(
-        name + "collect-data-train",
+        name + "-collect-data",
         template=PythonOPTemplate(
             collect_data_op,
             python_packages=upload_python_packages,
@@ -298,16 +298,14 @@ def _expl_dist_cl(
             "systems": inference_train.outputs.artifacts["labeled_systems"],
             "additional_multi_systems": steps.inputs.artifacts["iter_data"],
         },
-        key="--".join(
-            ["%s" % steps.inputs.parameters["block_id"], "collect-data-train"]
-        ),
+        key="--".join(["%s" % steps.inputs.parameters["block_id"], "collect-data"]),
         executor=collect_data_executor,
         **collect_data_config,
     )
     steps.add(collect_data_train)
 
     prep_run_dp = Step(
-        name + "-prep-run-dp",
+        name + "-prep-run-train",
         template=prep_run_train_op,
         parameters={
             "block_id": steps.inputs.parameters["block_id"],
@@ -325,7 +323,7 @@ def _expl_dist_cl(
 
     # the exploration steps for validation
     dp_test = Step(
-        name + "-dp-test",
+        name + "-test-model",
         template=PythonOPTemplate(
             ModelTestOP,
             python_packages=upload_python_packages,
@@ -341,13 +339,13 @@ def _expl_dist_cl(
             "systems": collect_data_train.outputs.artifacts["test_systems"],
             "model": prep_run_dp.outputs.artifacts["models"][0],
         },
-        key="--".join(["%s" % steps.inputs.parameters["block_id"], "validation-test"]),
+        key="--".join(["%s" % steps.inputs.parameters["block_id"], "test-model"]),
         executor=model_test_executor,
     )
     steps.add(dp_test)
 
     evaluate = Step(
-        name="evaluate-converge",
+        name + "-check-converge",
         template=PythonOPTemplate(
             EvalConv,
             python_packages=upload_python_packages,
@@ -358,9 +356,7 @@ def _expl_dist_cl(
             "test_res": dp_test.outputs.parameters["test_res"],
         },
         artifacts={"systems": collect_data_train.outputs.artifacts["test_systems"]},
-        key="--".join(
-            ["%s" % steps.inputs.parameters["block_id"], "evaluate-converge"]
-        ),
+        key="--".join(["%s" % steps.inputs.parameters["block_id"], "check-converge"]),
         **collect_data_config,
     )
     steps.add(evaluate)
@@ -508,7 +504,7 @@ def _loop(
 
     loop.outputs.artifacts["iter_data"].from_expression = if_expression(
         _if=stage_scheduler.outputs.parameters["converged"],
-        _then=loop.inputs.artifacts["init_data"],
+        _then=loop.inputs.artifacts["iter_data"],
         _else=next_step.outputs.artifacts["iter_data"],
     )
 

@@ -82,7 +82,7 @@ class ExplFinetuneBlock(Steps):
         self._output_artifacts = {
             "ft_model": OutputArtifact(),
             "iter_data": OutputArtifact(),
-            "dp_test_report": OutputArtifact(),
+            "test_report": OutputArtifact(),
         }
 
         super().__init__(
@@ -231,7 +231,7 @@ def _expl_ft_blk(
     select_confs_executor = init_executor(select_confs_step_config.pop("executor"))
 
     prep_run_explore = Step(
-        name + "prep-run-explore",
+        name + "-prep-run-explore",
         template=prep_run_explore_op,
         parameters={
             "block_id": steps.inputs.parameters["block_id"],
@@ -246,7 +246,7 @@ def _expl_ft_blk(
 
     # select reasonable configurations
     select_confs = Step(
-        name=name + "-select-confs",
+        name + "-select-confs",
         template=PythonOPTemplate(
             select_confs_op,
             output_artifact_archive={"confs": None},
@@ -266,7 +266,7 @@ def _expl_ft_blk(
 
     ## fp calculation
     prep_run_fp = Step(
-        name=name + "-prep-run-fp",
+        name + "-prep-run-fp",
         template=prep_run_fp_op,
         parameters={
             "block_id": steps.inputs.parameters["block_id"],
@@ -282,7 +282,7 @@ def _expl_ft_blk(
 
     ## inference with expl_model
     dp_test = Step(
-        name + "-dp-test",
+        name + "-test-model",
         template=PythonOPTemplate(
             inference_op,
             python_packages=upload_python_packages,
@@ -298,13 +298,13 @@ def _expl_ft_blk(
                 "current_model"
             ],  # expl_model[0] #prep_run_ft.outputs.artifacts["models"][0]
         },
-        key="--".join(["%s" % steps.inputs.parameters["block_id"], "validation-test"]),
+        key="--".join(["%s" % steps.inputs.parameters["block_id"], "test-model"]),
         executor=inference_executor,
     )
     steps.add(dp_test)
 
     evaluate = Step(
-        name="evaluate-converge",
+        name + "-check-converge",
         template=PythonOPTemplate(
             EvalConv,
             python_packages=upload_python_packages,
@@ -316,16 +316,14 @@ def _expl_ft_blk(
             "conf_filters_conv": steps.inputs.parameters["conf_filters_conv"],
         },
         artifacts={"systems": prep_run_fp.outputs.artifacts["labeled_data"]},
-        key="--".join(
-            ["%s" % steps.inputs.parameters["block_id"], "evaluate-converge"]
-        ),
+        key="--".join(["%s" % steps.inputs.parameters["block_id"], "check-converge"]),
         **collect_data_step_config,
     )
     steps.add(evaluate)
 
     # add a step to
     collect_data = Step(
-        name=name + "-collect-data-fp",
+        name + "-collect-data",
         template=PythonOPTemplate(
             collect_data_op,
             python_packages=upload_python_packages,
@@ -339,14 +337,14 @@ def _expl_ft_blk(
             "systems": evaluate.outputs.artifacts["selected_systems"],
             "additional_multi_systems": steps.inputs.artifacts["iter_data"],
         },
-        key="--".join(["%s" % steps.inputs.parameters["block_id"], "collect-data-fp"]),
+        key="--".join(["%s" % steps.inputs.parameters["block_id"], "collect-data"]),
         executor=collect_data_executor,
         **collect_data_step_config,
     )
     steps.add(collect_data)
 
     prep_run_ft = Step(
-        name + "-prep-run-dp-train",
+        name + "-prep-run-train",
         template=prep_run_train_op,
         parameters={
             "block_id": steps.inputs.parameters["block_id"],
@@ -385,7 +383,7 @@ def _expl_ft_blk(
     steps.outputs.artifacts["iter_data"]._from = collect_data.outputs.artifacts[
         "multi_systems"
     ]
-    steps.outputs.artifacts["dp_test_report"]._from = dp_test.outputs.artifacts[
+    steps.outputs.artifacts["test_report"]._from = dp_test.outputs.artifacts[
         "test_report"
     ]
     return steps
@@ -404,7 +402,7 @@ def _loop(
 
     # add a stage counter
     stage_scheduler = Step(
-        name="stage-scheduler",
+        name="loop-scheduler",
         template=PythonOPTemplate(
             StageScheduler,
             python_packages=upload_python_packages,
@@ -526,7 +524,7 @@ def _loop(
 
     loop.outputs.artifacts["iter_data"].from_expression = if_expression(
         _if=stage_scheduler.outputs.parameters["converged"],
-        _then=loop.inputs.artifacts["init_data"],
+        _then=loop.inputs.artifacts["iter_data"],
         _else=next_step.outputs.artifacts["iter_data"],
     )
     return loop

@@ -5,7 +5,15 @@ from pathlib import (
 )
 from typing import List, Dict
 
-from dflow.python import OP, OPIO, Artifact, BigParameter, OPIOSign, Parameter
+from dflow.python import (
+    OP,
+    OPIO,
+    Artifact,
+    BigParameter,
+    OPIOSign,
+    Parameter,
+    FatalError,
+)
 from pfd.exploration import converge
 from pfd.exploration.converge import CheckConv, ConfFiltersConv, ConvReport
 from pfd.exploration.inference import TestReport, TestReports
@@ -73,6 +81,10 @@ class EvalConv(OP):
             "./systems"
         )
         report.selected_frame = len(selected_idx)
+        if not converged and report.selected_frame == 0:
+            raise FatalError(
+                "Model has not converged, but no samples are selected for training either! Please check filter setting!"
+            )
         return OPIO(
             {
                 "converged": converged,

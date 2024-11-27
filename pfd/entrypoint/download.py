@@ -51,9 +51,14 @@ def download_end_result(
             path = Path(prefix)
         else:
             path = Path("./results")
+
+        # download output model
         download_artifact(
             artifact=wf_post.outputs.artifacts[END_OUTPUT[task_type]["artifact"]],
-            path=path,
+            path=path / "model",
+        )
+        download_artifact(
+            artifact=wf_post.outputs.artifacts["iter_data"], path=path / "data"
         )
 
 

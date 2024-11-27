@@ -140,7 +140,7 @@ def make_dist_op(
         )
 
     expl_dist_blk_op = ExplDistBlock(
-        "expl-dist",
+        "blk",
         prep_run_explore_op=prep_run_lmp_op,
         prep_run_train_op=prep_run_train_op,
         collect_data_op=CollectData,
@@ -152,7 +152,7 @@ def make_dist_op(
     )
 
     expl_dist_loop_op = ExplDistLoop(
-        "expl-dist-loop", expl_dist_blk_op, scheduler_config, upload_python_packages
+        "loop", expl_dist_blk_op, scheduler_config, upload_python_packages
     )
     dist_op = Distillation(
         "distillation",
@@ -272,7 +272,7 @@ def make_ft_op(
         raise ValueError(f"Explore style {explore_style} has not been implemented!")
 
     expl_ft_blk_op = ExplFinetuneBlock(
-        name="expl-ft-blk",
+        name="blk",
         prep_run_explore_op=prep_run_lmp_op,
         prep_run_fp_op=prep_run_fp_op,
         collect_data_op=CollectData,
@@ -285,7 +285,7 @@ def make_ft_op(
         upload_python_packages=upload_python_packages,
     )
     expl_finetune_loop_op = ExplFinetuneLoop(
-        name="expl-ft-loop",
+        name="loop",
         expl_ft_blk_op=expl_ft_blk_op,
         scheduler_config=scheduler_config,
         upload_python_packages=upload_python_packages,
@@ -981,11 +981,10 @@ def get_resubmit_keys(wf, unsuccessful_step_keys: bool = False):
         "prep-fp",
         "run-fp",
         "collect-data",
-        "validation-test",
+        "test-model",
         # "scheduler",
-        "id",
-        "inference-test",
-        "inference-train",
+        "check-converge",
+        "inference",
     ]
 
     all_step_keys = matched_step_key(

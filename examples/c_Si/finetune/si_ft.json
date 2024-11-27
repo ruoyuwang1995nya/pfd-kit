@@ -300,7 +300,6 @@
             "impl": "pytorch",
             "head": "Domains_SemiCond"
         },
-        "template_script": "input_torch_medium.json",
-        "_comment": "the initial pre-trained model at 'init_models_paths'"
+        "template_script": "input_torch_medium.json"
     }
 }

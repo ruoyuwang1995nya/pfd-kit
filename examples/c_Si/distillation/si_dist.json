@@ -216,7 +216,7 @@
             "Ts",
             "Og"
         ],
-        "base_model_path":"si_ft_res/task.0000/model.ckpt.pt"
+        "base_model_path":"model.ckpt.pt"
     },
     "conf_generation": {
         "init_configurations":
@@ -272,7 +272,6 @@
         "comment":"Training script for downstream DeePMD model",
         "type": "dp",
         "config": {},
-        "template_script": "dist_train.json",
-        "_comment": "the initial pre-trained model at 'init_models_paths'"
+        "template_script": "dist_train.json"
     }
 }
