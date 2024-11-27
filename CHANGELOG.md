@@ -1,6 +1,26 @@
 # CHANGELOG
 
 
+## v0.4.2 (2024-11-27)
+
+### Bug Fixes
+
+- Bnbzto example update to adapt the official version of deepmd-kit 3.0
+  ([`b124663`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/b124663094ca734d116f6a99a98e10708bbb01c5))
+
+- Update examples
+  ([`dd3b5f1`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/dd3b5f1429644ef57c758f0aa1b13520ca4fed90))
+
+- Update download module
+  ([`c1e5419`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/c1e54191deec9e1a302812f706ce21a04980fb1e))
+
+- Fatalerror if no conf is added while unconv
+  ([`e3ba0c0`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/e3ba0c03ac52d2f79e4432b78f0addaf137e3ff4))
+
+- Optimized step names and keys
+  ([`f6c8ff4`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/f6c8ff476107673bd323297622b302d3f7dc7064))
+
+
 ## v0.4.1 (2024-11-26)
 
 ### Bug Fixes
