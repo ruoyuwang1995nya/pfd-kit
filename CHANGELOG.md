@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.4.3 (2024-11-28)
+
+### Bug Fixes
+
+- Improve conv report for dist
+  ([`bc80a4d`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/bc80a4dbc9e1fabb25b32d4588a5e2ec909d3f5d))
+
+
 ## v0.4.2 (2024-11-27)
 
 ### Bug Fixes
