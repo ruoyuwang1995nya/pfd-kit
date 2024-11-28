@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.5.0 (2024-11-28)
+
+### Features
+
+- Add replicate to pert gen
+  ([`3319e43`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/3319e43e815ad15e291c1061ea8a18922cc79489))
+
+
 ## v0.4.3 (2024-11-28)
 
 ### Bug Fixes
