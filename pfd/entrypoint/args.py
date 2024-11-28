@@ -76,12 +76,22 @@ def pert_gen():
             "atom_pert_distance",
             float,
             optional=True,
-            default=0.1,
+            default=0.0,
             doc=doc_atom_pert_distance,
         ),
-        Argument("atom_pert_fraction", float, optional=True, default=0.03),
+        Argument("cell_pert_fraction", float, optional=True, default=0.0),
         Argument("pert_num", int, optional=True, default=1, doc=doc_pert_num),
+        Argument("replicate", [int, List[int]], optional=True, default=1),
     ]
+
+
+def normalize_pert_gen(data):
+    defs = pert_gen()
+    base = Argument("base", dict, defs)
+    data = base.normalize_value(data, trim_pattern="_*")
+    # not possible to strictly check arguments, dirty hack!
+    base.check_value(data, strict=True)
+    return data
 
 
 def conf_gen_args():
@@ -95,7 +105,14 @@ def conf_gen_args():
             alias=["confs", "init_configurations"],
             doc=doc_init_conf,
         ),
-        Argument("pert_generation", [dict, List[dict]], pert_gen(), doc=doc_pert_gen),
+        Argument(
+            "pert_generation",
+            [dict, List[dict]],
+            pert_gen(),
+            optional=True,
+            default={},
+            doc=doc_pert_gen,
+        ),
     ]
 
 

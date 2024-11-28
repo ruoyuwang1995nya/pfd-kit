@@ -15,7 +15,11 @@ import time
 from dflow import ArgoStep, Step, Steps, Workflow, upload_artifact, download_artifact
 
 
-from pfd.entrypoint.args import normalize_infer_args, normalize as normalize_args
+from pfd.entrypoint.args import (
+    normalize_infer_args,
+    normalize_pert_gen,
+    normalize as normalize_args,
+)
 from pfd.entrypoint.common import global_config_workflow, expand_idx
 
 from dpgen2.fp import fp_styles
@@ -369,6 +373,13 @@ class FlowGen:
         upload_python_packages.extend(list(fpop.__path__))
 
         pert_config = config["conf_generation"]
+        pert_gen_tasks = pert_config.pop("pert_generation")
+        if isinstance(pert_gen_tasks, dict):
+            pert_gen_tasks = [pert_gen_tasks]
+        pert_config["pert_generation"] = pert_gen_tasks
+        for pert_task in pert_gen_tasks:
+            pert_task.update(normalize_pert_gen(pert_task))
+
         if config["conf_generation"]["init_confs"]["confs_uri"] is not None:
             init_confs = get_artifact_from_uri(
                 config["conf_generation"]["init_confs"]["confs_uri"]
@@ -450,6 +461,13 @@ class FlowGen:
         else:
             mass_map = [getattr(elements, ii).mass for ii in type_map]
         pert_config = config["conf_generation"]
+        pert_gen_tasks = pert_config.pop("pert_generation")
+        if isinstance(pert_gen_tasks, dict):
+            pert_gen_tasks = [pert_gen_tasks]
+        pert_config["pert_generation"] = pert_gen_tasks
+        for pert_task in pert_gen_tasks:
+            pert_task.update(normalize_pert_gen(pert_task))
+
         # exploration
         explore_style = config["exploration"]["type"]
         explore_config = config["exploration"]["config"]
@@ -659,6 +677,13 @@ class FlowGen:
 
         numb_models = 1
         pert_config = config["conf_generation"]
+        pert_gen_tasks = pert_config.pop("pert_generation")
+        if isinstance(pert_gen_tasks, dict):
+            pert_gen_tasks = [pert_gen_tasks]
+        pert_config["pert_generation"] = pert_gen_tasks
+        for pert_task in pert_gen_tasks:
+            pert_task.update(normalize_pert_gen(pert_task))
+
         explore_style = config["exploration"]["type"]
         expl_stages = config["exploration"]["stages"]
         explore_config = config["exploration"]["config"]
