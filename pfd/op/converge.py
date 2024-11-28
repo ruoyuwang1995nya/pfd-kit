@@ -77,10 +77,9 @@ class EvalConv(OP):
             selected_idx = conf_filters.check(test_res)
         else:
             selected_idx = list(range(len(test_res)))
-        selected_systems = test_res.sub_reports(selected_idx).get_and_output_systems(
-            "./systems"
-        )
-        report.selected_frame = len(selected_idx)
+        selected_systems = test_res.sub_reports(selected_idx)
+        report.frame = test_res.get_nframes()
+        report.selected_frame = selected_systems.get_nframes()
         if not converged and report.selected_frame == 0:
             raise FatalError(
                 "Model has not converged, but no samples are selected for training either! Please check filter setting!"
@@ -88,7 +87,9 @@ class EvalConv(OP):
         return OPIO(
             {
                 "converged": converged,
-                "selected_systems": selected_systems,
+                "selected_systems": selected_systems.get_and_output_systems(
+                    "./systems"
+                ),
                 "report": report,
             }
         )

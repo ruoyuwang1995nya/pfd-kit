@@ -96,6 +96,13 @@ class TestReports:
                 reports.add_report(self._reports[ii])
         return reports
 
+    def get_nframes(self):
+        n_frame = 0
+        for ii in self._reports:
+            if getattr(ii, "system"):
+                n_frame += ii.system.get_nframes()
+        return n_frame
+
 
 class EvalModel(ABC):
     """The base class for inference and evaluation.

@@ -57,6 +57,7 @@ from pfd.utils import (
     print_keys_in_nice_format,
 )
 from periodictable import elements
+import logging
 
 default_config = normalize_step_dict({"template_config": {"image": default_image}})
 
@@ -459,6 +460,22 @@ class FlowGen:
             raise RuntimeError(
                 "The max number of iteration must be equal to or larger than 1!"
             )
+        if max_iter > 1:
+            logging.warning(
+                (
+                    "In most cases, there is absolutely no need for more than one training iteration for knowledge distillation!"
+                )
+            )
+            while True:
+                if input("Continue with %d max iterations? (Y/n)" % max_iter) not in [
+                    "Y",
+                    "y",
+                ]:
+                    logging.info("Submission ending...")
+                    return
+                else:
+                    break
+
         conf_filters_conv = get_conf_filters_conv(converge_config.pop("conf_filter"))
 
         # train (student model) style
