@@ -1,3 +1,6 @@
+import sys
+
+sys.path.append("../")
 import unittest
 from pfd.op.pert_gen import PertGen
 import dpdata
@@ -49,6 +52,20 @@ class TestPertGen(unittest.TestCase):
                     "atom_pert_distance": 0.1,
                     "cell_pert_fraction": 0.03,
                     "pert_num": 5,
+                    "replicate": [1, 1, 1],
+                }
+            ],
+        }
+
+        self.config_1 = {
+            "init_confs": {"type": "file", "fmt": "vasp/poscar"},
+            "pert_generation": [
+                {
+                    "conf_idx": "default",
+                    "atom_pert_distance": 0.0,
+                    "cell_pert_fraction": 0.0,
+                    "pert_num": 1,
+                    "replicate": 2,
                 }
             ],
         }
@@ -58,6 +75,13 @@ class TestPertGen(unittest.TestCase):
         out = op.execute(OPIO({"init_confs": self.init_confs, "config": self.config}))
         sys = dpdata.System(out["pert_sys"][0], fmt="deepmd/npy")
         self.assertEqual(sys.get_nframes(), 5)
+
+    def test_pert_1(self):
+        op = PertGen()
+        out = op.execute(OPIO({"init_confs": self.init_confs, "config": self.config_1}))
+        sys = dpdata.System(out["pert_sys"][0], fmt="deepmd/npy")
+        self.assertEqual(sys.get_nframes(), 1)
+        self.assertEqual(sys.get_natoms(), 64)
 
 
 if __name__ == "__main__":

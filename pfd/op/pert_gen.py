@@ -98,8 +98,13 @@ class PertGen(OP):
             atom_pert_distance = pert_param.get("atom_pert_distance", 0.2)
             atom_pert_style = pert_param.get("atom_pert_style", "normal")
             fmt = gen_config["init_confs"]["fmt"]
-            print(atom_pert_distance)
+            rep = pert_param["replicate"]
+            if isinstance(rep, int):
+                rep = [rep for ii in range(3)]
+            elif len(rep) != 3:
+                raise RuntimeError("Invalide supercell dimension")
             orig_sys = dpdata.System(str(init_confs[ii]), fmt=fmt)
+            orig_sys = orig_sys.replicate(rep)
             pert_sys = orig_sys.perturb(
                 pert_num=pert_num,
                 cell_pert_fraction=cell_pert_fraction,
