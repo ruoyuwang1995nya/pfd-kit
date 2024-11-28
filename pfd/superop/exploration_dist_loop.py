@@ -241,7 +241,7 @@ def _expl_dist_cl(
     steps.add(prep_run_explore)
 
     collect_data = Step(
-        name + "-collect-data",
+        name + "-collect-data-traj",
         template=PythonOPTemplate(
             collect_data_op,
             python_packages=upload_python_packages,
@@ -256,7 +256,9 @@ def _expl_dist_cl(
             "systems": prep_run_explore.outputs.artifacts["trajs"],
             # "additional_multi_systems": steps.inputs.artifacts["iter_data"],
         },
-        key="--".join(["%s" % steps.inputs.parameters["block_id"], "collect-data"]),
+        key="--".join(
+            ["%s" % steps.inputs.parameters["block_id"], "collect-data-traj"]
+        ),
         executor=collect_data_executor,
         **collect_data_config,
     )
