@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.5.1 (2024-11-29)
+
+### Bug Fixes
+
+- Correct rmse calculator
+  ([`ccb3b9f`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/ccb3b9f1ba1894d11d5d47b4b980c71acc481ea1))
+
+
 ## v0.5.0 (2024-11-28)
 
 ### Features
