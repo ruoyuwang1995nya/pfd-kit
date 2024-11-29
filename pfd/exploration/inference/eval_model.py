@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from math import sqrt
 from pathlib import Path
 from typing import Optional, Union
 import dpdata
@@ -62,14 +63,23 @@ class TestReports:
 
     def get_weighted_rmse_f(self):
         if len(self._reports) > 0:
-            return sum(res.numb_frame * res.rmse_f for res in self._reports) / sum(
-                res.numb_frame for res in self._reports
+            return np.sqrt(
+                sum(
+                    res.numb_frame * res.rmse_f**2 * 3 * res.atom_numb
+                    for res in self._reports
+                )
+                / sum(
+                    res.numb_frame * 3 * res.atom_numb
+                    for res in self._reports
+                    if res.atom_numb > 0
+                )
             )
 
     def get_weighted_rmse_e_atom(self):
         if len(self._reports) > 0:
-            return sum(res.numb_frame * res.rmse_e_atom for res in self._reports) / sum(
-                res.numb_frame for res in self._reports
+            return np.sqrt(
+                sum(res.numb_frame * res.rmse_e_atom**2 for res in self._reports)
+                / sum(res.numb_frame for res in self._reports)
             )
 
     def get_systems(self):

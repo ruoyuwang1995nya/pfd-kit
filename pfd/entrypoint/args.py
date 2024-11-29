@@ -70,6 +70,11 @@ def conf_args():
 def pert_gen():
     doc_atom_pert_distance = "Perturb distance for atoms, in Angstrom"
     doc_pert_num = "Number of perturbed structures"
+    doc_cell_pert = "The amount of lattice contraction or extension, relative to original lattice constant."
+    doc_replicate = (
+        "Generate supercell by lattice replication. Either an integer number or a list of three integers. "
+        "If an integer is given, the lattice is replicated uniformly in all three directions."
+    )
     return [
         Argument("conf_idx", [str, List[int]], optional=True, default="default"),
         Argument(
@@ -79,9 +84,13 @@ def pert_gen():
             default=0.0,
             doc=doc_atom_pert_distance,
         ),
-        Argument("cell_pert_fraction", float, optional=True, default=0.0),
+        Argument(
+            "cell_pert_fraction", float, optional=True, default=0.0, doc=doc_cell_pert
+        ),
         Argument("pert_num", int, optional=True, default=1, doc=doc_pert_num),
-        Argument("replicate", [int, List[int]], optional=True, default=1),
+        Argument(
+            "replicate", [int, List[int]], optional=True, default=1, doc=doc_replicate
+        ),
     ]
 
 
@@ -96,7 +105,7 @@ def normalize_pert_gen(data):
 
 def conf_gen_args():
     doc_init_conf = "The initial configurations for PFD workflow"
-    doc_pert_gen = "Generation of perturbed structures for PFD exploration"
+    doc_pert_gen = "Structure perturbation settings. A list of multiple perturbation settings can also be supplied if neccesarry."
     return [
         Argument(
             "init_confs",
