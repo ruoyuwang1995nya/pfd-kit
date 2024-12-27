@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v1.1.1 (2024-12-27)
+
+### Bug Fixes
+
+- Issue with pert_gen args
+  ([`b531f44`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/b531f4420d72adce850001dc381a8a83c0a39312))
+
+
 ## v1.1.0 (2024-12-27)
 
 
