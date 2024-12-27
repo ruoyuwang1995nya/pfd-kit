@@ -68,7 +68,8 @@ def conf_args():
 
 
 def pert_gen():
-    doc_atom_pert_distance = "Perturb distance for atoms, in Angstrom"
+    doc_atom_pert_distance = "Perturb distance for atoms, in Angstrom."
+    doc_orig = "Include unperturbed structures."
     doc_pert_num = "Number of perturbed structures"
     doc_cell_pert = "The amount of lattice contraction or extension, relative to original lattice constant."
     doc_replicate = (
@@ -84,6 +85,7 @@ def pert_gen():
             default=0.0,
             doc=doc_atom_pert_distance,
         ),
+        Argument("orig", bool, optional=True, default=False, doc=doc_orig),
         Argument(
             "cell_pert_fraction", float, optional=True, default=0.0, doc=doc_cell_pert
         ),
