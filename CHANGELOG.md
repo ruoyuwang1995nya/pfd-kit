@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.5.3 (2024-12-28)
+
+### Bug Fixes
+
+- Enable fp in dist
+  ([`3270c9c`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/3270c9c531f1f258754d0161116aa8f1580f1ff4))
+
+
 ## v0.5.2 (2024-12-28)
 
 ### Bug Fixes
