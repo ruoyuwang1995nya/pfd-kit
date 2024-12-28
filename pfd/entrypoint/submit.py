@@ -501,7 +501,7 @@ class FlowGen:
         train_config = config["train"]["config"]
         train_config.update(
             {
-                "init_model_policy": "no",
+                # "init_model_policy": "no",
             }
         )
         # others
