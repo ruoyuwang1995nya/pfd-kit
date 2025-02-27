@@ -1,6 +1,19 @@
 # CHANGELOG
 
 
+## v0.6.0 (2025-02-27)
+
+### Bug Fixes
+
+- Miscellaneous
+  ([`124b2c4`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/124b2c414f8c411c1026bc60bd082a3aad81309f))
+
+### Features
+
+- Add calypso support
+  ([`3d281f6`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/3d281f62f8b62f03630f520cfbe9d7fa1b561ec9))
+
+
 ## v0.5.3 (2024-12-28)
 
 ### Bug Fixes
