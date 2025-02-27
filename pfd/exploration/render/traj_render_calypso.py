@@ -20,9 +20,10 @@ if TYPE_CHECKING:
     )
 
 
-@TrajRender.register("lmp")
-@TrajRender.register("lammps")
-class TrajRenderLammps(TrajRender):
+@TrajRender.register("calypso")
+@TrajRender.register("calypso:default")
+@TrajRender.register("calypso:merge")
+class TrajRenderCalypso(TrajRender):
     def __init__(
         self,
         nopbc: bool = False,
@@ -34,7 +35,6 @@ class TrajRenderLammps(TrajRender):
     def get_confs(
         self,
         trajs: List[Path],
-        # id_selected: List[List[int]],
         type_map: Optional[List[str]] = None,
         conf_filters: Optional["ConfFilters"] = None,
         optional_outputs: Optional[List[Path]] = None,
@@ -43,14 +43,15 @@ class TrajRenderLammps(TrajRender):
         if optional_outputs:
             assert ntraj == len(optional_outputs)
 
-        traj_fmt = "lammps/dump"
+        traj_fmt = "ase/traj"
         ms = dpdata.MultiSystems(type_map=type_map)
         for ii in range(ntraj):
-            # if len(id_selected[ii]) > 0:
-            ss = dpdata.System(trajs[ii], fmt=traj_fmt, type_map=type_map)
-            ss.nopbc = self.nopbc
-            # ss = ss.sub_system(id_selected[ii])
-            ms.append(ss)
+            traj_dir = trajs[ii]
+            traj_files = list(traj_dir.rglob("*.traj"))
+            for traj_file in traj_files:
+                ss = dpdata.System(traj_file, fmt=traj_fmt, type_map=type_map)
+                ss.nopbc = self.nopbc
+                ms.append(ss)
         if conf_filters is not None:
             ms2 = dpdata.MultiSystems(type_map=type_map)
             for s in ms:

@@ -16,6 +16,7 @@ from .make_task_group_from_config import (
 )
 from .make_task_group_from_config import (
     lmp_normalize as normalize_lmp_task_group_config,
+    caly_normalize as normalize_caly_task_group_config,
 )
 from .make_task_group_from_config import (
     lmp_task_group_args,
@@ -36,4 +37,9 @@ from .task_group import (
     BaseExplorationTaskGroup,
     ExplorationTaskGroup,
 )
-from .gen_task_group import gen_expl_grp_lmps, expl_grp_args_lmps
+from .gen_task_group import (
+    gen_expl_grp_lmps,
+    expl_grp_args_lmps,
+    gen_expl_grp_caly,
+    expl_grp_args_caly,
+)

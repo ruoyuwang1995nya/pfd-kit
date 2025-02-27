@@ -56,6 +56,9 @@ class ModelTestOP(OP):
         logging.info("##### Number of systems: %d" % len(systems))
         res_total = TestReports()
         for idx, sys in enumerate(systems):
+            if sys is None:
+                logging.warning("System at index %d is None, skipping..." % idx)
+                continue
             name = "sys_%03d_%s" % (idx, sys.name)
             logging.info("##### Testing: %s" % name)
             evaluator.read_data(data=sys, type_map=type_map)
