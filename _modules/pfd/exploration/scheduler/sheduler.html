@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pfd.exploration.scheduler.sheduler &mdash; pfd-kit 0.5.3 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+  <title>pfd.exploration.scheduler.sheduler &mdash; pfd-kit 0.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=2a2fe768"></script>
+      <script src="../../../../_static/documentation_options.js?v=8fa8b3e9"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -81,21 +81,21 @@
            <div itemprop="articleBody">
              
   <h1>Source code for pfd.exploration.scheduler.sheduler</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
-<span class="kn">from</span> <span class="nn">pfd.exploration</span> <span class="kn">import</span> <span class="n">explore_styles</span>
-<span class="kn">from</span> <span class="nn">pfd.exploration.task</span> <span class="kn">import</span> <span class="n">ExplorationStage</span><span class="p">,</span> <span class="n">BaseExplorationTaskGroup</span>
-<span class="kn">from</span> <span class="nn">pfd.exploration.converge</span> <span class="kn">import</span> <span class="n">ConvReport</span>
-<span class="kn">import</span> <span class="nn">logging</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pfd.exploration</span><span class="w"> </span><span class="kn">import</span> <span class="n">explore_styles</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pfd.exploration.task</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExplorationStage</span><span class="p">,</span> <span class="n">BaseExplorationTaskGroup</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pfd.exploration.converge</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConvReport</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
 
 <div class="viewcode-block" id="Scheduler">
 <a class="viewcode-back" href="../../../../development/pfd.exploration.scheduler.html#pfd.exploration.scheduler.sheduler.Scheduler">[docs]</a>
-<span class="k">class</span> <span class="nc">Scheduler</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Scheduler</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This would manage every part of workflow status</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">model_style</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;dp&quot;</span><span class="p">,</span>
         <span class="n">explore_style</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;lmp&quot;</span><span class="p">,</span>
@@ -153,77 +153,84 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_train_config</span> <span class="o">=</span> <span class="n">train_config</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">ft</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ft</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ft</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">rec_ft</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rec_ft</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rec_ft</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">train_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">train_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_train_config</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">model_style</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">model_style</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_style</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">explore_style</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">explore_style</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_explore_style</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">expl_stages</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">expl_stages</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_explore_stages</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">iter_numb</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">iter_numb</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iter_numb</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">idx_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">idx_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_idx_stage</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">type_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">type_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type_map</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">mass_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mass_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mass_map</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">max_iteration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">max_iteration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_iter</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">convergence</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">convergence</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_converge</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_first_iteration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_first_iteration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_first_iteration</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log</span>
 
     <span class="nd">@is_first_iteration</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">is_first_iteration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_first_iteration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_first_iteration</span> <span class="o">=</span> <span class="n">value</span>
 
 <div class="viewcode-block" id="Scheduler.set_explore_tasks">
 <a class="viewcode-back" href="../../../../development/pfd.exploration.scheduler.html#pfd.exploration.scheduler.sheduler.Scheduler.set_explore_tasks">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_explore_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">systems</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_explore_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">systems</span><span class="p">):</span>
         <span class="n">_expl_stage</span> <span class="o">=</span> <span class="n">ExplorationStage</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">task_grp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">expl_stages</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">idx_stage</span><span class="p">]:</span>
-            <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">task_grp</span><span class="p">[</span><span class="s2">&quot;conf_idx&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">explore_style</span> <span class="o">==</span> <span class="s2">&quot;lmp&quot;</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">task_grp</span><span class="p">[</span><span class="s2">&quot;conf_idx&quot;</span><span class="p">]:</span>
+                    <span class="n">_expl_stage</span><span class="o">.</span><span class="n">add_task_group</span><span class="p">(</span>
+                        <span class="n">explore_styles</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">model_style</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">explore_style</span><span class="p">][</span><span class="s2">&quot;task&quot;</span><span class="p">](</span>
+                            <span class="n">systems</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">type_map</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">mass_map</span><span class="p">,</span>
+                            <span class="n">task_grp</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">explore_style</span> <span class="o">==</span> <span class="s2">&quot;calypso&quot;</span><span class="p">:</span>
                 <span class="n">_expl_stage</span><span class="o">.</span><span class="n">add_task_group</span><span class="p">(</span>
                     <span class="n">explore_styles</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">model_style</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">explore_style</span><span class="p">][</span><span class="s2">&quot;task&quot;</span><span class="p">](</span>
-                        <span class="n">systems</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">type_map</span><span class="p">,</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">mass_map</span><span class="p">,</span>
-                        <span class="n">task_grp</span><span class="p">,</span>
+                        <span class="n">task_grp</span>
                     <span class="p">)</span>
                 <span class="p">)</span>
         <span class="k">return</span> <span class="n">_expl_stage</span><span class="o">.</span><span class="n">make_task</span><span class="p">()</span></div>
@@ -231,7 +238,7 @@
 
 <div class="viewcode-block" id="Scheduler.set_convergence">
 <a class="viewcode-back" href="../../../../development/pfd.exploration.scheduler.html#pfd.exploration.scheduler.sheduler.Scheduler.set_convergence">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_convergence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">convergence_stage</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_convergence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">convergence_stage</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_first_iteration</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">next_iter</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
@@ -252,19 +259,19 @@
 
 <div class="viewcode-block" id="Scheduler.next_iter">
 <a class="viewcode-back" href="../../../../development/pfd.exploration.scheduler.html#pfd.exploration.scheduler.sheduler.Scheduler.next_iter">[docs]</a>
-    <span class="k">def</span> <span class="nf">next_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">next_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_iter_numb</span> <span class="o">+=</span> <span class="mi">1</span></div>
 
 
 <div class="viewcode-block" id="Scheduler.next_stage">
 <a class="viewcode-back" href="../../../../development/pfd.exploration.scheduler.html#pfd.exploration.scheduler.sheduler.Scheduler.next_stage">[docs]</a>
-    <span class="k">def</span> <span class="nf">next_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">next_stage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_idx_stage</span> <span class="o">+=</span> <span class="mi">1</span></div>
 
 
 <div class="viewcode-block" id="Scheduler.add_report">
 <a class="viewcode-back" href="../../../../development/pfd.exploration.scheduler.html#pfd.exploration.scheduler.sheduler.Scheduler.add_report">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">report</span><span class="p">:</span> <span class="n">ConvReport</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">report</span><span class="p">:</span> <span class="n">ConvReport</span><span class="p">):</span>
         <span class="n">report</span><span class="o">.</span><span class="n">iteration</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%03d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_numb</span>
         <span class="n">report</span><span class="o">.</span><span class="n">stage</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%03d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">idx_stage</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">report</span><span class="p">)</span></div>
@@ -272,8 +279,8 @@
 
 <div class="viewcode-block" id="Scheduler.get_status">
 <a class="viewcode-back" href="../../../../development/pfd.exploration.scheduler.html#pfd.exploration.scheduler.sheduler.Scheduler.get_status">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">tabulate</span> <span class="kn">import</span> <span class="n">tabulate</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">tabulate</span><span class="w"> </span><span class="kn">import</span> <span class="n">tabulate</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">tabulate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="s2">&quot;keys&quot;</span><span class="p">,</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s2">&quot;grid&quot;</span><span class="p">)</span>

@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pfd.exploration.converge.energy_conv &mdash; pfd-kit 0.5.3 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+  <title>pfd.exploration.converge.energy_conv &mdash; pfd-kit 0.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=2a2fe768"></script>
+      <script src="../../../../_static/documentation_options.js?v=8fa8b3e9"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -81,20 +81,20 @@
            <div itemprop="articleBody">
              
   <h1>Source code for pfd.exploration.converge.energy_conv</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">.check_conv</span> <span class="kn">import</span> <span class="n">CheckConv</span>
-<span class="kn">from</span> <span class="nn">dargs</span> <span class="kn">import</span> <span class="n">Argument</span>
-<span class="kn">from</span> <span class="nn">pfd.exploration.inference</span> <span class="kn">import</span> <span class="n">TestReports</span>
-<span class="kn">from</span> <span class="nn">pfd.exploration.converge</span> <span class="kn">import</span> <span class="n">ConvReport</span>
-<span class="kn">import</span> <span class="nn">logging</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">.check_conv</span><span class="w"> </span><span class="kn">import</span> <span class="n">CheckConv</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dargs</span><span class="w"> </span><span class="kn">import</span> <span class="n">Argument</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pfd.exploration.inference</span><span class="w"> </span><span class="kn">import</span> <span class="n">TestReports</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pfd.exploration.converge</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConvReport</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
 
 <div class="viewcode-block" id="EnerConvRMSE">
 <a class="viewcode-back" href="../../../../development/pfd.exploration.converge.html#pfd.exploration.converge.energy_conv.EnerConvRMSE">[docs]</a>
 <span class="nd">@CheckConv</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;energy_rmse&quot;</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">EnerConvRMSE</span><span class="p">(</span><span class="n">CheckConv</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EnerConvRMSE</span><span class="p">(</span><span class="n">CheckConv</span><span class="p">):</span>
 <div class="viewcode-block" id="EnerConvRMSE.check_conv">
 <a class="viewcode-back" href="../../../../development/pfd.exploration.converge.html#pfd.exploration.converge.energy_conv.EnerConvRMSE.check_conv">[docs]</a>
-    <span class="k">def</span> <span class="nf">check_conv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reports</span><span class="p">:</span> <span class="n">TestReports</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">conv_report</span><span class="p">:</span> <span class="n">ConvReport</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_conv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reports</span><span class="p">:</span> <span class="n">TestReports</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">conv_report</span><span class="p">:</span> <span class="n">ConvReport</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check convergence, and selected systems for following iterations</span>
 <span class="sd">        Args:</span>
@@ -149,14 +149,14 @@
 <div class="viewcode-block" id="EnerConvRMSE.args">
 <a class="viewcode-back" href="../../../../development/pfd.exploration.converge.html#pfd.exploration.converge.energy_conv.EnerConvRMSE.args">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">args</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">args</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">Argument</span><span class="p">(</span><span class="s2">&quot;RMSE&quot;</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">optional</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)]</span></div>
 
 
 <div class="viewcode-block" id="EnerConvRMSE.doc">
 <a class="viewcode-back" href="../../../../development/pfd.exploration.converge.html#pfd.exploration.converge.energy_conv.EnerConvRMSE.doc">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">doc</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">doc</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;Converge by RMSE of energy per atom&quot;</span></div>
 </div>
 

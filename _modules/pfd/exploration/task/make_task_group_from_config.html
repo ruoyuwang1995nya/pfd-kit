@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pfd.exploration.task.make_task_group_from_config &mdash; pfd-kit 0.5.3 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+  <title>pfd.exploration.task.make_task_group_from_config &mdash; pfd-kit 0.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=2a2fe768"></script>
+      <script src="../../../../_static/documentation_options.js?v=8fa8b3e9"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -81,28 +81,28 @@
            <div itemprop="articleBody">
              
   <h1>Source code for pfd.exploration.task.make_task_group_from_config</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">dargs</span>
-<span class="kn">from</span> <span class="nn">dargs</span> <span class="kn">import</span> <span class="p">(</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dargs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dargs</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Argument</span><span class="p">,</span>
     <span class="n">Variant</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">dpgen2.constants</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpgen2.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">lmp_conf_name</span><span class="p">,</span>
     <span class="n">lmp_input_name</span><span class="p">,</span>
     <span class="n">model_name_pattern</span><span class="p">,</span>
     <span class="n">plm_input_name</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">pfd.exploration.task.caly_task_group</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pfd.exploration.task.caly_task_group</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">CalyTaskGroup</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">pfd.exploration.task.customized_lmp_template_task_group</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pfd.exploration.task.customized_lmp_template_task_group</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">CustomizedLmpTemplateTaskGroup</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">pfd.exploration.task.lmp_template_task_group</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pfd.exploration.task.lmp_template_task_group</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">LmpTemplateTaskGroup</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">pfd.exploration.task.npt_task_group</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pfd.exploration.task.npt_task_group</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">NPTTaskGroup</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -112,7 +112,7 @@
 
 <div class="viewcode-block" id="npt_task_group_args">
 <a class="viewcode-back" href="../../../../development/pfd.exploration.task.html#pfd.exploration.task.make_task_group_from_config.npt_task_group_args">[docs]</a>
-<span class="k">def</span> <span class="nf">npt_task_group_args</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">npt_task_group_args</span><span class="p">():</span>
     <span class="n">doc_temps</span> <span class="o">=</span> <span class="s2">&quot;A list of temperatures in K. Also used to initialize the temperature&quot;</span>
     <span class="n">doc_press</span> <span class="o">=</span> <span class="s2">&quot;A list of pressures in bar.&quot;</span>
     <span class="n">doc_ens</span> <span class="o">=</span> <span class="s2">&quot;The ensemble. Allowd options are &#39;nve&#39;, &#39;nvt&#39;, &#39;npt&#39;, &#39;npt-a&#39;, &#39;npt-t&#39;. &#39;npt-a&#39; stands for anisotrpic box sampling and &#39;npt-t&#39; stands for triclinic box sampling.&quot;</span>
@@ -180,7 +180,7 @@
 
 <div class="viewcode-block" id="lmp_template_task_group_args">
 <a class="viewcode-back" href="../../../../development/pfd.exploration.task.html#pfd.exploration.task.make_task_group_from_config.lmp_template_task_group_args">[docs]</a>
-<span class="k">def</span> <span class="nf">lmp_template_task_group_args</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">lmp_template_task_group_args</span><span class="p">():</span>
     <span class="n">doc_lmp_template_fname</span> <span class="o">=</span> <span class="s2">&quot;The file name of lammps input template&quot;</span>
     <span class="n">doc_plm_template_fname</span> <span class="o">=</span> <span class="s2">&quot;The file name of plumed input template&quot;</span>
     <span class="n">doc_revisions</span> <span class="o">=</span> <span class="s2">&quot;The revisions. Should be a dict providing the key - list of desired values pair. Key is the word to be replaced in the templates, and it may appear in both the lammps and plumed input templates. All values in the value list will be enmerated.&quot;</span>
@@ -225,7 +225,7 @@
 
 <div class="viewcode-block" id="customized_lmp_template_task_group_args">
 <a class="viewcode-back" href="../../../../development/pfd.exploration.task.html#pfd.exploration.task.make_task_group_from_config.customized_lmp_template_task_group_args">[docs]</a>
-<span class="k">def</span> <span class="nf">customized_lmp_template_task_group_args</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">customized_lmp_template_task_group_args</span><span class="p">():</span>
     <span class="n">doc_input_lmp_tmpl_name</span> <span class="o">=</span> <span class="s2">&quot;The file name of lammps input template&quot;</span>
     <span class="n">doc_input_plm_tmpl_name</span> <span class="o">=</span> <span class="s2">&quot;The file name of plumed input template&quot;</span>
     <span class="n">doc_revisions</span> <span class="o">=</span> <span class="s2">&quot;The revisions. Should be a dict providing the key - list of desired values pair. Key is the word to be replaced in the templates, and it may appear in both the lammps and plumed input templates. All values in the value list will be enmerated.&quot;</span>
@@ -337,7 +337,7 @@
 
 <div class="viewcode-block" id="variant_task_group">
 <a class="viewcode-back" href="../../../../development/pfd.exploration.task.html#pfd.exploration.task.make_task_group_from_config.variant_task_group">[docs]</a>
-<span class="k">def</span> <span class="nf">variant_task_group</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">variant_task_group</span><span class="p">():</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="s2">&quot;the type of the task group&quot;</span>
     <span class="n">doc_lmp_md</span> <span class="o">=</span> <span class="s2">&quot;Lammps MD tasks. DPGEN will generate the lammps input script&quot;</span>
     <span class="n">doc_lmp_template</span> <span class="o">=</span> <span class="s2">&quot;Lammps MD tasks defined by templates. User provide lammps (and plumed) template for lammps tasks. The variables in templates are revised by the revisions key. Notice that the lines for pair style, dump and plumed are reserved for the revision of dpgen2, and the users should not write these lines by themselves. Rather, users notify dpgen2 the poistion of the line for `pair_style` by writting &#39;pair_style deepmd&#39;, the line for `dump` by writting &#39;dump dpgen_dump&#39;. If plumed is used, the line for `fix plumed` shouldbe written exactly as &#39;fix dpgen_plm&#39;. &quot;</span>
@@ -368,14 +368,14 @@
 
 <div class="viewcode-block" id="lmp_task_group_args">
 <a class="viewcode-back" href="../../../../development/pfd.exploration.task.html#pfd.exploration.task.make_task_group_from_config.lmp_task_group_args">[docs]</a>
-<span class="k">def</span> <span class="nf">lmp_task_group_args</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">lmp_task_group_args</span><span class="p">():</span>
     <span class="k">return</span> <span class="n">Argument</span><span class="p">(</span><span class="s2">&quot;task_group&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="p">[],</span> <span class="p">[</span><span class="n">variant_task_group</span><span class="p">()])</span></div>
 
 
 
 <div class="viewcode-block" id="lmp_normalize">
 <a class="viewcode-back" href="../../../../development/pfd.exploration.task.html#pfd.exploration.task.make_task_group_from_config.lmp_normalize">[docs]</a>
-<span class="k">def</span> <span class="nf">lmp_normalize</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">lmp_normalize</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
     <span class="n">args</span> <span class="o">=</span> <span class="n">lmp_task_group_args</span><span class="p">()</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">normalize_value</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">trim_pattern</span><span class="o">=</span><span class="s2">&quot;_*&quot;</span><span class="p">)</span>
     <span class="n">args</span><span class="o">.</span><span class="n">check_value</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">)</span>
@@ -385,7 +385,7 @@
 
 <div class="viewcode-block" id="caly_task_grp_args">
 <a class="viewcode-back" href="../../../../development/pfd.exploration.task.html#pfd.exploration.task.make_task_group_from_config.caly_task_grp_args">[docs]</a>
-<span class="k">def</span> <span class="nf">caly_task_grp_args</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">caly_task_grp_args</span><span class="p">():</span>
     <span class="k">return</span> <span class="p">[</span>
         <span class="n">Argument</span><span class="p">(</span><span class="s2">&quot;numb_of_species&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">optional</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;number of species.&quot;</span><span class="p">),</span>
         <span class="n">Argument</span><span class="p">(</span>
@@ -579,7 +579,7 @@
 
 <div class="viewcode-block" id="caly_task_group_args">
 <a class="viewcode-back" href="../../../../development/pfd.exploration.task.html#pfd.exploration.task.make_task_group_from_config.caly_task_group_args">[docs]</a>
-<span class="k">def</span> <span class="nf">caly_task_group_args</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">caly_task_group_args</span><span class="p">():</span>
     <span class="n">doc_caly_task_grp</span> <span class="o">=</span> <span class="s2">&quot;CALYPSO structure prediction tasks. DPGEN will generate the calypso input script&quot;</span>
     <span class="k">return</span> <span class="n">Argument</span><span class="p">(</span>
         <span class="s2">&quot;task_group&quot;</span><span class="p">,</span>
@@ -592,17 +592,17 @@
 
 <div class="viewcode-block" id="caly_normalize">
 <a class="viewcode-back" href="../../../../development/pfd.exploration.task.html#pfd.exploration.task.make_task_group_from_config.caly_normalize">[docs]</a>
-<span class="k">def</span> <span class="nf">caly_normalize</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">caly_normalize</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
     <span class="n">args</span> <span class="o">=</span> <span class="n">caly_task_group_args</span><span class="p">()</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">normalize_value</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">trim_pattern</span><span class="o">=</span><span class="s2">&quot;_*&quot;</span><span class="p">)</span>
-    <span class="n">args</span><span class="o">.</span><span class="n">check_value</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">args</span><span class="o">.</span><span class="n">check_value</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">data</span></div>
 
 
 
 <div class="viewcode-block" id="config_strip_confidx">
 <a class="viewcode-back" href="../../../../development/pfd.exploration.task.html#pfd.exploration.task.make_task_group_from_config.config_strip_confidx">[docs]</a>
-<span class="k">def</span> <span class="nf">config_strip_confidx</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">config_strip_confidx</span><span class="p">(</span>
     <span class="n">config</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="n">cc</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -614,7 +614,7 @@
 
 <div class="viewcode-block" id="make_calypso_task_group_from_config">
 <a class="viewcode-back" href="../../../../development/pfd.exploration.task.html#pfd.exploration.task.make_task_group_from_config.make_calypso_task_group_from_config">[docs]</a>
-<span class="k">def</span> <span class="nf">make_calypso_task_group_from_config</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">make_calypso_task_group_from_config</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
     <span class="n">config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="n">config</span> <span class="o">=</span> <span class="n">caly_normalize</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 
@@ -626,7 +626,7 @@
 
 <div class="viewcode-block" id="make_lmp_task_group_from_config">
 <a class="viewcode-back" href="../../../../development/pfd.exploration.task.html#pfd.exploration.task.make_task_group_from_config.make_lmp_task_group_from_config">[docs]</a>
-<span class="k">def</span> <span class="nf">make_lmp_task_group_from_config</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">make_lmp_task_group_from_config</span><span class="p">(</span>
     <span class="n">numb_models</span><span class="p">,</span>
     <span class="n">mass_map</span><span class="p">,</span>
     <span class="n">config</span><span class="p">,</span>

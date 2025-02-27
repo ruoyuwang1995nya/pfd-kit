@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pfd.exploration.inference.util &mdash; pfd-kit 0.5.3 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+  <title>pfd.exploration.inference.util &mdash; pfd-kit 0.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=2a2fe768"></script>
+      <script src="../../../../_static/documentation_options.js?v=8fa8b3e9"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -81,12 +81,12 @@
            <div itemprop="articleBody">
              
   <h1>Source code for pfd.exploration.inference.util</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 
 <div class="viewcode-block" id="get_mae">
 <a class="viewcode-back" href="../../../../development/pfd.exploration.inference.html#pfd.exploration.inference.util.get_mae">[docs]</a>
-<span class="k">def</span> <span class="nf">get_mae</span><span class="p">(</span><span class="n">test_arr</span><span class="p">,</span> <span class="n">orig_arr</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_mae</span><span class="p">(</span><span class="n">test_arr</span><span class="p">,</span> <span class="n">orig_arr</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
     <span class="n">num_data</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_arr</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">num_data</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">orig_arr</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Two arrays must be of the same size&quot;</span><span class="p">)</span>
@@ -96,7 +96,7 @@
 
 <div class="viewcode-block" id="get_rmse">
 <a class="viewcode-back" href="../../../../development/pfd.exploration.inference.html#pfd.exploration.inference.util.get_rmse">[docs]</a>
-<span class="k">def</span> <span class="nf">get_rmse</span><span class="p">(</span><span class="n">test_arr</span><span class="p">,</span> <span class="n">orig_arr</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_rmse</span><span class="p">(</span><span class="n">test_arr</span><span class="p">,</span> <span class="n">orig_arr</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
     <span class="n">num_data</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">test_arr</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">num_data</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">orig_arr</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Two arrays must be of the same size&quot;</span><span class="p">)</span>

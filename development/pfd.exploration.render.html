@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pfd.exploration.render package &mdash; pfd-kit 0.5.3 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+  <title>pfd.exploration.render package &mdash; pfd-kit 0.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=2a2fe768"></script>
+      <script src="../_static/documentation_options.js?v=8fa8b3e9"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -114,11 +114,11 @@
 <span id="pfd-exploration-render-traj-render-module"></span><h2>pfd.exploration.render.traj_render module<a class="headerlink" href="#module-pfd.exploration.render.traj_render" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="pfd.exploration.render.traj_render.TrajRender">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pfd.exploration.render.traj_render.</span></span><span class="sig-name descname"><span class="pre">TrajRender</span></span><a class="reference internal" href="../_modules/pfd/exploration/render/traj_render.html#TrajRender"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pfd.exploration.render.traj_render.TrajRender" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pfd.exploration.render.traj_render.</span></span><span class="sig-name descname"><span class="pre">TrajRender</span></span><a class="reference internal" href="../_modules/pfd/exploration/render/traj_render.html#TrajRender"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pfd.exploration.render.traj_render.TrajRender" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pfd.exploration.render.traj_render.TrajRender.get_confs">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_confs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conf_filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pfd.exploration.selector.html#pfd.exploration.selector.conf_filter.ConfFilters" title="pfd.exploration.selector.conf_filter.ConfFilters"><span class="pre">ConfFilters</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional_outputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">MultiSystems</span></span></span><a class="reference internal" href="../_modules/pfd/exploration/render/traj_render.html#TrajRender.get_confs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pfd.exploration.render.traj_render.TrajRender.get_confs" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_confs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conf_filters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pfd.exploration.selector.html#pfd.exploration.selector.conf_filter.ConfFilters" title="pfd.exploration.selector.conf_filter.ConfFilters"><span class="pre">ConfFilters</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional_outputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">MultiSystems</span></span></span><a class="reference internal" href="../_modules/pfd/exploration/render/traj_render.html#TrajRender.get_confs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pfd.exploration.render.traj_render.TrajRender.get_confs" title="Link to this definition"></a></dt>
 <dd><p>Get configurations from trajectory by selection.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -140,6 +140,51 @@ from the ii-th trajectory. id_selected[ii] may be an empty list.</p></li>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="pfd.exploration.render.traj_render.TrajRender.get_driver">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_driver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pfd/exploration/render/traj_render.html#TrajRender.get_driver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pfd.exploration.render.traj_render.TrajRender.get_driver" title="Link to this definition"></a></dt>
+<dd><p>Get a driver for ModelEval</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – _description_</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – _description_</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>_description_</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>_type_</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pfd.exploration.render.traj_render.TrajRender.get_drivers">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_drivers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/pfd/exploration/render/traj_render.html#TrajRender.get_drivers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pfd.exploration.render.traj_render.TrajRender.get_drivers" title="Link to this definition"></a></dt>
+<dd><p>Get all drivers</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>all drivers</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pfd.exploration.render.traj_render.TrajRender.register">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pfd/exploration/render/traj_render.html#TrajRender.register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pfd.exploration.render.traj_render.TrajRender.register" title="Link to this definition"></a></dt>
+<dd><p>Register a traj render. Used as decorators</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – key of the traj</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -147,7 +192,7 @@ from the ii-th trajectory. id_selected[ii] may be an empty list.</p></li>
 <span id="pfd-exploration-render-traj-render-lammps-module"></span><h2>pfd.exploration.render.traj_render_lammps module<a class="headerlink" href="#module-pfd.exploration.render.traj_render_lammps" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="pfd.exploration.render.traj_render_lammps.TrajRenderLammps">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pfd.exploration.render.traj_render_lammps.</span></span><span class="sig-name descname"><span class="pre">TrajRenderLammps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nopbc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_ele_temp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pfd/exploration/render/traj_render_lammps.html#TrajRenderLammps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pfd.exploration.render.traj_render_lammps.TrajRenderLammps" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pfd.exploration.render.traj_render_lammps.</span></span><span class="sig-name descname"><span class="pre">TrajRenderLammps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nopbc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_ele_temp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pfd/exploration/render/traj_render_lammps.html#TrajRenderLammps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pfd.exploration.render.traj_render_lammps.TrajRenderLammps" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pfd.exploration.render.traj_render.TrajRender" title="pfd.exploration.render.traj_render.TrajRender"><code class="xref py py-class docutils literal notranslate"><span class="pre">TrajRender</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pfd.exploration.render.traj_render_lammps.TrajRenderLammps.get_confs">

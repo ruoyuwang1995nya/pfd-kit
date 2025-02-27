@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pfd.utils.download_pfd_artifacts &mdash; pfd-kit 0.5.3 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+  <title>pfd.utils.download_pfd_artifacts &mdash; pfd-kit 0.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=2a2fe768"></script>
+      <script src="../../../_static/documentation_options.js?v=8fa8b3e9"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -81,23 +81,23 @@
            <div itemprop="articleBody">
              
   <h1>Source code for pfd.utils.download_pfd_artifacts</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">itertools</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="p">(</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Path</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">List</span><span class="p">,</span>
     <span class="n">Optional</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">dflow</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dflow</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Workflow</span><span class="p">,</span>
     <span class="n">download_artifact</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">pfd.utils.dflow_query</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pfd.utils.dflow_query</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">get_iteration</span><span class="p">,</span>
     <span class="n">get_subkey</span><span class="p">,</span>
 <span class="p">)</span>
@@ -107,14 +107,14 @@
 
 <div class="viewcode-block" id="DownloadDefinition">
 <a class="viewcode-back" href="../../../development/pfd.utils.html#pfd.utils.download_pfd_artifacts.DownloadDefinition">[docs]</a>
-<span class="k">class</span> <span class="nc">DownloadDefinition</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DownloadDefinition</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">input_def</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_def</span> <span class="o">=</span> <span class="p">{}</span>
 
 <div class="viewcode-block" id="DownloadDefinition.add_def">
 <a class="viewcode-back" href="../../../development/pfd.utils.html#pfd.utils.download_pfd_artifacts.DownloadDefinition.add_def">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_def</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_def</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">tdict</span><span class="p">,</span>
         <span class="n">key</span><span class="p">,</span>
@@ -126,7 +126,7 @@
 
 <div class="viewcode-block" id="DownloadDefinition.add_input">
 <a class="viewcode-back" href="../../../development/pfd.utils.html#pfd.utils.download_pfd_artifacts.DownloadDefinition.add_input">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_input</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_input</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">input_key</span><span class="p">,</span>
         <span class="n">suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -136,7 +136,7 @@
 
 <div class="viewcode-block" id="DownloadDefinition.add_output">
 <a class="viewcode-back" href="../../../development/pfd.utils.html#pfd.utils.download_pfd_artifacts.DownloadDefinition.add_output">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_output</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_output</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">output_key</span><span class="p">,</span>
         <span class="n">suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -179,7 +179,7 @@
 
 <div class="viewcode-block" id="print_op_download_setting">
 <a class="viewcode-back" href="../../../development/pfd.utils.html#pfd.utils.download_pfd_artifacts.print_op_download_setting">[docs]</a>
-<span class="k">def</span> <span class="nf">print_op_download_setting</span><span class="p">(</span><span class="n">op_download_setting</span><span class="o">=</span><span class="n">op_download_setting</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">print_op_download_setting</span><span class="p">(</span><span class="n">op_download_setting</span><span class="o">=</span><span class="n">op_download_setting</span><span class="p">):</span>
     <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">kk</span> <span class="ow">in</span> <span class="n">op_download_setting</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
         <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;step: </span><span class="si">{</span><span class="n">kk</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -203,7 +203,7 @@
 
 <div class="viewcode-block" id="download_dpgen2_artifacts">
 <a class="viewcode-back" href="../../../development/pfd.utils.html#pfd.utils.download_pfd_artifacts.download_dpgen2_artifacts">[docs]</a>
-<span class="k">def</span> <span class="nf">download_dpgen2_artifacts</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">download_dpgen2_artifacts</span><span class="p">(</span>
     <span class="n">wf</span><span class="p">:</span> <span class="n">Workflow</span><span class="p">,</span>
     <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">prefix</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -267,7 +267,7 @@
 
 <div class="viewcode-block" id="download_dpgen2_artifacts_by_def">
 <a class="viewcode-back" href="../../../development/pfd.utils.html#pfd.utils.download_pfd_artifacts.download_dpgen2_artifacts_by_def">[docs]</a>
-<span class="k">def</span> <span class="nf">download_dpgen2_artifacts_by_def</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">download_dpgen2_artifacts_by_def</span><span class="p">(</span>
     <span class="n">wf</span><span class="p">:</span> <span class="n">Workflow</span><span class="p">,</span>
     <span class="n">iterations</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">step_defs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -322,7 +322,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_dload_input_lower</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_dload_input_lower</span><span class="p">(</span>
     <span class="n">step</span><span class="p">,</span>
     <span class="n">mypath</span><span class="p">,</span>
     <span class="n">key</span><span class="p">,</span>
@@ -347,7 +347,7 @@
             <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_dload_output_lower</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_dload_output_lower</span><span class="p">(</span>
     <span class="n">step</span><span class="p">,</span>
     <span class="n">mypath</span><span class="p">,</span>
     <span class="n">key</span><span class="p">,</span>
@@ -372,7 +372,7 @@
             <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_get_all_step_defs</span><span class="p">(</span><span class="n">op_download_setting</span><span class="o">=</span><span class="n">op_download_setting</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_all_step_defs</span><span class="p">(</span><span class="n">op_download_setting</span><span class="o">=</span><span class="n">op_download_setting</span><span class="p">):</span>
     <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">kk</span><span class="p">,</span> <span class="n">vv</span> <span class="ow">in</span> <span class="n">op_download_setting</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">idef</span> <span class="o">=</span> <span class="n">vv</span><span class="o">.</span><span class="n">input_def</span>
@@ -384,7 +384,7 @@
     <span class="k">return</span> <span class="n">ret</span>
 
 
-<span class="k">def</span> <span class="nf">_get_all_iterations</span><span class="p">(</span><span class="n">step_keys</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_all_iterations</span><span class="p">(</span><span class="n">step_keys</span><span class="p">):</span>
     <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">kk</span> <span class="ow">in</span> <span class="n">step_keys</span><span class="p">:</span>
         <span class="n">ii</span> <span class="o">=</span> <span class="n">get_iteration</span><span class="p">(</span><span class="n">kk</span><span class="p">)</span>
@@ -395,7 +395,7 @@
     <span class="k">return</span> <span class="n">ret</span>
 
 
-<span class="k">def</span> <span class="nf">_get_all_queried_steps</span><span class="p">(</span><span class="n">wf_step_keys</span><span class="p">,</span> <span class="n">dld_items</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_all_queried_steps</span><span class="p">(</span><span class="n">wf_step_keys</span><span class="p">,</span> <span class="n">dld_items</span><span class="p">):</span>
     <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">dld_items</span><span class="p">:</span>
         <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ii</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">global_step_def_split</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
@@ -404,7 +404,7 @@
     <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">ret</span><span class="p">))</span>
 
 
-<span class="k">def</span> <span class="nf">_get_dld_items</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_dld_items</span><span class="p">(</span>
     <span class="n">iterations</span><span class="p">,</span>
     <span class="n">step_defs</span><span class="p">,</span>
 <span class="p">):</span>
@@ -414,7 +414,7 @@
     <span class="k">return</span> <span class="n">items</span>
 
 
-<span class="k">def</span> <span class="nf">_item_path</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_item_path</span><span class="p">(</span>
     <span class="n">prefix</span><span class="p">,</span>
     <span class="n">item</span><span class="p">,</span>
 <span class="p">):</span>
@@ -425,7 +425,7 @@
     <span class="k">return</span> <span class="n">ret</span>
 
 
-<span class="k">def</span> <span class="nf">_filter_if_complished</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_filter_if_complished</span><span class="p">(</span>
     <span class="n">prefix</span><span class="p">,</span>
     <span class="n">items</span><span class="p">,</span>
 <span class="p">):</span>
@@ -439,7 +439,7 @@
     <span class="k">return</span> <span class="n">ret</span>
 
 
-<span class="k">def</span> <span class="nf">_filter_def_by_availability</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_filter_def_by_availability</span><span class="p">(</span>
     <span class="n">defs</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
@@ -469,7 +469,7 @@
     <span class="k">return</span> <span class="n">ret</span>
 
 
-<span class="k">def</span> <span class="nf">_dl_step_item</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_dl_step_item</span><span class="p">(</span>
     <span class="n">step</span><span class="p">,</span>
     <span class="n">item</span><span class="p">,</span>
     <span class="n">prefix</span><span class="p">,</span>

@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pfd.op.select_confs &mdash; pfd-kit 0.5.3 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+  <title>pfd.op.select_confs &mdash; pfd-kit 0.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=2a2fe768"></script>
+      <script src="../../../_static/documentation_options.js?v=8fa8b3e9"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -81,18 +81,18 @@
            <div itemprop="articleBody">
              
   <h1>Source code for pfd.op.select_confs</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="p">(</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Path</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">List</span><span class="p">,</span>
     <span class="n">Set</span><span class="p">,</span>
     <span class="n">Tuple</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">dflow.python</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dflow.python</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">OP</span><span class="p">,</span>
     <span class="n">OPIO</span><span class="p">,</span>
     <span class="n">Artifact</span><span class="p">,</span>
@@ -102,11 +102,11 @@
 <span class="p">)</span>
 
 
-<span class="kn">from</span> <span class="nn">pfd.exploration.selector</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pfd.exploration.selector</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ConfSelector</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
 <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
     <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span>
@@ -118,13 +118,13 @@
 
 <div class="viewcode-block" id="SelectConfs">
 <a class="viewcode-back" href="../../../development/pfd.op.html#pfd.op.select_confs.SelectConfs">[docs]</a>
-<span class="k">class</span> <span class="nc">SelectConfs</span><span class="p">(</span><span class="n">OP</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SelectConfs</span><span class="p">(</span><span class="n">OP</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Select configurations from exploration trajectories for labeling.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="SelectConfs.get_input_sign">
 <a class="viewcode-back" href="../../../development/pfd.op.html#pfd.op.select_confs.SelectConfs.get_input_sign">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get_input_sign</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_input_sign</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">OPIOSign</span><span class="p">(</span>
             <span class="p">{</span>
                 <span class="s2">&quot;conf_selector&quot;</span><span class="p">:</span> <span class="n">ConfSelector</span><span class="p">,</span>
@@ -138,7 +138,7 @@
 <div class="viewcode-block" id="SelectConfs.get_output_sign">
 <a class="viewcode-back" href="../../../development/pfd.op.html#pfd.op.select_confs.SelectConfs.get_output_sign">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get_output_sign</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_output_sign</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">OPIOSign</span><span class="p">(</span>
             <span class="p">{</span>
                 <span class="c1"># &quot;report&quot;: BigParameter(ExplorationReport),</span>
@@ -150,7 +150,7 @@
 <div class="viewcode-block" id="SelectConfs.execute">
 <a class="viewcode-back" href="../../../development/pfd.op.html#pfd.op.select_confs.SelectConfs.execute">[docs]</a>
     <span class="nd">@OP</span><span class="o">.</span><span class="n">exec_sign_check</span>
-    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">ip</span><span class="p">:</span> <span class="n">OPIO</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OPIO</span><span class="p">:</span>
@@ -199,7 +199,7 @@
 <div class="viewcode-block" id="SelectConfs.validate_trajs">
 <a class="viewcode-back" href="../../../development/pfd.op.html#pfd.op.select_confs.SelectConfs.validate_trajs">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">validate_trajs</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_trajs</span><span class="p">(</span>
         <span class="n">trajs</span><span class="p">,</span>
         <span class="n">model_devis</span><span class="p">,</span>
     <span class="p">):</span>

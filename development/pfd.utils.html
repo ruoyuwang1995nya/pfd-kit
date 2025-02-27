@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pfd.utils package &mdash; pfd-kit 0.5.3 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+  <title>pfd.utils package &mdash; pfd-kit 0.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=2a2fe768"></script>
+      <script src="../_static/documentation_options.js?v=8fa8b3e9"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -126,7 +126,7 @@
 <p>Binary file inputs</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="pfd.utils.binary_file_input.BinaryFileInput">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pfd.utils.binary_file_input.</span></span><span class="sig-name descname"><span class="pre">BinaryFileInput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pfd/utils/binary_file_input.html#BinaryFileInput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pfd.utils.binary_file_input.BinaryFileInput" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pfd.utils.binary_file_input.</span></span><span class="sig-name descname"><span class="pre">BinaryFileInput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pfd/utils/binary_file_input.html#BinaryFileInput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pfd.utils.binary_file_input.BinaryFileInput" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pfd.utils.binary_file_input.BinaryFileInput.save_as_file">
@@ -156,9 +156,9 @@
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">SomeOP</span><span class="p">(</span><span class="n">OP</span><span class="p">):</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">SomeOP</span><span class="p">(</span><span class="n">OP</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="nd">@chdir</span><span class="p">(</span><span class="s2">&quot;path&quot;</span><span class="p">)</span>
-<span class="gp">... </span>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span><span class="p">:</span> <span class="n">OPIO</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span><span class="p">:</span> <span class="n">OPIO</span><span class="p">):</span>
 <span class="gp">... </span>        <span class="n">do_something</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -274,7 +274,7 @@ other keys are treated as config keys.</p>
 <span id="pfd-utils-download-pfd-artifacts-module"></span><h2>pfd.utils.download_pfd_artifacts module<a class="headerlink" href="#module-pfd.utils.download_pfd_artifacts" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="pfd.utils.download_pfd_artifacts.DownloadDefinition">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pfd.utils.download_pfd_artifacts.</span></span><span class="sig-name descname"><span class="pre">DownloadDefinition</span></span><a class="reference internal" href="../_modules/pfd/utils/download_pfd_artifacts.html#DownloadDefinition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pfd.utils.download_pfd_artifacts.DownloadDefinition" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pfd.utils.download_pfd_artifacts.</span></span><span class="sig-name descname"><span class="pre">DownloadDefinition</span></span><a class="reference internal" href="../_modules/pfd/utils/download_pfd_artifacts.html#DownloadDefinition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pfd.utils.download_pfd_artifacts.DownloadDefinition" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pfd.utils.download_pfd_artifacts.DownloadDefinition.add_def">
@@ -350,7 +350,7 @@ prefix/iter-xxxxxx/key-of-step/outputs/</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pfd.utils.step_config.gen_doc">
-<span class="sig-prename descclassname"><span class="pre">pfd.utils.step_config.</span></span><span class="sig-name descname"><span class="pre">gen_doc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">make_anchor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">make_link</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pfd/utils/step_config.html#gen_doc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pfd.utils.step_config.gen_doc" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">pfd.utils.step_config.</span></span><span class="sig-name descname"><span class="pre">gen_doc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">make_anchor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">make_link</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pfd/utils/step_config.html#gen_doc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pfd.utils.step_config.gen_doc" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
