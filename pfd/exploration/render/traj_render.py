@@ -24,6 +24,8 @@ if TYPE_CHECKING:
 
 
 class TrajRender(ABC):
+    __RenderTypes = {}
+
     @abstractmethod
     def get_confs(
         self,
@@ -55,3 +57,44 @@ class TrajRender(ABC):
             The configurations in dpdata.MultiSystems format
         """
         pass
+
+    @staticmethod
+    def register(key: str):
+        """Register a traj render. Used as decorators
+
+        Args:
+            key (str): key of the traj
+        """
+
+        def decorator(object):
+            TrajRender.__RenderTypes[key] = object
+            return object
+
+        return decorator
+
+    @staticmethod
+    def get_driver(key: str):
+        """Get a driver for ModelEval
+
+        Args:
+            key (str): _description_
+
+        Raises:
+            RuntimeError: _description_
+
+        Returns:
+            _type_: _description_
+        """
+        try:
+            return TrajRender.__RenderTypes[key]
+        except KeyError as e:
+            raise RuntimeError("unknown driver: " + key) from e
+
+    @staticmethod
+    def get_drivers() -> dict:
+        """Get all drivers
+
+        Returns:
+            dict: all drivers
+        """
+        return TrajRender.__RenderTypes

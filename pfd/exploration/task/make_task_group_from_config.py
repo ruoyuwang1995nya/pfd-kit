@@ -483,10 +483,10 @@ def caly_task_group_args():
     )
 
 
-def caly_normalize(data):
+def caly_normalize(data, strict: bool = False):
     args = caly_task_group_args()
     data = args.normalize_value(data, trim_pattern="_*")
-    args.check_value(data, strict=False)
+    args.check_value(data, strict=strict)
     return data
 
 

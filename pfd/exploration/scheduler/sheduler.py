@@ -130,13 +130,20 @@ class Scheduler:
     def set_explore_tasks(self, systems):
         _expl_stage = ExplorationStage()
         for task_grp in self.expl_stages[self.idx_stage]:
-            for idx in task_grp["conf_idx"]:
+            if self.explore_style == "lmp":
+                for idx in task_grp["conf_idx"]:
+                    _expl_stage.add_task_group(
+                        explore_styles[self.model_style][self.explore_style]["task"](
+                            systems[idx],
+                            self.type_map,
+                            self.mass_map,
+                            task_grp,
+                        )
+                    )
+            elif self.explore_style == "calypso":
                 _expl_stage.add_task_group(
                     explore_styles[self.model_style][self.explore_style]["task"](
-                        systems[idx],
-                        self.type_map,
-                        self.mass_map,
-                        task_grp,
+                        task_grp
                     )
                 )
         return _expl_stage.make_task()

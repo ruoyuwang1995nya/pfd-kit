@@ -26,7 +26,13 @@ from dpgen2.fp import fp_styles
 from pfd.train import train_styles
 from pfd.exploration import explore_styles
 
-from dpgen2.superop import PrepRunDPTrain, PrepRunFp
+from dpgen2.superop import PrepRunDPTrain, PrepRunFp, PrepRunCaly
+
+
+from pfd.superop.caly_evo_step import (
+    CalyEvoStep,
+)
+
 
 from pfd.op import (
     PertGen,
@@ -34,6 +40,11 @@ from pfd.op import (
     InferenceOP,
     SelectConfs,
     ModelTestOP,
+    CollRunCaly,
+    PrepCalyDPOptim,
+    PrepCalyInput,
+    CalyEvoStepMerge,
+    RunCalyDPOptim,
 )
 
 from pfd.superop import (
@@ -41,6 +52,7 @@ from pfd.superop import (
     ExplFinetuneBlock,
     ExplDistBlock,
     ExplDistLoop,
+    PrepRunCaly,
 )
 from pfd.exploration.selector import (
     ConfFilters,
@@ -48,7 +60,7 @@ from pfd.exploration.selector import (
     conf_filter_styles,
 )
 from pfd.exploration.converge import ConfFiltersConv, ConfFilterConv
-from pfd.exploration.render import TrajRenderLammps
+from pfd.exploration.render import TrajRender, TrajRenderLammps
 from pfd.exploration.scheduler import Scheduler
 from pfd.flow import Distillation, FineTune, DataGen
 from pfd.constants import default_image
@@ -225,8 +237,8 @@ def make_ft_op(
     run_fp_config: dict = default_config,
     prep_train_config: dict = default_config,
     run_train_config: dict = default_config,
-    prep_lmp_config: dict = default_config,
-    run_lmp_config: dict = default_config,
+    prep_explore_config: dict = default_config,
+    run_explore_config: dict = default_config,
     scheduler_config: dict = default_config,
     collect_data_step_config: dict = default_config,
     select_confs_step_config: dict = default_config,
@@ -264,13 +276,53 @@ def make_ft_op(
             f"Training style {train_style} has not been implemented!"
         )
 
-    if explore_style in explore_styles[train_style].keys():
-        prep_run_lmp_op = explore_styles[train_style][explore_style]["preprun"](
+    if explore_style == "lmp":
+        prep_run_explore_op = explore_styles[train_style][explore_style]["preprun"](
             "prep-run-explore-step",
             explore_styles[train_style][explore_style]["prep"],
             explore_styles[train_style][explore_style]["run"],
-            prep_config=prep_lmp_config,
-            run_config=run_lmp_config,
+            prep_config=prep_explore_config,
+            run_config=run_explore_config,
+            upload_python_packages=upload_python_packages,
+        )
+    elif "calypso" in explore_style:
+        expl_mode = explore_style.split(":")[-1] if ":" in explore_style else "default"
+        # the evolution process is running locally
+        if expl_mode == "merge":
+            caly_evo_step_op = CalyEvoStepMerge(
+                name="caly-evo-step",
+                collect_run_caly=CollRunCaly,
+                prep_dp_optim=PrepCalyDPOptim,
+                run_dp_optim=RunCalyDPOptim,
+                expl_mode=expl_mode,
+                prep_config=prep_explore_config,
+                run_config=run_explore_config,
+                upload_python_packages=None,
+            )
+        elif expl_mode == "default":
+            caly_evo_step_op = CalyEvoStep(
+                name="caly-evo-step",
+                collect_run_caly=CollRunCaly,
+                prep_dp_optim=PrepCalyDPOptim,
+                run_dp_optim=RunCalyDPOptim,
+                expl_mode=expl_mode,
+                prep_config=prep_explore_config,
+                run_config=run_explore_config,
+                upload_python_packages=upload_python_packages,
+            )
+        else:
+            raise KeyError(
+                f"Unknown key: {explore_style}, support `calypso:default` and `calypso:merge`."
+            )
+        prep_run_explore_op = PrepRunCaly(
+            "prep-run-calypso",
+            prep_caly_input_op=PrepCalyInput,
+            caly_evo_step_op=caly_evo_step_op,
+            # prep_caly_model_devi_op=PrepCalyModelDevi,
+            # run_caly_model_devi_op=RunCalyModelDevi,
+            expl_mode=expl_mode,
+            prep_config=prep_explore_config,
+            run_config=run_explore_config,
             upload_python_packages=upload_python_packages,
         )
     else:
@@ -278,7 +330,7 @@ def make_ft_op(
 
     expl_ft_blk_op = ExplFinetuneBlock(
         name="blk",
-        prep_run_explore_op=prep_run_lmp_op,
+        prep_run_explore_op=prep_run_explore_op,
         prep_run_fp_op=prep_run_fp_op,
         collect_data_op=CollectData,
         select_confs_op=SelectConfs,
@@ -691,7 +743,7 @@ class FlowGen:
         converge_config = config["exploration"]["convergence"]
         # conf selectors
         conf_filters = get_conf_filters(config["exploration"]["filter"])
-        render = TrajRenderLammps(nopbc=False)
+        render = TrajRender.get_driver(explore_style)()
         conf_selector = ConfSelectorFrames(
             render, config["fp"]["task_max"], conf_filters
         )
@@ -739,7 +791,9 @@ class FlowGen:
         else:
             raise RuntimeError("init_confs must be provided")
 
-        expl_args = explore_styles[train_style][explore_style]["task_args"]
+        expl_args = explore_styles[train_style][explore_style.split(":")[0]][
+            "task_args"
+        ]
         for stg in expl_stages:
             for task_grp in stg:
                 args = expl_args(task_grp)
@@ -748,7 +802,7 @@ class FlowGen:
 
         scheduler = Scheduler(
             model_style=train_style,
-            explore_style=explore_style,
+            explore_style=explore_style.split(":")[0],
             explore_stages=expl_stages,
             mass_map=mass_map,
             type_map=type_map,
@@ -821,8 +875,8 @@ class FlowGen:
             run_fp_config=run_fp_config,
             prep_train_config=prep_train_config,
             run_train_config=run_train_config,
-            prep_lmp_config=prep_lmp_config,
-            run_lmp_config=run_lmp_config,
+            prep_explore_config=prep_lmp_config,
+            run_explore_config=run_lmp_config,
             scheduler_config=scheduler_config,
             collect_data_step_config=run_collect_data_config,
             select_confs_step_config=run_select_confs_config,
