@@ -8,7 +8,12 @@ from pfd.exploration.task import (
     BaseExplorationTaskGroup,
     make_lmp_task_group_from_config,
     normalize_lmp_task_group_config,
+    normalize_caly_task_group_config,
+    caly_normalize,
 )
+
+from pfd.exploration.task.caly_task_group import CalyTaskGroup
+
 from dflow import ArgoStep, Step, Steps, Workflow, upload_artifact
 
 
@@ -39,3 +44,25 @@ def expl_grp_args_lmps(config):
         if plm_template_fname := config.pop("plm_template_fname"):
             config["plm_template"] = Path(plm_template_fname).read_text().split("\n")
     return config
+
+
+def expl_grp_args_caly(config):
+    """Normalize input parameters of calypso exploration
+
+    Args:
+        config (dict): input config
+
+    Returns:
+        dict: normalized config
+    """
+    config.pop("type", None)
+    config = normalize_caly_task_group_config(config, strict=True)
+    return config
+
+
+def gen_expl_grp_caly(
+    task,
+):
+    tgroup = CalyTaskGroup()
+    tgroup.set_params(**task)
+    return tgroup
