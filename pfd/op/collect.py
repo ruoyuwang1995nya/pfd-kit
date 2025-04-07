@@ -160,6 +160,8 @@ class CollectData(OP):
 
 def get_sys_fmt(sys_path: Union[Path, str]):
     "return dpdata format"
+    if not sys_path:
+        return "lammps/dump"
     if isinstance(sys_path, str):
         sys_path = Path(sys_path)
     if (sys_path / "type.raw").is_file():
