@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.6.1 (2025-04-07)
+
+### Bug Fixes
+
+- Issues with None sys_path
+  ([`bbf8ca6`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/bbf8ca63225131d8bdd1705721f155daf5f920fa))
+
+
 ## v0.6.0 (2025-02-27)
 
 ### Bug Fixes

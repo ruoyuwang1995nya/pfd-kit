@@ -11,8 +11,11 @@ class EnerConfFilter(ConfFilterConv):
         self.thr_h = thr_h
 
     def check(self, rep: TestReport):
-        if rep.mae_e_atom > self.thr_h or rep.mae_e_atom < self.thr_l:
-            logging.warning("#### Energy predition error out of threshold!")
+        if rep.mae_e_atom < self.thr_l:
+            logging.warning(f"#### Energy predition error ({rep.mae_e_atom}) out of low threshold ({self.thr_l})!")
+            return False
+        elif rep.mae_e_atom > self.thr_h:
+            logging.warning(f"#### Energy predition error ({rep.mae_e_atom}) out of high threshold ({self.thr_h})!")
             return False
         return True
 
@@ -37,8 +40,11 @@ class ForceConfFilter(ConfFilterConv):
         self.thr_h = thr_h
 
     def check(self, rep: TestReport):
-        if rep.rmse_f > self.thr_h or rep.rmse_f < self.thr_l:
-            logging.warning("#### Force predition error out of threshold!")
+        if rep.rmse_f < self.thr_l:
+            logging.warning(f"#### Force predition error ({rep.rmse_f}) out of low threshold ({self.thr_l})!")
+            return False
+        elif rep.rmse_f > self.thr_h:
+            logging.warning(f"#### Force predition error ({rep.rmse_f}) out of high threshold ({self.thr_h})!")
             return False
         return True
 
