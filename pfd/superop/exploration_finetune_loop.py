@@ -511,11 +511,11 @@ def _loop(
         ),
     )
     loop.add(next_step)
-    loop.outputs.parameters["report"].value_from_expression = if_expression(
-        _if=stage_scheduler.outputs.parameters["converged"],
-        _then=loop.inputs.parameters["report"],
-        _else=next_step.outputs.parameters["report"],
-    )
+    # loop.outputs.parameters["report"].value_from_expression = if_expression(
+    #    _if=stage_scheduler.outputs.parameters["converged"],
+    #    _then=loop.inputs.parameters["report"],
+    #    _else=next_step.outputs.parameters["report"],
+    # )
     loop.outputs.artifacts["ft_model"].from_expression = if_expression(
         _if=stage_scheduler.outputs.parameters["converged"],
         _then=loop.inputs.artifacts["current_model"],
