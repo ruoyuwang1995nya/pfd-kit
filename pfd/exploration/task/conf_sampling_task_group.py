@@ -5,7 +5,7 @@ from typing import (
     Optional,
 )
 
-from dpgen2.constants import (
+from pfd.constants import (
     lmp_conf_name,
     lmp_input_name,
     model_name_pattern,
