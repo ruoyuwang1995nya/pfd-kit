@@ -17,7 +17,6 @@ from dflow.python import (
 from pfd.exploration import converge
 from pfd.exploration.converge import CheckConv, ConfFiltersConv, ConvReport
 from pfd.exploration.inference import TestReport, TestReports
-from pfd.exploration.scheduler import Scheduler
 import logging
 
 logging.basicConfig(
@@ -72,11 +71,11 @@ class EvalConv(OP):
         report = ConvReport()
         converged, _ = conv.check_conv(test_res, config, report)
         logging.info("Converged: %s" % converged)
-        if conf_filters := ip["conf_filters_conv"]:
-            logging.info("Checking filters...")
-            selected_idx = conf_filters.check(test_res)
-        else:
-            selected_idx = list(range(len(test_res)))
+        #if conf_filters := ip["conf_filters_conv"]:
+        #    logging.info("Checking filters...")
+        #    selected_idx = conf_filters.check(test_res)
+        #else:
+        #    selected_idx = list(range(len(test_res)))
         selected_systems = test_res.sub_reports(selected_idx)
         report.frame = test_res.get_nframes()
         report.selected_frame = selected_systems.get_nframes()

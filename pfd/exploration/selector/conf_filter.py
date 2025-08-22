@@ -7,15 +7,17 @@ from abc import (
     abstractmethod,
 )
 
-import dpdata
+from ase import Atoms
 import numpy as np
-
+from typing import (
+    List,
+)
 
 class ConfFilter(ABC):
     @abstractmethod
     def check(
         self,
-        frame: dpdata.System,
+        frame: Atoms,
     ) -> bool:
         """Check if the configuration is valid.
 
@@ -50,11 +52,10 @@ class ConfFilters:
 
     def check(
         self,
-        conf: dpdata.System,
-    ) -> dpdata.System:
-        natoms = sum(conf["atom_numbs"])  # type: ignore
-        selected_idx = np.arange(conf.get_nframes())
+        conf: List[Atoms],
+    ) -> List[Atoms]:
+        selected_idx = np.arange(len(conf))
         for ff in self._filters:
-            fsel = np.where([ff.check(conf[ii]) for ii in range(conf.get_nframes())])[0]
+            fsel = np.where([ff.check(conf[ii]) for ii in range(len(conf))])[0]
             selected_idx = np.intersect1d(selected_idx, fsel)
-        return conf.sub_system(selected_idx)
+        return [conf[ii] for ii in selected_idx]

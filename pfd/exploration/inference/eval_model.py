@@ -1,17 +1,15 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from math import sqrt
 from pathlib import Path
-from typing import Optional, Union
-import dpdata
+from typing import List, Optional, Union
 import numpy as np
-
+from ase import Atoms
 
 @dataclass
 class TestReport:
     name: str = "default_system"
-    system: Optional[dpdata.System] = None
-    atom_numb: int = 0
+    system: Optional[List[Atoms]] = None
+    atom_numb: Union[int, np.ndarray] = 0
     numb_frame: int = 0
     mae_f: float = 0
     rmse_f: float = 0
@@ -31,7 +29,6 @@ class TestReport:
     def report(self):
         return {
             "name": self.name,
-            "atom_numb": self.atom_numb,
             "numb_frame": self.numb_frame,
             "MAE_force": self.mae_f,
             "RMSE_force": self.rmse_f,
@@ -128,6 +125,7 @@ class EvalModel(ABC):
 
     def __init__(
         self,
+        *args,
         model: Optional[Union[Path, str]] = None,
         data: Optional[Union[Path, str]] = None,
         **kwargs
@@ -136,7 +134,7 @@ class EvalModel(ABC):
         self._model = None
 
         if model:
-            self.load_model(model, **kwargs)
+            self.load_model(*args, model=model, **kwargs)
         if data:
             self.read_data(data)
 
@@ -195,10 +193,6 @@ class EvalModel(ABC):
 
     @abstractmethod
     def read_data(self, data: Union[Path, str], **kwargs):
-        pass
-
-    @abstractmethod
-    def read_data_unlabeled(self, data: Union[Path, str], **kwargs):
         pass
 
     @abstractmethod

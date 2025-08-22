@@ -9,13 +9,9 @@ from typing import (
     TYPE_CHECKING,
     List,
     Optional,
-    Tuple,
-    Union,
 )
 
-import dpdata
-import numpy as np
-
+from ase import Atoms
 
 if TYPE_CHECKING:
     from pfd.exploration.selector import (
@@ -30,11 +26,9 @@ class TrajRender(ABC):
     def get_confs(
         self,
         traj: List[Path],
-        # id_selected: List[List[int]],
-        type_map: Optional[List[str]] = None,
         conf_filters: Optional["ConfFilters"] = None,
         optional_outputs: Optional[List[Path]] = None,
-    ) -> dpdata.MultiSystems:
+    ) -> List['Atoms']:
         r"""Get configurations from trajectory by selection.
 
         Parameters

@@ -12,8 +12,8 @@ from .task import (
 
 
 explore_styles = {
-    "dp": {
-        "lmp": {
+    "lmp": {
+        "dp": {
             "preprun": PrepRunLmp,
             "prep": PrepLmp,
             "run": RunLmp,
@@ -21,5 +21,15 @@ explore_styles = {
             "task_args": expl_grp_args_lmps,
         },
         "calypso": {"task": gen_expl_grp_caly, "task_args": expl_grp_args_caly},
+    },
+    "ase":{
+        "dp": {
+            "preprun": None,
+            "prep": None,
+            "run": None,
+            "task": None,
+            "task_args": None,
+        },
+        "calypso": {"task": None, "task_args": None},
     }
 }
