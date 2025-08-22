@@ -1,0 +1,59 @@
+from pathlib import (
+    Path,
+)
+from typing import (
+    TYPE_CHECKING,
+    List,
+    Optional,
+    Tuple,
+    Union,
+)
+
+from ase import Atoms
+from ase.io import read
+
+from .traj_render import (
+    TrajRender,
+)
+
+if TYPE_CHECKING:
+    from pfd.exploration.selector import (
+        ConfFilters,
+    )
+
+
+@TrajRender.register("ase")
+class TrajRenderASE(TrajRender):
+    def __init__(
+        self,
+        nopbc: bool = False,
+    ):
+        self.nopbc = nopbc
+
+    def get_confs(
+        self,
+        trajs: List[Path],
+        conf_filters: Optional["ConfFilters"] = None,
+        optional_outputs: Optional[List[Path]] = None,
+    ) -> List[Atoms]:
+        ntraj = len(trajs)
+        if optional_outputs:
+            assert ntraj == len(optional_outputs)
+        atoms_list=[]
+        for ii in range(ntraj):
+            ss = read(trajs[ii], index=':')
+            if isinstance(ss,Atoms):
+                ss=[ss]
+            if self.nopbc:
+                for atoms in ss:
+                    atoms.pbc = not self.nopbc
+            atoms_list.extend(ss)
+        # it might be better to forward an List[Atoms] to the conf_filters
+        if conf_filters is not None:
+            atoms_list2=[]
+            for s in atoms_list:
+                s2 = conf_filters.check(s)
+                if len(s2) > 0:
+                    atoms_list2.append(s2)
+            atoms_list = atoms_list2
+        return atoms_list

@@ -43,3 +43,8 @@ from .gen_task_group import (
     gen_expl_grp_caly,
     expl_grp_args_caly,
 )
+
+from .ase_task_group import (
+    AseTaskGroup,
+)
+
