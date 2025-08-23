@@ -17,7 +17,7 @@ from pfd.exploration.render import (
     TrajRender,
 )
 
-from pfd.utils.ase2xyz import train_test_split,write_xyz_trajectory
+from pfd.utils.ase2xyz import train_test_split
 
 from . import (
     ConfFilters,
