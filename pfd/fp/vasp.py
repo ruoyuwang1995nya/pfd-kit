@@ -14,7 +14,6 @@ from typing import (
     Union,
 )
 
-import dpdata
 import numpy as np
 from dargs import (
     Argument,
@@ -32,12 +31,19 @@ from dflow.python import (
     TransientError,
 )
 
+from ase import Atoms
+from ase.io import read, write
+import dpdata
+
 from pfd.constants import (
     fp_default_log_name,
     fp_default_out_data_name,
 )
 from pfd.utils import (
-    run_command
+    run_command,
+    sort_atoms_by_atomic_number,
+    get_element_types_from_sorted_atoms,
+    dpdata2ase
 )
 
 from .prep_fp import (
@@ -81,6 +87,14 @@ def clean_lines(string_list, remove_empty_lines=True):
 
 
 def loads_incar(incar: str):
+    """[migrated from dpgen2]
+    Parse a VASP INCAR string into a dictionary.
+    Args:
+        incar (str): INCAR string.
+
+    Returns:
+        dict: A dictionary representation of the INCAR parameters.
+    """
     lines = list(clean_lines(incar.splitlines()))
     params = {}
     for line in lines:
@@ -99,55 +113,27 @@ def dumps_incar(params: dict):
 
 
 class PrepVasp(PrepFp):
-    def set_ele_temp(self, conf_frame, incar):
-        use_ele_temp = 0
-        ele_temp = None
-        if "fparam" in conf_frame.data:
-            use_ele_temp = 1
-            ele_temp = conf_frame.data["fparam"][0][0]
-        if "aparam" in conf_frame.data:
-            use_ele_temp = 2
-            ele_temp = conf_frame.data["aparam"][0][0][0]
-        if ele_temp:
-            import scipy.constants as pc
-
-            params = loads_incar(incar)
-            params["ISMEAR"] = -1
-            params["SIGMA"] = ele_temp * pc.Boltzmann / pc.electron_volt
-            incar = dumps_incar(params)
-            data = {
-                "use_ele_temp": use_ele_temp,
-                "ele_temp": ele_temp,
-            }
-            with open("job.json", "w") as f:
-                json.dump(data, f, indent=4)
-        return incar
-
     def prep_task(
         self,
-        conf_frame: dpdata.System,
+        conf_frame: Atoms,
         vasp_inputs: VaspInputs,
     ):
         r"""Define how one Vasp task is prepared.
 
         Parameters
         ----------
-        conf_frame : dpdata.System
-            One frame of configuration in the dpdata format.
+        conf_frame : ase.Atoms
+            One frame of configuration in the ase.Atoms format.
         vasp_inputs : VaspInputs
             The VaspInputs object handels all other input files of the task.
         """
-
-        conf_frame.to("vasp/poscar", vasp_conf_name)
+        sort_atoms_by_atomic_number(conf_frame)
+        atom_names = get_element_types_from_sorted_atoms(conf_frame)
+        write(vasp_conf_name, conf_frame, format="vasp")
         incar = vasp_inputs.incar_template
-        self.set_ele_temp(conf_frame, incar)
-
         Path(vasp_input_name).write_text(incar)
-        # fix the case when some element have 0 atom, e.g. H0O2
-        tmp_frame = dpdata.System(vasp_conf_name, fmt="vasp/poscar")
-        Path(vasp_pot_name).write_text(vasp_inputs.make_potcar(tmp_frame["atom_names"]))
-        Path(vasp_kp_name).write_text(vasp_inputs.make_kpoints(conf_frame["cells"][0]))  # type: ignore
-
+        Path(vasp_pot_name).write_text(vasp_inputs.make_potcar(atom_names))
+        Path(vasp_kp_name).write_text(vasp_inputs.make_kpoints(conf_frame.cell.array))  # type: ignore
 
 class RunVasp(RunFp):
     def input_files(self) -> List[str]:
@@ -172,19 +158,6 @@ class RunVasp(RunFp):
         """
         return ["job.json"]
 
-    def set_ele_temp(self, system):
-        if os.path.exists("job.json"):
-            with open("job.json", "r") as f:
-                data = json.load(f)
-            if "use_ele_temp" in data and "ele_temp" in data:
-                if data["use_ele_temp"] == 1:
-                    setup_ele_temp(False)
-                    system.data["fparam"] = np.tile(data["ele_temp"], [1, 1])
-                elif data["use_ele_temp"] == 2:
-                    setup_ele_temp(True)
-                    system.data["aparam"] = np.tile(
-                        data["ele_temp"], [1, system.get_natoms(), 1]
-                    )
 
     def run_task(
         self,
@@ -223,10 +196,11 @@ class RunVasp(RunFp):
                 )
             )
             raise TransientError("vasp failed")
-        # convert the output to deepmd/npy format
+        # dpdata as a lightweight parser
         sys = dpdata.LabeledSystem("OUTCAR")
-        self.set_ele_temp(sys)
-        sys.to("deepmd/npy", out_name)
+        sys = dpdata2ase(sys)
+        # convert system to Atoms format
+        write(out_name,sys,format="extxyz")
         return out_name, log_name
 
     @staticmethod
