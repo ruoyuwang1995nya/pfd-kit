@@ -36,6 +36,7 @@ from dflow.python import (
 from pfd.constants import (
     fp_default_log_name,
     fp_default_out_data_name,
+    fp_task_pattern
 )
 
 from ase.io import write,read
@@ -51,7 +52,8 @@ from .vasp_input import (
     VaspInputs,
     make_kspacing_kpoints,
 )
-
+from pfd.utils import (
+    set_directory)
 from ase import Atoms
 from ase.io import read
 
@@ -61,6 +63,38 @@ foo_log_name = "foo.log"
 
 
 class PrepFoo(PrepFp):
+    def _create_tasks(
+        self,
+        confs: List[Atoms],
+        config: Dict,
+        **kwargs,
+    ):
+        counter = 0
+        task_names = []
+        task_paths = []
+        inputs = config["inputs"]
+        for ii in range(len(confs)):
+            ss = confs[ii]
+            # loop over frames
+            nn, pp = self._exec_one_frame(counter, inputs, ss)
+            task_names.append(nn)
+            task_paths.append(pp)
+            counter += 1
+
+        return task_names, task_paths
+
+    def _exec_one_frame(
+        self,
+        idx,
+        inputs,
+        conf_frame: Atoms,
+    ) -> Tuple[str, Path]:
+        task_name = fp_task_pattern % idx
+        task_path = Path(task_name)
+        with set_directory(task_path):
+            self.prep_task(conf_frame, inputs)
+        return task_name, task_path
+
     def prep_task(
         self, 
         conf_frame: Atoms, inputs: Any):

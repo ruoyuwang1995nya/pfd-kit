@@ -11,6 +11,8 @@ from pfd.exploration.md import CalculatorWrapper
 from pfd.exploration.inference.eval_model import EvalModel
 from pfd.exploration.inference.util import get_mae, get_rmse
 
+@EvalModel.register("deepmd")
+@EvalModel.register("dp")
 @EvalModel.register("mattersim")
 @EvalModel.register("mace")
 class EvalASE(EvalModel):
@@ -41,12 +43,13 @@ class EvalASE(EvalModel):
         lab_f = []
         atom_num = []
         for atoms in self._data:
-            # read the energy first
-            pred_e.append(atoms.get_potential_energy())
-            atoms.calc=self._model
+            # read labels
             lab_e.append(atoms.get_potential_energy())
+            lab_f.append(atoms.get_forces().flatten())
+            # make prediction
+            atoms.calc=self._model
+            pred_e.append(atoms.get_potential_energy())
             pred_f.append(atoms.get_forces().flatten())
-            lab_f.append(atoms.arrays['force'].flatten())
             atom_num.append(atoms.get_number_of_atoms())
 
         atom_num = np.array(atom_num)

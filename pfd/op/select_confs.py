@@ -93,7 +93,7 @@ class SelectConfs(OP):
         confs = conf_selector.select(
             trajs,
         )
-        
+        logger.info(f"Select {len(confs)} configurations from trajectories.")
         # entropy based selection
         h_filter = optional_parameters.get("entropy_filter")
         if h_filter:
@@ -156,9 +156,10 @@ class SelectConfs(OP):
         if reference is not None:
             reference = read(reference, index=":")
         else:
-            n_ref = min(100, len(confs) // 10)
+            n_ref = max(1, min(100, len(confs) // 10))
             ref_indices = np.random.choice(len(confs), n_ref, replace=False)
             reference = [confs[i] for i in ref_indices]
+            write('text.extxyz', reference, format='extxyz')
             other_indices = np.setdiff1d(np.arange(len(confs)), ref_indices)
             confs = [confs[i] for i in other_indices]
         current_descriptors = get_descriptors(reference,k=k,cutoff=cutoff)
