@@ -11,6 +11,7 @@ from typing import (
     Dict
 )
 
+from click import option
 from dflow.python import (
     OP,
     OPIO,
@@ -34,6 +35,16 @@ from pfd.utils.chdir import (
     set_directory,
 )
 
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[logging.StreamHandler()],
+)
+logger = logging.getLogger(__name__)
+
+
 class Train(OP,ABC):
     r"""Prepares and run model training.
 
@@ -46,7 +57,7 @@ class Train(OP,ABC):
     
     default_optional_parameter = {}
     train_script_name = "input.json"
-    model_name = "model.pb"
+    model_file = "model.pb"
     log_file = "train.log"
     lcurve_file = "lcurve.out"
 
@@ -56,9 +67,8 @@ class Train(OP,ABC):
             {
             #"block_id": Parameter(type=str, default=""),
             "train_config": Parameter(Dict,default={}),
-            "run_optional_parameter": Parameter(Dict, default={}),
+            #"run_optional_parameter": Parameter(Dict, default={}),
             "template_script": BigParameter(Union[dict, List[dict]]),
-
             "init_model": Artifact(Path, optional=True),
             "init_data": Artifact(List[Path], optional=True),
             "iter_data": Artifact(Path),
@@ -108,40 +118,37 @@ class Train(OP,ABC):
         init_data = ip.get("init_data")
         iter_data = ip["iter_data"]
         valid_data = ip.get("valid_data")
-        optional_param = ip.get("run_optional_parameter", self.default_optional_parameter)
+        optional_files = ip.get("optional_files")
+        #optional_param = ip.get("run_optional_parameter", self.default_optional_parameter)
 
         work_dir = Path(train_task_pattern%0)
         work_dir.mkdir(exist_ok=True, parents=True)
-        idict = self._process_script(template)
+        train_dict = self._process_script(template)
         
         # write input script
-        fname = work_dir / train_script_name
-        with open(fname, "w") as fp:
-            json.dump(idict, fp, indent=4)
+        #fname = work_dir / train_script_name
+        #with open(fname, "w") as fp:
+        #    json.dump(idict, fp, indent=4)
 
         
         with set_directory(work_dir):
             # prepare training directory
-            self.prepare_train(
+            self.run_train(
                 config=config,
+                train_dict=train_dict,
                 init_model=init_model,
                 init_data=init_data,
                 iter_data=iter_data,
                 valid_data=valid_data,
-                optional_param=optional_param,
-                )
-            
-            # run training
-            ret, out, err =  self.run_train()
-            
-            # write and print log
-            self.write_log(ret=ret, out=out, err=err)
-        
-        
+                optional_files=optional_files,
+            )
+
+        logger.info(f"Training completed. Model saved to {work_dir / self.model_file}")
+
         op = OPIO(
             {
                 "script": work_dir / self.train_script_name,
-                "model": work_dir / self.model_name,
+                "model": work_dir / self.model_file,
                 "lcurve": work_dir / self.lcurve_file,
                 "log": work_dir / self.log_file,
             }
@@ -155,13 +162,6 @@ class Train(OP,ABC):
         input_dict,
     )-> Any:
         pass
-    @abstractmethod
-    def prepare_train(
-        self,
-        *args,
-        **kwargs
-        ):
-        pass
 
     @abstractmethod
     def run_train(
@@ -171,13 +171,6 @@ class Train(OP,ABC):
         )-> Tuple[int,str,str]:
         pass
     
-    @abstractmethod
-    def write_log(
-        self,
-        *args,
-        **kwargs
-        ):
-        pass
     
 
     @classmethod

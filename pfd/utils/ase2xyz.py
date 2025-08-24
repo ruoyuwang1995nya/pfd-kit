@@ -77,8 +77,63 @@ def dpdata2ase(
         if "virial" in sys[ii].data:
             atoms.set_array("virial", sys[ii].data["virial"][0])
         if "forces" in sys[ii].data:
-            atoms.set_array("force", sys[ii].data["forces"][0])
+            atoms.set_array("forces", sys[ii].data["forces"][0])
         if "energies" in sys[ii].data:
             atoms.info["energy"] = sys[ii].data["energies"][0]
         atoms_list.append(atoms)
     return atoms_list
+
+def ase2dpdata(
+    atoms: Atoms,
+    labeled: bool = False,
+    ) -> dpdata.System:
+    """[Modified from dpdata.plugins.ase] Convert ase.Atoms to dpdata System.
+    
+    Parameters
+    ----------
+    atoms : ase.Atoms
+        The ase.Atoms object to convert.
+    labeled : bool, optional
+        Whether the atoms object has labels (forces, energies, virials), by default False
+    
+    """
+    symbols = atoms.get_chemical_symbols()
+    atom_names = list(dict.fromkeys(symbols))
+    atom_numbs = [symbols.count(symbol) for symbol in atom_names]
+    atom_types = np.array([atom_names.index(symbol) for symbol in symbols]).astype(
+            int
+        )
+    cells = atoms.cell.array
+    coords = atoms.get_positions()
+    info_dict = {
+            "atom_names": atom_names,
+            "atom_numbs": atom_numbs,
+            "atom_types": atom_types,
+            "cells": np.array([cells]),
+            "coords": np.array([coords]),
+            "orig": np.zeros(3),
+            "nopbc": not np.any(atoms.get_pbc()),
+        }
+    if labeled:
+        energy = atoms.get_potential_energy()
+        info_dict["energies"] = np.array([energy])
+        
+        forces = atoms.get_forces()
+        info_dict["forces"] = np.array([forces])
+
+        if "virial" in atoms.arrays:
+            virials = atoms.arrays["virial"]
+            info_dict["virial"] = np.array([virials])
+        return dpdata.LabeledSystem.from_dict({'data':info_dict})
+    return dpdata.System.from_dict({'data':info_dict})
+
+def ase2multisys(
+    atoms_list: List[Atoms],
+    labeled: bool = False,
+    ) -> dpdata.MultiSystems:
+    """Convert list of ase.Atoms to dpdata MultiSystem."""
+    ms=dpdata.MultiSystems()
+    for atoms in atoms_list:
+        system = ase2dpdata(atoms, labeled=labeled)
+        ms.append(system)
+    return ms
