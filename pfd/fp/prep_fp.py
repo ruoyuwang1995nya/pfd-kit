@@ -25,12 +25,6 @@ from dflow.python import (
     OPIOSign,
 )
 
-from pfd.constants import (
-    fp_task_pattern,
-)
-from pfd.utils import (
-    set_directory
-)
 
 from ase import Atoms
 from ase.io import read
@@ -52,6 +46,7 @@ class PrepFp(OP, ABC):
             {
                 "config": BigParameter(dict),
                 "confs": Artifact(Path),
+                #"model_file": Artifact(Path, optional=True),
             }
         )
 
@@ -63,24 +58,6 @@ class PrepFp(OP, ABC):
                 "task_paths": Artifact(List[Path]),
             }
         )
-
-    @abstractmethod
-    def prep_task(
-        self,
-        conf_frame: Atoms,
-        inputs: Any,
-    ):
-        r"""Define how one FP task is prepared.
-
-        Parameters
-        ----------
-        conf_frame : dpdata.System
-            One frame of configuration in the dpdata format.
-        inputs : Any
-            The class object handels all other input files of the task.
-            For example, pseudopotential file, k-point file and so on.
-        """
-        pass
 
     @OP.exec_sign_check
     def execute(
@@ -106,39 +83,30 @@ class PrepFp(OP, ABC):
             - `task_paths`: (`Artifact(List[Path])`) The parepared working paths of the tasks. Contains all input files needed to start the FP. The order fo the Paths should be consistent with `op["task_names"]`
         """
 
-        inputs = ip["config"]["inputs"]
+        config = ip["config"]
         confs = ip["confs"]
-        #type_map = ip["type_map"]
-
-        task_names = []
-        task_paths = []
-        counter = 0
-        # loop over list of extxyz files
-        #for mm in confs:
+        #model_file = ip.get("model_file")
         confs = read(confs,index=":")
         # loop over atoms
-        for ii in range(len(confs)):
-            ss = confs[ii]
-            # loop over frames
-            nn, pp = self._exec_one_frame(counter, inputs, ss)
-            task_names.append(nn)
-            task_paths.append(pp)
-            counter += 1
+        task_names, task_paths = self._create_tasks(
+            confs=confs,
+            config=config,
+            #model_file=model_file,
+        )
+        
         return OPIO(
             {
                 "task_names": task_names,
                 "task_paths": task_paths,
             }
         )
-
-    def _exec_one_frame(
+    @abstractmethod
+    def _create_tasks(
         self,
-        idx,
-        inputs,
-        conf_frame: Atoms,
-    ) -> Tuple[str, Path]:
-        task_name = fp_task_pattern % idx
-        task_path = Path(task_name)
-        with set_directory(task_path):
-            self.prep_task(conf_frame, inputs)
-        return task_name, task_path
+        *args,
+        **kwargs,
+        )->Tuple[List[str],List[Path]]:
+        pass
+    
+    
+    

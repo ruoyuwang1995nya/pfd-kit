@@ -49,6 +49,7 @@ class RunFp(OP, ABC):
                 "config": BigParameter(dict),
                 "task_name": BigParameter(str),
                 "task_path": Artifact(Path),
+                "model": Artifact(Path, optional=True),
             }
         )
 
@@ -176,6 +177,7 @@ class RunFp(OP, ABC):
         config = type(self).normalize_config(config, strict=False)
         task_name = ip["task_name"]
         task_path = ip["task_path"]
+        model = ip.get("model")
         input_files = self.input_files()
         input_files = [(Path(task_path) / ii).resolve() for ii in input_files]
         opt_input_files = self.optional_input_files()
@@ -195,7 +197,10 @@ class RunFp(OP, ABC):
                 if os.path.isfile(ii) or os.path.isdir(ii):
                     iname = ii.name
                     Path(iname).symlink_to(ii)
-            out_name, log_name = self.run_task(**config)
+            out_name, log_name = self.run_task(
+                **config,
+                model = model,
+                )
 
         extra_outputs = []
         for fname in ip["config"]["extra_output_files"]:

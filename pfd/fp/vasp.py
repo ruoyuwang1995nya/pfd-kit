@@ -38,12 +38,15 @@ import dpdata
 from pfd.constants import (
     fp_default_log_name,
     fp_default_out_data_name,
+    fp_task_pattern
 )
+from pfd.exploration import task
 from pfd.utils import (
     run_command,
     sort_atoms_by_atomic_number,
     get_element_types_from_sorted_atoms,
-    dpdata2ase
+    dpdata2ase,
+    set_directory
 )
 
 from .prep_fp import (
@@ -113,6 +116,38 @@ def dumps_incar(params: dict):
 
 
 class PrepVasp(PrepFp):
+    def _create_tasks(
+        self,
+        confs: List[Atoms],
+        config: Dict,
+        **kwargs,
+    ):
+        counter = 0
+        task_names = []
+        task_paths = []
+        inputs = config["inputs"]
+        for ii in range(len(confs)):
+            ss = confs[ii]
+            # loop over frames
+            nn, pp = self._exec_one_frame(counter, inputs, ss)
+            task_names.append(nn)
+            task_paths.append(pp)
+            counter += 1
+
+        return task_names, task_paths
+
+    def _exec_one_frame(
+        self,
+        idx,
+        inputs,
+        conf_frame: Atoms,
+    ) -> Tuple[str, Path]:
+        task_name = fp_task_pattern % idx
+        task_path = Path(task_name)
+        with set_directory(task_path):
+            self.prep_task(conf_frame, inputs)
+        return task_name, task_path
+
     def prep_task(
         self,
         conf_frame: Atoms,
@@ -164,6 +199,7 @@ class RunVasp(RunFp):
         command: str,
         out: str,
         log: str,
+        **kwargs
     ) -> Tuple[str, str]:
         r"""Defines how one FP task runs
 

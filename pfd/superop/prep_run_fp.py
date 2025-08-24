@@ -63,7 +63,10 @@ class PrepRunFp(Steps):
             "fp_config": InputParameter(),
             #"type_map": InputParameter(),
         }
-        self._input_artifacts = {"confs": InputArtifact()}
+        self._input_artifacts = {
+            "confs": InputArtifact(),
+            "model": InputArtifact(optional=True),
+            }
         self._output_parameters = {
             "task_names": OutputParameter(),
         }
@@ -183,6 +186,7 @@ def _prep_run_fp(
         },
         artifacts={
             "task_path": prep_fp.outputs.artifacts["task_paths"],
+            "model": prep_run_steps.inputs.artifacts["model"],
         },
         with_sequence=argo_sequence(
             argo_len(prep_fp.outputs.parameters["task_names"]), format=fp_index_pattern

@@ -202,6 +202,7 @@ def _expl_tr_blk(
         },
         artifacts={
             "confs": select_confs.outputs.artifacts["confs"],
+            "model": steps.inputs.artifacts["expl_model"],
         },
         key="--".join(["%s" % steps.inputs.parameters["block_id"], "prep-run-fp"]),
     )

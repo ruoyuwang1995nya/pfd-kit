@@ -161,5 +161,5 @@ class RunASE(OP):
         ta = RunASE.ase_args()
         base = Argument("base", dict, ta)
         data = base.normalize_value(data, trim_pattern="_*")
-        base.check_value(data, strict=True)
+        base.check_value(data, strict=False)
         return data
