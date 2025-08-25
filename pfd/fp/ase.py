@@ -130,3 +130,6 @@ class RunFpASE(RunFp):
                 doc=doc_model_args,
             )
         ]
+class ASEInputs:
+    def __init__(self, **kwargs):
+        self.ase = "ase"

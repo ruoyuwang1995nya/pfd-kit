@@ -1,22 +1,22 @@
 
-from math import tau
+from dargs import Argument
+from pathlib import Path
+
+from matplotlib.pyplot import cla
+
 from .task import (
     ExplorationTask,
 )
-from .task_group import (
-    ExplorationTaskGroup,
-)
+
 from .conf_sampling_task_group import (
     ConfSamplingTaskGroup,
 )
-from .ase import (
-    ASEInput
-)
+
 from pfd.constants import (
     ase_conf_name,
     ase_input_name,
 )
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 import itertools
 
@@ -147,3 +147,76 @@ class AseTaskGroup(ConfSamplingTaskGroup):
         )
         task.add_file(ase_input_name, ase_input.to_json())
         return task
+        
+    
+    @classmethod
+    def normalize_config(cls, data: Dict = {}, strict: bool = False) -> Dict:
+        r"""Normalized the argument.
+
+        Parameters
+        ----------
+        data : Dict
+            The input dict of arguments.
+        strict : bool
+            Strictly check the arguments.
+
+        Returns
+        -------
+        data: Dict
+            The normalized arguments.
+
+        """
+        ta = cls.args()
+        base = Argument("base", dict, ta)
+        data = base.normalize_value(data, trim_pattern="_*")
+        base.check_value(data, strict=strict)
+        return data
+    
+    
+    @classmethod
+    def args(cls):
+        r"""The argument definition of the `run_task` method.
+
+        Returns
+        -------
+        arguments: List[dargs.Argument]
+            List of dargs.Argument defines the arguments of `run_task` method.
+        """
+
+        doc_temps = "List of temperatures for MD simulation."
+        doc_press = "List of pressures for MD simulation (optional)."
+        doc_ens = "Ensemble type (e.g., 'npt', 'nvt')."
+        doc_dt = "MD time step (fs or ps)."
+        doc_nsteps = "Number of MD steps."
+        doc_trj_freq = "Trajectory output frequency."
+        doc_tau_t = "Thermostat time constant."
+        doc_tau_p = "Barostat time constant."
+        doc_no_pbc = "Disable periodic boundary conditions."
+
+        return [
+            Argument("temps", list, optional=False, doc=doc_temps),
+            Argument("press", list, optional=True, default=None, doc=doc_press),
+            Argument("ens", str, optional=True, default="npt", doc=doc_ens),
+            Argument("dt", float, optional=True, default=2, doc=doc_dt),
+            Argument("nsteps", int, optional=True, default=1000, doc=doc_nsteps),
+            Argument("trj_freq", int, optional=True, default=100, doc=doc_trj_freq),
+            Argument("tau_t", float, optional=True, default=100, doc=doc_tau_t),
+            Argument("tau_p", float, optional=True, default=500, doc=doc_tau_p),
+            Argument("no_pbc", bool, optional=True, default=False, doc=doc_no_pbc),
+        ]
+    
+    @classmethod   
+    def make_task_grp(
+        cls,
+        atom_ls_strs: List[str],
+        config: Dict,
+        n_sample: int=1,
+        
+    ):
+        # task["model_name_pattern"] = pytorch_model_name_pattern
+        task_grp = AseTaskGroup()
+        task_grp.set_md(**AseTaskGroup.normalize_config(config, strict=False))
+        task_grp.set_conf(
+            conf_list=atom_ls_strs, n_sample=n_sample, random_sample=True
+        )
+        return task_grp

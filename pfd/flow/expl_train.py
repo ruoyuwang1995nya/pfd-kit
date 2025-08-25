@@ -45,9 +45,9 @@ class ExplTrainBlock(Steps):
         collect_data_op: Type[OP],
         select_confs_op: Type[OP],
         prep_run_train_op: Type[OP],
-        test_op: Type[OP],
+        evaluate_op: Type[OP],
         collect_data_config: dict,
-        test_config: dict,
+        evaluate_config: dict,
         train_config: dict,
         select_confs_config: dict,
         upload_python_packages: Optional[List[os.PathLike]] = None,
@@ -101,11 +101,11 @@ class ExplTrainBlock(Steps):
             prep_run_fp_op=prep_run_fp_op,
             prep_run_train_op=prep_run_train_op,
             select_confs_op=select_confs_op,
-            test_op=test_op,
+            evaluate_op=evaluate_op,
             train_config=train_config,
             collect_data_op=collect_data_op,
             collect_data_config=collect_data_config,
-            test_config=test_config,
+            evaluate_config=evaluate_config,
             select_confs_config=select_confs_config,
             upload_python_packages=upload_python_packages,
         )
@@ -132,19 +132,19 @@ def _expl_tr_blk(
     prep_run_explore_op: OPTemplate,
     prep_run_fp_op: OPTemplate,
     prep_run_train_op: Type[OP],
-    test_op: Type[OP],
+    evaluate_op: Type[OP],
     select_confs_op: Type[OP],
     collect_data_op: Type[OP],
-    test_config: dict,
+    evaluate_config: dict,
     train_config: dict,
     select_confs_config: dict,
     collect_data_config: dict,
     upload_python_packages: Optional[List[os.PathLike]] = None,
 ):
 
-    test_config = deepcopy(test_config)
-    test_template_config = test_config.pop("template_config")
-    test_executor = init_executor(test_config.pop("executor"))
+    evaluate_config = deepcopy(evaluate_config)
+    test_template_config = evaluate_config.pop("template_config")
+    test_executor = init_executor(evaluate_config.pop("executor"))
 
     train_config = deepcopy(train_config)
     train_template_config = train_config.pop("template_config")
@@ -254,7 +254,7 @@ def _expl_tr_blk(
     evaluate = Step(
         name + "-test-model",
         template=PythonOPTemplate(
-            test_op,
+            evaluate_op,
             python_packages=upload_python_packages,
             **test_template_config,
         ),
@@ -292,7 +292,7 @@ class ExplTrainLoop(Steps):
         self,
         name: str,
         stage_scheduler_op: Type[OP],
-        expl_ft_blk_op: OPTemplate,
+        expl_train_blk_op: OPTemplate,
         scheduler_config: dict,
         upload_python_packages: Optional[List[os.PathLike]] = None,
     ):
@@ -305,6 +305,7 @@ class ExplTrainLoop(Steps):
             "explore_config": InputParameter(),
             "evaluate_config": InputParameter(value={}),
             "collect_data_config": InputParameter(value={}),
+            "select_confs_config": InputParameter(value={}),
             #"schedule_config": InputParameter(value={}),
             "scheduler": InputParameter(),
             "converged": InputParameter(value=False),
@@ -341,7 +342,7 @@ class ExplTrainLoop(Steps):
             self,
             name=name,
             stage_scheduler_op=stage_scheduler_op,
-            expl_ft_blk_op=expl_ft_blk_op,
+            expl_train_blk_op=expl_train_blk_op,
             scheduler_config=scheduler_config,
             upload_python_packages=upload_python_packages,
         )
@@ -367,7 +368,7 @@ def _loop(
     loop,  # the loop Steps
     name: str,
     stage_scheduler_op: Type[OP],
-    expl_ft_blk_op: OPTemplate,
+    expl_train_blk_op: OPTemplate,
     scheduler_config: dict,
     upload_python_packages: Optional[List[os.PathLike]] = None,
 ):
@@ -400,13 +401,14 @@ def _loop(
     )
     loop.add(stage_scheduler)
 
-    expl_ft_blk = Step(
+    expl_train_blk = Step(
         name=name + "-exploration-train",
-        template=expl_ft_blk_op,
+        template=expl_train_blk_op,
         parameters={
             "block_id": "iter-%s" % stage_scheduler.outputs.parameters["iter_id"],
             "expl_tasks": stage_scheduler.outputs.parameters["task_grp"],
             "conf_selector": loop.inputs.parameters["conf_selector"],
+            "select_confs_config": loop.inputs.parameters["select_confs_config"],
             "template_script": loop.inputs.parameters["template_script"],
             "train_config": stage_scheduler.outputs.parameters["train_config"],
             "explore_config": loop.inputs.parameters["explore_config"],
@@ -429,7 +431,7 @@ def _loop(
         ),
         when="%s == false" % (stage_scheduler.outputs.parameters["converged"]),
     )
-    loop.add(expl_ft_blk)
+    loop.add(expl_train_blk)
 
     # next iteration
     next_parameters = {
@@ -442,8 +444,8 @@ def _loop(
         "collect_data_config": loop.inputs.parameters["collect_data_config"],
         "evaluate_config": loop.inputs.parameters["evaluate_config"],
         "scheduler": stage_scheduler.outputs.parameters["scheduler"],
-        "converged": expl_ft_blk.outputs.parameters["converged"],
-        "report": expl_ft_blk.outputs.parameters["report"],
+        "converged": expl_train_blk.outputs.parameters["converged"],
+        "report": expl_train_blk.outputs.parameters["report"],
     }
     next_step = Step(
         name=name + "-exploration-train-next",
@@ -451,9 +453,9 @@ def _loop(
         parameters=next_parameters,
         artifacts={
             "init_model": stage_scheduler.outputs.artifacts["init_model"],
-            "current_model": expl_ft_blk.outputs.artifacts["model"],
+            "current_model": expl_train_blk.outputs.artifacts["model"],
             "expl_model": stage_scheduler.outputs.artifacts["expl_model"],
-            "iter_data": expl_ft_blk.outputs.artifacts["iter_data"],
+            "iter_data": expl_train_blk.outputs.artifacts["iter_data"],
             "init_data": loop.inputs.artifacts["init_data"],
         },
         when="%s == false" % (stage_scheduler.outputs.parameters["converged"],),
