@@ -1,4 +1,5 @@
 import argparse
+from ast import parse
 import json
 import logging
 import textwrap
@@ -16,6 +17,7 @@ from .status import status
 from .submit import FlowGen, resubmit_workflow
 from .common import (
     expand_idx,
+    perturb_cli
 )
 
 
@@ -150,6 +152,62 @@ def main_parser() -> argparse.ArgumentParser:
         help="if specified, download regardless whether check points exist.",
     )
     #########################################
+    # perturb
+    parser_perturb = subparsers.add_parser(
+        "perturb",
+        help="Perturb structures from files",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser_perturb.add_argument(
+        "ATOMS",
+        type=str,
+        nargs="+",
+        help="the structure files to be perturbed, support multiple files.",
+    )
+    parser_perturb.add_argument(    
+        "-n",
+        "--pert-num",
+        type=int,
+        default=1,
+        help="the number of perturbed structures to be generated for each input structure.",
+    )
+    parser_perturb.add_argument(
+        "-c",
+        "--cell-pert-fraction",
+        type=float,
+        default=0.05,
+        help="the fraction of cell perturbation.",
+    )   
+    parser_perturb.add_argument(
+        "-d",
+        "--atom-pert-distance",
+        type=float,
+        default=0.2,
+        help="the distance to perturb the atom.",
+    )
+    parser_perturb.add_argument(
+        "-s",
+        "--atom-pert-style",
+        type=str,
+        default="normal",
+        help="the style of perturbation.",
+    )
+    parser_perturb.add_argument(    
+        "-a",
+        "--atom-pert-prob",
+        type=float,
+        default=1.0,
+        help="the probability of perturbing each atom.",
+    )
+    parser_perturb.add_argument(    
+        "-r",
+        "--supercell",
+        type=int,
+        nargs="+",
+        default=None,
+        help="the supercell replication, support int or 3 ints.",
+    )
+    #########################################
     # status
     parser_status = subparsers.add_parser(
         "status",
@@ -253,7 +311,16 @@ def main():
             config = json.load(fp)
         wfid = args.ID
         status(wfid, config)
-
+    elif args.command == "perturb":
+        perturb_cli(
+            atoms_path_ls=args.ATOMS,
+            pert_num=args.pert_num,
+            cell_pert_fraction=args.cell_pert_fraction,
+            atom_pert_distance=args.atom_pert_distance,
+            atom_pert_style=args.atom_pert_style,
+            atom_pert_prob=args.atom_pert_prob,
+            supercell=args.supercell
+        )
     elif args.command is None:
         pass
     else:

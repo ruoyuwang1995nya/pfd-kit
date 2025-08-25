@@ -163,4 +163,7 @@ class RunFoo(RunFp):
                 doc="Command to run the foo task.",
             ),
         ]
-        
+
+class FooInputs:
+    def __init__(self, **kwargs):
+        self.foo = "foo"

@@ -1,8 +1,7 @@
-from dpgen2.op import PrepDPTrain, RunDPTrain
+from pfd.op.train import (
+    DPTrain
+)
 
 train_styles = {
-    "dp": {
-        "prep": PrepDPTrain,
-        "run": RunDPTrain,
-    }
+    "dp": DPTrain,
 }
