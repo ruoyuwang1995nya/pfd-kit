@@ -167,7 +167,8 @@ class StageSchedulerFT(StageScheduler):
         """
         Schedule the exploration tasks in distributed mode.
         """
-        expl_model_next = current_model
+        if current_model:
+            expl_model = current_model
         if kwargs.get("iterative", False) == True:
             init_model = current_model
-        return init_model, expl_model_next, current_model #, init_data, iter_data
+        return init_model, expl_model, current_model #, init_data, iter_data
