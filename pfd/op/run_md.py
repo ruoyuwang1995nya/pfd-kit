@@ -53,7 +53,7 @@ from pfd.utils import (
 
 
 class RunASE(OP):
-    r"""Execute a LAMMPS task.
+    r"""Execute a ASE MD task.
 
     A working directory named `task_name` is created. All input files
     are copied or symbol linked to directory `task_name`. The LAMMPS

@@ -305,6 +305,10 @@ class FlowGen:
         #### train config
         train_style = config["train"]["type"]
         train_config = config["train"]["config"]
+        if task_type == 'finetune':
+            train_config["finetune_mode"] = True
+        else:
+            train_config["finetune_mode"] = False
         # read custom training template
         with open(config["train"]["template_script"], "r") as fp:
             template_script = json.load(fp)

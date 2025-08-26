@@ -167,3 +167,6 @@ class RunFoo(RunFp):
 class FooInputs:
     def __init__(self, **kwargs):
         self.foo = "foo"
+    @staticmethod
+    def args():
+        return []
