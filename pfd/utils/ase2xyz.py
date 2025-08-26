@@ -34,6 +34,8 @@ def train_test_split(atoms_list: List[Atoms],
     
     if test_size < 1:
         n_test = int(len(atoms_list) * test_size)
+        if n_test == 0:
+            n_test = 1
     else:
         n_test = int(test_size)
     test_indices = indices[:n_test]
