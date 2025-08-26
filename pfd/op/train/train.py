@@ -26,6 +26,7 @@ from dargs import (
     Argument
 )
 
+from pfd import op
 from pfd.constants import (
     train_script_name,
     train_task_pattern,
@@ -71,7 +72,7 @@ class Train(OP,ABC):
             "template_script": BigParameter(Union[dict, List[dict]]),
             "init_model": Artifact(Path, optional=True),
             "init_data": Artifact(List[Path], optional=True),
-            "iter_data": Artifact(Path),
+            "iter_data": Artifact(Path, optional=True),
             "valid_data": Artifact(NestedDict[Path], optional=True),
             "optional_files": Artifact(List[Path], optional=True),
             }
@@ -116,7 +117,7 @@ class Train(OP,ABC):
         config = ip["train_config"]
         init_model = ip.get("init_model")
         init_data = ip.get("init_data")
-        iter_data = ip["iter_data"]
+        iter_data = ip.get("iter_data")
         valid_data = ip.get("valid_data")
         optional_files = ip.get("optional_files")
         #optional_param = ip.get("run_optional_parameter", self.default_optional_parameter)

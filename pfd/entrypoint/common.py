@@ -9,7 +9,7 @@ from typing import (
     Union,
     Tuple
 )
-
+import os
 import dflow
 
 from pfd.utils import (
@@ -75,7 +75,7 @@ def perturb_cli(
     atom_pert_distance: float, 
     atom_pert_style: str, 
     atom_pert_prob: float, 
-    supercell=Optional[Union[int, Tuple[int,int,int]]] = None,
+    supercell: Optional[Union[int, Tuple[int,int,int]]] = None,
     ):
     """A CLI function to perturb structures from file paths.
     """

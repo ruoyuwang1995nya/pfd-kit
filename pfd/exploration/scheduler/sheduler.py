@@ -1,11 +1,7 @@
 from typing import Dict, List
-from pfd.exploration import explore_styles
-from pfd.exploration.task import ExplorationStage, BaseExplorationTaskGroup
+from pfd.exploration.task import ExplorationStage
 from pfd.exploration.converge import ConvReport
 import logging
-
-from pfd.op import stage
-
 
 class Scheduler:
     """

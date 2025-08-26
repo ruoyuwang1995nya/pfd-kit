@@ -10,9 +10,8 @@ from wandb import init
 
 from pfd import op
 from pfd.exploration.scheduler.sheduler import Scheduler
-from pfd.exploration.task import ExplorationStage, BaseExplorationTaskGroup, task_group
+from pfd.exploration.task import  BaseExplorationTaskGroup, task_group
 from pfd.exploration.converge import ConvReport
-from pfd.exploration import explore_styles
 
 
 class StageScheduler(OP,ABC):

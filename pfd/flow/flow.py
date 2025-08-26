@@ -12,6 +12,7 @@ from typing import (
     Union,
 )
 
+from click import option
 from dflow import (
     InputArtifact,
     InputParameter,
@@ -27,8 +28,10 @@ from dflow.python import (
     OP,
     PythonOPTemplate,
 )
+from wandb import init
 
 
+import pfd
 from pfd.utils.step_config import init_executor
 
 
@@ -57,17 +60,20 @@ class PFD(Steps):
             # training
             "template_script": InputParameter(),
             "train_config": InputParameter(),
+
             # fp calculation for labeling
             "fp_config": InputParameter(),
+            "init_fp_config": InputParameter(optional=True),
+            
             # fp exploration
             "collect_data_config": InputParameter(),
             "evaluate_config": InputParameter(),
         }
         self._input_artifacts = {
             "init_confs": InputArtifact(),
-            "expl_models": InputArtifact(optional=True),
-            "init_models": InputArtifact(),
-            #"iter_data": InputArtifact(optional=True),
+            "expl_model": InputArtifact(optional=True),
+            "init_model": InputArtifact(),
+             "iter_data": InputArtifact(optional=True),
             "init_data": InputArtifact(optional=True),
             "init_fp_confs": InputArtifact(optional=True),
             "validation_data": InputArtifact(optional=True),
@@ -142,21 +148,20 @@ def _pfd(
     collect_data_template_config = collect_data_step_config.pop("template_config")
     collect_data_executor = init_executor(collect_data_step_config.pop("executor"))
 
+    init_data = pfd_steps.inputs.artifacts.get("init_data")
+    iter_data = pfd_steps.inputs.artifacts.get("iter_data")
     if init_train is True:
-        # if skip AIMD exploration
-        if init_fp is False:
-            init_data = pfd_steps.inputs.artifacts.get("init_data")
-        # if execute AIMD exploration
-        else:
+        if init_fp:
             prep_run_fp = Step(
                 "init-prep-run-fp",
                 template=prep_run_fp_op,
                 parameters={
                     "block_id": "init",
-                    "fp_config": pfd_steps.inputs.parameters["aimd_config"],
+                    "fp_config": pfd_steps.inputs.parameters["init_fp_config"],
                 },
                 artifacts={
                     "confs": pfd_steps.inputs.artifacts["init_fp_confs"],
+                    "model":pfd_steps.inputs.artifacts["expl_model"],
                 },
                 key="--".join(["init", "prep-run-fp"]),
             )
@@ -174,15 +179,15 @@ def _pfd(
                     },
                 },
                 artifacts={
-                    "systems": prep_run_fp.outputs.artifacts["labeled_data"],
-                    "pre_structures": pfd_steps.inputs.artifacts["init_data"],
+                    "structures": prep_run_fp.outputs.artifacts["labeled_data"],
+                    #"pre_structures": pfd_steps.inputs.artifacts["init_data"],
                 },
                 key="--".join(["init", "collect-data"]),
                 executor=collect_data_executor,
                 **collect_data_step_config
             )
             pfd_steps.add(collect_data)
-            init_data = collect_data.outputs.artifacts["all_structures"]
+            iter_data = collect_data.outputs.artifacts["iter_structures"]
 
         # model training 
         prep_run_ft = Step(
@@ -197,19 +202,20 @@ def _pfd(
                 "template_script": pfd_steps.inputs.parameters["template_script"]
             },
             artifacts={
-                "init_model": pfd_steps.inputs.artifacts["init_models"],
-                "iter_data": init_data, # as iter_data is not optional
+                "init_model": pfd_steps.inputs.artifacts["init_model"],
+                "init_data": init_data,
+                "iter_data": iter_data, # as iter_data is not optional
             },
             key="--".join(["init", "train"]),
             executor=train_executor,
             **train_config,
         )
         pfd_steps.add(prep_run_ft)
-        expl_models = prep_run_ft.outputs.artifacts.get("models")
+        expl_model = prep_run_ft.outputs.artifacts.get("model")
     # if skip initial model training
     else:
         #loop_iter_data = pfd_steps.inputs.artifacts.get("iter_data")
-        expl_models = pfd_steps.inputs.artifacts.get("expl_models")
+        expl_model = pfd_steps.inputs.artifacts.get("expl_model")
 
     loop = Step(
         name="expl-train-loop",
@@ -219,17 +225,18 @@ def _pfd(
             "conf_selector": pfd_steps.inputs.parameters["conf_selector"],
             "select_confs_config": pfd_steps.inputs.parameters["select_confs_config"],
             "template_script": pfd_steps.inputs.parameters["template_script"],
-            "train_config": pfd_steps.inputs.parameters["train_config"],
+            "collect_data_config": pfd_steps.inputs.parameters["collect_data_config"],
+            #"train_config": pfd_steps.inputs.parameters["train_config"],
             "explore_config": pfd_steps.inputs.parameters["explore_config"],
             #"explore_tasks": pfd_steps.inputs.parameters["explore_tasks"],
             "evaluate_config": pfd_steps.inputs.parameters["evaluate_config"],
             "scheduler": pfd_steps.inputs.parameters["scheduler"],
         },
         artifacts={
-            "current_model": expl_models,  # pfd_steps.inputs.artifacts["expl_models"],
-            "init_model": pfd_steps.inputs.artifacts["init_models"],  # starting point for finetune
+            "expl_model": expl_model,  
+            "init_model": pfd_steps.inputs.artifacts["init_model"],  # starting point for finetune
             "init_data": init_data,  # initial data for model finetune
-            #"iter_data": loop_iter_data,  # pfd_steps.inputs.artifacts["iter_data"],
+            "iter_data": iter_data,  # pfd_steps.inputs.artifacts["iter_data"],
         },
         key="--".join(["%s" % "pfd", "loop"]),
     )

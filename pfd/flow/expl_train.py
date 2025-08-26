@@ -33,8 +33,6 @@ from dflow.python import (
 from typeguard import value
 from pfd import train
 from pfd.utils.step_config import init_executor
-from pfd.op import EvalConv, ModelTestOP, StageScheduler
-
 
 class ExplTrainBlock(Steps):
     def __init__(
@@ -301,7 +299,7 @@ class ExplTrainLoop(Steps):
             "conf_selector": InputParameter(),
             "fp_config": InputParameter(),
             "template_script": InputParameter(),
-            "train_config": InputParameter(),
+            #"train_config": InputParameter(),
             "explore_config": InputParameter(),
             "evaluate_config": InputParameter(value={}),
             "collect_data_config": InputParameter(value={}),
@@ -324,7 +322,7 @@ class ExplTrainLoop(Steps):
 
         self._output_parameters = {"report": OutputParameter(default=None)}
         self._output_artifacts = {
-            "ft_model": OutputArtifact(),
+            "model": OutputArtifact(),
             "iter_data": OutputArtifact(),  # data collected after exploration
         }
 
@@ -438,7 +436,7 @@ def _loop(
         "block_id": stage_scheduler.outputs.parameters["next_iter_id"],
         "conf_selector": loop.inputs.parameters["conf_selector"],
         "template_script": loop.inputs.parameters["template_script"],
-        "train_config": loop.inputs.parameters["train_config"],
+        #"train_config": loop.inputs.parameters["train_config"],
         "explore_config": loop.inputs.parameters["explore_config"],
         "fp_config": loop.inputs.parameters["fp_config"],
         "collect_data_config": loop.inputs.parameters["collect_data_config"],
@@ -468,6 +466,6 @@ def _loop(
     )
     loop.add(next_step)
     loop.outputs.parameters["report"].value_from_parameter = stage_scheduler.outputs.parameters["report"]
-    loop.outputs.artifacts["ft_model"]._from = stage_scheduler.outputs.artifacts["current_model"]
+    loop.outputs.artifacts["model"]._from = stage_scheduler.outputs.artifacts["current_model"]
     loop.outputs.artifacts["iter_data"]._from = stage_scheduler.outputs.artifacts["iter_data"]
     return loop

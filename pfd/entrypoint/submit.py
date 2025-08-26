@@ -2,11 +2,13 @@ from copy import deepcopy
 from io import StringIO
 import os
 import copy
+from turtle import up
 from typing import Dict, List, Optional, Union
 from pathlib import Path
 import json
 import dpdata
 import dflow
+from wandb import init
 import pfd
 import re
 import ase
@@ -22,25 +24,16 @@ from pfd.entrypoint.common import global_config_workflow, expand_idx
 
 from pfd.exploration.task.stage import ExplorationStage
 from pfd.train import train_styles
-from pfd.exploration import explore_styles
+#from pfd.exploration import explore_styles
 from pfd.fp import fp_styles
 from pfd.flow import wf_styles
 from pfd.superop import PrepRunFp
 
 from pfd.op import (
-    PertGen,
     CollectData,
-    InferenceOP,
     SelectConfs,
     ModelTestOP,
-    CollRunCaly,
-    PrepCalyDPOptim,
-    PrepCalyInput,
-    CalyEvoStepMerge,
-    RunCalyDPOptim,
-    StageSchedulerFT
 )
-
 
 from pfd.flow import (
     ExplTrainBlock,
@@ -65,8 +58,28 @@ from pfd.utils import (
     sort_slice_ops,
     print_keys_in_nice_format,
 )
-from periodictable import elements
-import logging
+
+from pfd.superop import PrepRunExpl
+from pfd.op import (
+    PrepASE,
+    RunASE
+)
+from pfd.exploration.task import (
+    AseTaskGroup
+)
+
+
+explore_styles = {
+    "ase":{
+        "preprun": PrepRunExpl,
+        "prep": PrepASE,
+        "run": RunASE,
+        "task_grp": AseTaskGroup,
+    }
+}
+
+
+
 
 default_config = normalize_step_dict({"template_config": {"image": default_image}})
 
@@ -271,7 +284,7 @@ class FlowGen:
         
         ##### task configs
         task_type = config["task"].get("type", "finetune")
-        max_iter = config["task"]["max_numb_iter"]
+        max_iter = config["task"]["max_iter"]
         
         if task_type == 'dist':
             init_train=False
@@ -322,6 +335,15 @@ class FlowGen:
             init_confs = get_systems_from_data(init_confs, init_confs_prefix)
         else:
             raise RuntimeError("init_confs must be provided")
+        
+        #### read init fp confs
+        if config["inputs"]["init_fp_confs"]["confs_paths"] is not None:
+            init_fp_confs_prefix = config["inputs"]["init_confs"]["prefix"]
+            init_fp_confs = config["inputs"]["init_confs"]["confs_paths"]
+            init_fp_confs = get_systems_from_data(init_confs, init_fp_confs_prefix)
+        else: 
+            init_fp_confs = []
+        init_fp_confs = upload_artifact_and_print_uri(init_fp_confs, "init_fp_confs")
 
         #### create expl tasks from the init_confs
         task_grp_style = explore_styles[explore_style]["task_grp"]
@@ -352,6 +374,7 @@ class FlowGen:
         scheduler = Scheduler(
             explore_stages=_expl_stages,
             max_iter=max_iter,
+            train_config=train_config
         )
 
         #### upload init_data
@@ -363,15 +386,16 @@ class FlowGen:
             init_data = get_systems_from_data(init_data, init_data_prefix)
             init_data = upload_artifact_and_print_uri(init_data, "init_data")
         else:
+            init_train = init_fp
             init_data = upload_artifact([])
         
         #### upload init models
-        init_models_paths = config["inputs"]["base_model_path"]
+        init_model_paths = config["inputs"]["base_model_path"]
         if config["inputs"]["base_model_uri"] is not None:
             print("Using uploaded model at: ", config["inputs"]["base_model_uri"])
-            init_models = get_artifact_from_uri(config["inputs"]["base_model_uri"])
-        elif init_models_paths:
-            init_models = upload_artifact_and_print_uri(init_models_paths, "base_model")
+            init_model = get_artifact_from_uri(config["inputs"]["base_model_uri"])
+        elif init_model_paths:
+            init_model = upload_artifact_and_print_uri(init_model_paths, "base_model")
         else:
             raise FileNotFoundError("Pre-trained model must exist!")
 
@@ -387,14 +411,14 @@ class FlowGen:
 
         # aimd exploration
         init_fp_config = {}
-        if init_fp is not True:
+        if init_fp:
             init_fp_config.update(fp_config)
             init_fp_inputs_config = copy.deepcopy(fp_inputs_config)
-            init_fp_inputs_config.update(config["aimd"]["inputs_config"])
+            init_fp_inputs_config.update(config["init_fp"]["inputs_config"])
             init_fp_inputs = fp_styles[fp_type]["inputs"](**init_fp_inputs_config)
             init_fp_config["inputs"] = init_fp_inputs
 
-        # make distillation op
+        # make pfd op
         pfd_op = make_pfd_op(
             wf_style=task_type,
             fp_style=fp_type,
@@ -413,9 +437,9 @@ class FlowGen:
             init_train=init_train,
             init_fp=init_fp,
         )
-
+        
         pfd_step = Step(
-            "finetune",
+            "workflow",
             template=pfd_op,
             parameters={
                 "block_id": "finetune",
@@ -427,9 +451,11 @@ class FlowGen:
                 
                 # training
                 "template_script": template_script,
-                "train_config": train_config,
+                "train_config":train_config,
+                
                 # fp_calculation
                 "fp_config": fp_config,
+                "init_fp_config":init_fp_config,
                 
                 #"aimd_config": aimd_config,
                 #"aimd_sample_conf": aimd_sample_conf,
@@ -437,10 +463,11 @@ class FlowGen:
                 "evaluate_config": evaluate_config,
             },
             artifacts={
-                "init_models": init_models,
-                "init_confs": init_confs,
-                "expl_models": init_models,
+                "init_model": init_model,
+                "expl_model": init_model,
                 "init_data": init_data,
+                "init_confs": init_confs,
+                "init_fp_confs": init_fp_confs
                 #"iter_data": iter_data,
             },
         )
