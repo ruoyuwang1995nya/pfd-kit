@@ -133,3 +133,7 @@ class RunFpASE(RunFp):
 class ASEInputs:
     def __init__(self, **kwargs):
         self.ase = "ase"
+        
+    @staticmethod
+    def args():
+        return []
