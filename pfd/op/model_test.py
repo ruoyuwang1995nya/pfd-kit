@@ -1,16 +1,11 @@
 from pathlib import Path
 import json
-from typing import (
-    List,
-)
-
 from dflow.python import OP, OPIO, Artifact, BigParameter, Parameter,OPIOSign
 from ase.io import read, write
 from pfd.exploration.converge.check_conv import CheckConv, ConvReport
 from pfd.exploration.inference import EvalModel
 import logging
 
-from pfd.op import converge
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"

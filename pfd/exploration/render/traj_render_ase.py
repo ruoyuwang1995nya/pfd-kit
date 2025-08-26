@@ -48,12 +48,14 @@ class TrajRenderASE(TrajRender):
                 for atoms in ss:
                     atoms.pbc = not self.nopbc
             atoms_list.extend(ss)
+        print(len(atoms_list))
         # it might be better to forward an List[Atoms] to the conf_filters
         if conf_filters is not None:
-            atoms_list2=[]
-            for s in atoms_list:
-                s2 = conf_filters.check(s)
-                if len(s2) > 0:
-                    atoms_list2.append(s2)
-            atoms_list = atoms_list2
-        return atoms_list
+            #atoms_list2=[]
+            #for s in atoms_list:
+            #    print(type(s))
+            atoms_list2 = conf_filters.check(atoms_list)
+            #    if len(s2) > 0:
+            #        atoms_list2.append(s2)
+            #atoms_list = atoms_list2
+        return atoms_list2

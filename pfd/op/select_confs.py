@@ -95,18 +95,18 @@ class SelectConfs(OP):
         )
         logger.info(f"Select {len(confs)} configurations from trajectories.")
         # entropy based selection
-        h_filter = optional_parameters.get("entropy_filter")
+        h_filter = optional_parameters.get("h_filter")
         if h_filter:
             confs = self.filter_by_entropy(confs,referece=pre_confs, **h_filter)
         
         out_path = Path("confs")
         out_path.mkdir(exist_ok=True)
         max_sel = optional_parameters.get("max_sel")
-        if len(confs) > max_sel:
-            # random select max_sel configurations
-            logger.info(f"Selected {len(confs)} configurations, but max_sel is {max_sel}. Randomly select {max_sel} configurations.")
-            sel_indices = np.random.choice(len(confs), max_sel, replace=False)
-            confs = [confs[i] for i in sel_indices]
+        if max_sel:
+            if len(confs) > max_sel:
+                logger.info(f"Selected {len(confs)} configurations, but max_sel is {max_sel}. Randomly select {max_sel} configurations.")
+                sel_indices = np.random.choice(len(confs), max_sel, replace=False)
+                confs = [confs[i] for i in sel_indices]
         
         write(out_path / "confs.extxyz", confs, format="extxyz")
         return OPIO(

@@ -16,8 +16,7 @@ from ase.md.nose_hoover_chain import NoseHooverChainNVT
 from ase.md.nptberendsen import NPTBerendsen
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution
 
-from pfd.constants import ase_conf_name, ase_input_name, ase_log_name, ase_traj_name
-from pfd.exploration.task.ase import ASEInput
+from pfd.constants import ase_log_name, ase_traj_name
 
 @dataclass
 class MDParameters:
