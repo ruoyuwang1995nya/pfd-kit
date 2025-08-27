@@ -28,10 +28,7 @@ from dflow.python import (
     OP,
     PythonOPTemplate,
 )
-from wandb import init
 
-
-import pfd
 from pfd.utils.step_config import init_executor
 
 
