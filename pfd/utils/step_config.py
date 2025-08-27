@@ -12,7 +12,7 @@ from dflow.plugins.dispatcher import (
     DispatcherExecutor,
 )
 
-from dpgen2.constants import (
+from pfd.constants import (
     default_image,
 )
 
