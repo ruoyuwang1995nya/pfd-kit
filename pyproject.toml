@@ -29,7 +29,8 @@ dependencies = [
     "periodictable",
     "ase",
     "tabulate",
-    "quests"
+    "quests",
+    "dpdispatcher"
 ]
 
 [project.urls]
@@ -97,3 +98,8 @@ insecure = false
 [semantic_release.remote.token]
 env = "GH_TOKEN"
 
+[project.optional-dependencies]
+gpu = [
+    "torch",
+    "torchvision"
+]

@@ -223,12 +223,7 @@ class FlowGen:
         print("dflow mode: %s" % dflow.config["mode"])
         self.workflow = Workflow(name=self._config["name"])
         self._wf_type = config["task"].get("type")
-        #if self._wf_type == "dist":
-        #    self._set_dist_wf(self._config)
-        #elif self.wf_type == "finetune":
         self._set_wf(self._config)
-        #elif self.wf_type == "data_gen":
-        #    self._set_data_gen_wf(self._config)
 
     @property
     def wf_type(self):
