@@ -8,7 +8,6 @@ from pathlib import Path
 import json
 import dpdata
 import dflow
-from wandb import init
 import pfd
 import re
 import ase
