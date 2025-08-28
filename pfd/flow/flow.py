@@ -12,7 +12,6 @@ from typing import (
     Union,
 )
 
-from click import option
 from dflow import (
     InputArtifact,
     InputParameter,
