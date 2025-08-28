@@ -336,9 +336,9 @@ class FlowGen:
         
         #### read init fp confs
         if config["inputs"]["init_fp_confs"]["confs_paths"] is not None:
-            init_fp_confs_prefix = config["inputs"]["init_confs"]["prefix"]
-            init_fp_confs = config["inputs"]["init_confs"]["confs_paths"]
-            init_fp_confs = get_systems_from_data(init_confs, init_fp_confs_prefix)
+            init_fp_confs_prefix = config["inputs"]["init_fp_confs"]["prefix"]
+            init_fp_confs = config["inputs"]["init_fp_confs"]["confs_paths"]
+            init_fp_confs = get_systems_from_data(init_fp_confs, init_fp_confs_prefix)
         else: 
             init_fp_confs = []
         init_fp_confs = upload_artifact_and_print_uri(init_fp_confs, "init_fp_confs")

@@ -5,14 +5,18 @@
     },
     "step_configs": {
         "run_fp_config": {
-            "template_config": {},
+            "template_config": {
+            },
             "executor": null,
-            "template_slice_config": {}
+            "template_slice_config": {
+            }
         },
         "run_explore_config": {
-            "template_config": {},
-            "template_slice_config": {},
-            "executor": null
+           "template_config": {
+            },
+            "executor": null,
+            "template_slice_config": {
+            }
         },
         "run_train_config": {
             "template_config": {
@@ -28,25 +32,25 @@
     "task": {
         "type": "finetune",
         "max_iter": 1,
-        "init_fp": true,
-        "init_train": true
+        "init_fp": false,
+        "init_train": false
     },
     "inputs": {
-        "base_model_path": "./dp/DPA2_medium_28_10M_rc0.pt",
+        "base_model_path": "DPA2_medium_28_10M_rc0.pt",
         "base_model_uri":null,
         "init_confs":{
             "prefix": "./",
-            "confs_paths": ["./si.extxyz"]
+            "confs_paths": ["./pert_si_single.extxyz"]
         },
         "init_fp_confs":{
             "prefix": "./",
-            "confs_paths": ["./si.extxyz"]
+            "confs_paths": ["./pert_si_single.extxyz"]
         },
         "init_data_uri":null,
         "init_data_sys":null
     }, 
     "select_confs":{
-        "max_sel":10,
+        "max_sel":2,
         "frame_filter": [
             {"type": "distance"}
         ],
@@ -78,28 +82,24 @@
                 "conf_idx": [0],
                 "n_sample":1,
                 "ens": "nvt",
-                "dt": 2,
-                "nsteps": 10,
-                "temps": [300],
+                "dt": 10,
+                "nsteps": 1000,
+                "temps": [700],
                 "trj_freq": 1
                 }
             ]
         ]
         
     },
-    "init_fp":{
-        "type": "ase",
-        "inputs_config": {
-            }
-    },
     "fp": {
-        "type": "ase",
+        "type": "vasp",
         "run_config": {
-            "model_style": "dp",
-            "model_args": {
-                "head":"MP_traj_v024_alldata_mixu"
-            }},
+            "command": "mpirun -n 16 vasp_std"
+        },
         "inputs_config": {
+            "incar": "INCAR.fp",
+            "pp_files": {"Si": "POTCAR.Si"},
+            "kspacing":0.2
             }
         },
     "train": {
@@ -109,6 +109,6 @@
             "impl": "pytorch",
             "head": "MP_traj_v024_alldata_mixu"
         },
-        "template_script": "./dp/dist_train.json"
+        "template_script": "finetune_script_dp.json"
     }
 }
