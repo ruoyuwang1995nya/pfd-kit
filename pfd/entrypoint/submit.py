@@ -471,32 +471,7 @@ class FlowGen:
         )
         self.workflow.add(pfd_step)
 
-    def _moniter_dist(self):
-        print("Running...")
-        while True:
-            time.sleep(4)
-            step_info = self.workflow.query()
-            wf_status = self.workflow.query_status()
-            if wf_status == "Failed":
-                raise RuntimeError(
-                    f"Workflow failed (ID: {self.workflow.id}, UID: {self.workflow.uid})"
-                )
-            try:
-                dist_post = step_info.get_step(name="distillation")[0]
-            except IndexError:
-                continue
-            if dist_post["phase"] == "Succeeded":
-                print(
-                    f"Distillation finished (ID: {self.workflow.id}, UID: {self.workflow.uid})"
-                )
-                print("Retrieving completed tasks to local...")
-                download_artifact(
-                    artifact=dist_post.outputs.artifacts["dist_model"],
-                    path=self.download_path,
-                )
-                break
-
-    def _moniter_ft(self):
+    def _moniter(self):
         while True:
             time.sleep(4)
             step_info = self.workflow.query()
@@ -528,15 +503,10 @@ class FlowGen:
     ):
         if not no_submission:
             self.workflow.submit(reuse_step=reuse_step)
-            # return self.workflow
         else:
             return self.workflow
         if not only_submit:
-            if self.wf_type == "dist":
-                self._moniter_dist()
-            elif self.wf_type == "finetune":
-                self._moniter_ft()
-
+            self._moniter()
 
 def successful_step_keys(wf, unsuccessful_step_keys: bool = False):
     all_step_keys = []
