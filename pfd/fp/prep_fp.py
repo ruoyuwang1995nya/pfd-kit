@@ -45,7 +45,7 @@ class PrepFp(OP, ABC):
         return OPIOSign(
             {
                 "config": BigParameter(dict),
-                "confs": Artifact(Path),
+                "confs": Artifact(List[Path]),
                 #"model_file": Artifact(Path, optional=True),
             }
         )
@@ -84,16 +84,15 @@ class PrepFp(OP, ABC):
         """
 
         config = ip["config"]
-        confs = ip["confs"]
-        #model_file = ip.get("model_file")
-        confs = read(confs,index=":")
+        confs = ip["confs"] 
+        confs_ls=[]
+        for cc in confs:
+            confs_ls.extend(read(cc,index=":"))
         # loop over atoms
         task_names, task_paths = self._create_tasks(
-            confs=confs,
+            confs=confs_ls,
             config=config,
-            #model_file=model_file,
         )
-        
         return OPIO(
             {
                 "task_names": task_names,
