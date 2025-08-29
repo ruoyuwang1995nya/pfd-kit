@@ -82,7 +82,7 @@ def inputs_args():
             doc=doc_init_confs
             ),
         Argument(
-            "init_fp_confs", dict, conf_args(), optional=False,
+            "init_fp_confs", dict, conf_args(), optional=True, default={},
             doc=doc_init_fp_confs
             ),
         Argument(

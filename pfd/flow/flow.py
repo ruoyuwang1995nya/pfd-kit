@@ -170,13 +170,10 @@ def _pfd(
                     **collect_data_template_config
                 ),
                 parameters={
-                    "optional_parameters": {
-                        
-                    },
+                    "iter_id": "init",
                 },
                 artifacts={
                     "structures": prep_run_fp.outputs.artifacts["labeled_data"],
-                    #"pre_structures": pfd_steps.inputs.artifacts["init_data"],
                 },
                 key="--".join(["init", "collect-data"]),
                 executor=collect_data_executor,
