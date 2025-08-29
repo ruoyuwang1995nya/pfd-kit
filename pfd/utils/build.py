@@ -149,7 +149,11 @@ def perturb(
     if supercell:
         if isinstance(supercell, int):
             supercell = (supercell, supercell, supercell)
-        atoms_ls = [make_supercell(atoms, supercell) for atoms in atoms_ls]
+        elif len(supercell) == 1:
+            supercell = (supercell[0], supercell[0], supercell[0])
+        else:
+            supercell = tuple(supercell)
+        atoms_ls = [atoms*supercell for atoms in atoms_ls]
 
     for atoms in atoms_ls:
         pert_atoms = perturbed_atoms(
