@@ -1,7 +1,10 @@
 from ase.io import read, write
+from ase.io.formats import UnknownFileTypeError
 from pathlib import Path
 from typing import List, Dict
 from dflow.python import OP, OPIO, Artifact, OPIOSign, Parameter
+from traitlets import default
+from pfd import op
 from pfd.utils.ase2xyz import train_test_split
 
 import logging
@@ -41,9 +44,10 @@ class CollectData(OP):
         return OPIOSign(
             {
                 "structures": Artifact(List[Path]), # systems in the form of extxyz files
-                "pre_structures": Artifact(Path, optional=True), # all the previous systems
+                "pre_structures": Artifact(List[Path], optional=True), # all the previous systems
                 "optional_structures": Artifact(List[Path], optional=True), # additional systems
                 "optional_parameters": Parameter(Dict, default={}),
+                "iter_id":Parameter(str,default=None)
             }
         )
 
@@ -86,33 +90,41 @@ class CollectData(OP):
         optional_parameters = ip["optional_parameters"]
         test_size = optional_parameters.get("test_size",0.1)
         structures_name = optional_parameters.pop("structures", "structures")
+        iter_id = ip.get("iter_id")
 
         structures = []
         for path in iter_structures:
-            structures.extend(read(path,index=":"))
-        
+            try:
+                structures.extend(read(path,index=":"))
+            except UnknownFileTypeError as e:
+                logging.warning(f"Unknown file type for {path}: {e}")
+                continue
+        # label iteration id
+        if iter_id:
+            for atoms in structures:
+                atoms.info['iter']=iter_id
         train_structures = structures
         if optional_structures:
             test_structures = optional_structures
         else:
             train_structures, test_structures = train_test_split(structures, test_size=test_size,random_state=1)
-            
         
         if pre_structures:
-            #for path in pre_structures:
-            pre_structures = read(pre_structures, index=":")
-            train_structures.extend(pre_structures)
+            pre_structures_ls=[]
+            for path in pre_structures:
+                pre_structures_ls.extend(read(path,index=":"))
+                train_structures.extend(pre_structures_ls)
             # append the current iteration to iter data
-            pre_structures.extend(structures)
+            pre_structures_ls.extend(structures)
         else:
-            pre_structures = structures
+            pre_structures_ls = structures
 
         # structures for training
         train_structures_name = "%s_train.extxyz" % structures_name
         write(train_structures_name, train_structures)
 
         all_structures_name = "%s_all.extxyz" % structures_name
-        write(all_structures_name, pre_structures)
+        write(all_structures_name, pre_structures_ls)
 
         # structures for testing
         test_structures_name = "%s_test.extxyz" % structures_name

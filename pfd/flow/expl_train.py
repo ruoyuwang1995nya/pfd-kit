@@ -215,6 +215,7 @@ def _expl_tr_blk(
         ),
         parameters={
             "optional_parameters": steps.inputs.parameters["collect_data_config"],
+            "iter_id": steps.inputs.parameters["block_id"]
         },
         artifacts={
             "structures": prep_run_fp.outputs.artifacts["labeled_data"],
