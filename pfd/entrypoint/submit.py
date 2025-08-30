@@ -490,7 +490,7 @@ class FlowGen:
                 )
                 print("Retrieving completed tasks to local...")
                 download_artifact(
-                    artifact=dist_post.outputs.artifacts["fine_tuned_model"],
+                    artifact=dist_post.outputs.artifacts["model"],
                     path=self.download_path,
                 )
                 break
@@ -509,6 +509,15 @@ class FlowGen:
             self._moniter()
 
 def successful_step_keys(wf, unsuccessful_step_keys: bool = False):
+    """[From DPGEN2] Get the keys of all successful steps in the workflow.
+
+    Args:
+        wf (_type_): The workflow object.
+        unsuccessful_step_keys (bool, optional): If True, include keys of unsuccessful steps. Defaults to False.
+
+    Returns:
+        list: A list of successful step keys.
+    """
     all_step_keys = []
     steps = wf.query_step()
     # For reused steps whose startedAt are identical, sort them by key
@@ -524,32 +533,22 @@ def successful_step_keys(wf, unsuccessful_step_keys: bool = False):
 
 
 def get_superop(key):
-    if "prep-train" in key:
-        return key.replace("prep-train", "prep-run-train")
-    elif "run-train-" in key:
-        return re.sub("run-train-[0-9]*", "prep-run-train", key)
-    elif "prep-lmp" in key:
-        return key.replace("prep-lmp", "prep-run-explore")
-    elif "run-lmp-" in key:
-        return re.sub("run-lmp-[0-9]*", "prep-run-explore", key)
+    """[From DPGEN2] Get the super operation key for a given step key.
+
+    Args:
+        key (str): The step key.
+
+    Returns:
+        str: The super operation key, or None if not found.
+    """
+    if "prep-expl" in key:
+        return key.replace("prep-expl", "prep-run-explore")
+    elif "run-expl-" in key:
+        return re.sub("run-expl-[0-9]*", "prep-run-explore", key)
     elif "prep-fp" in key:
         return key.replace("prep-fp", "prep-run-fp")
     elif "run-fp-" in key:
         return re.sub("run-fp-[0-9]*", "prep-run-fp", key)
-    elif "prep-caly-input" in key:
-        return key.replace("prep-caly-input", "prep-run-explore")
-    elif "collect-run-calypso-" in key:
-        return re.sub("collect-run-calypso-[0-9]*-[0-9]*", "prep-run-explore", key)
-    elif "prep-dp-optim-" in key:
-        return re.sub("prep-dp-optim-[0-9]*-[0-9]*", "prep-run-explore", key)
-    elif "run-dp-optim-" in key:
-        return re.sub("run-dp-optim-[0-9]*-[0-9]*-[0-9]*", "prep-run-explore", key)
-    elif "prep-caly-model-devi" in key:
-        return key.replace("prep-caly-model-devi", "prep-run-explore")
-    elif "run-caly-model-devi" in key:
-        return re.sub("run-caly-model-devi-[0-9]*", "prep-run-explore", key)
-    elif "caly-evo-step" in key:
-        return re.sub("caly-evo-step-[0-9]*", "prep-run-explore", key)
     return None
 
 
@@ -557,7 +556,7 @@ def fold_keys(all_step_keys):
     folded_keys = {}
     for key in all_step_keys:
         is_superop = False
-        for superop in ["prep-run-train", "prep-run-explore", "prep-run-fp"]:
+        for superop in ["prep-run-explore", "prep-run-fp"]:
             if superop in key:
                 if key not in folded_keys:
                     folded_keys[key] = []
@@ -580,30 +579,22 @@ def fold_keys(all_step_keys):
 
 
 def get_resubmit_keys(wf, unsuccessful_step_keys: bool = False):
+    """[From DPGEN2] Get the keys of all steps in the workflow for resubmission.
+    """
     all_step_keys = successful_step_keys(wf, unsuccessful_step_keys)
-
+    # legal step keys
     step_keys = [
-        "pert-gen",
-        "sample-aimd",
-        "prep-run-train",
-        "prep-train",
-        "run-train",
-        "modify-train-script",
-        "prep-caly-input",
-        "prep-caly-model-devi",
-        "run-caly-model-devi",
+        "train",
         "prep-run-explore",
-        "prep-lmp",
-        "run-lmp",
+        "prep-expl",
+        "run-expl",
         "select-confs",
         "prep-run-fp",
         "prep-fp",
         "run-fp",
         "collect-data",
-        "test-model",
+        "evaluate",
         # "scheduler",
-        "check-converge",
-        "inference",
     ]
 
     all_step_keys = matched_step_key(
@@ -612,7 +603,7 @@ def get_resubmit_keys(wf, unsuccessful_step_keys: bool = False):
     )
     all_step_keys = sort_slice_ops(
         all_step_keys,
-        ["run-train", "run-lmp", "run-fp"],
+        ["run-expl", "run-fp"],
     )
     folded_keys = fold_keys(all_step_keys)
     return folded_keys

@@ -467,6 +467,6 @@ def _loop(
     )
     loop.add(next_step)
     loop.outputs.parameters["report"].value_from_parameter = stage_scheduler.outputs.parameters["report"]
-    loop.outputs.artifacts["model"]._from = stage_scheduler.outputs.artifacts["current_model"]
-    loop.outputs.artifacts["iter_data"]._from = stage_scheduler.outputs.artifacts["iter_data"]
+    loop.outputs.artifacts["model"] = OutputArtifact(_from = stage_scheduler.outputs.artifacts["current_model"])
+    loop.outputs.artifacts["iter_data"] = OutputArtifact(_from = stage_scheduler.outputs.artifacts["iter_data"])
     return loop
