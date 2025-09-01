@@ -467,6 +467,14 @@ def _loop(
     )
     loop.add(next_step)
     loop.outputs.parameters["report"].value_from_parameter = stage_scheduler.outputs.parameters["report"]
-    loop.outputs.artifacts["model"] = OutputArtifact(_from = stage_scheduler.outputs.artifacts["current_model"])
-    loop.outputs.artifacts["iter_data"] = OutputArtifact(_from = stage_scheduler.outputs.artifacts["iter_data"])
+    loop.outputs.artifacts["model"].from_expression = if_expression(
+        _if=(stage_scheduler.outputs.parameters["converged"]==True),
+        _then=stage_scheduler.outputs.artifacts["current_model"],
+        _else=next_step.outputs.artifacts["model"],
+    )
+    loop.outputs.artifacts["iter_data"].from_expression = if_expression(
+        _if=(stage_scheduler.outputs.parameters["converged"]==True),
+        _then=stage_scheduler.outputs.artifacts["iter_data"],
+        _else=next_step.outputs.artifacts["iter_data"],
+    )
     return loop
