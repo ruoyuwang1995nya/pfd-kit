@@ -49,7 +49,7 @@ jobs:
     - name: Build documentation
       run: |
         cd docs
-        sphinx-multiversion  --root-ref main . _build/html
+        sphinx-multiversion . _build/html
 
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
