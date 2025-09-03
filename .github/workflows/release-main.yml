@@ -2,7 +2,7 @@ name: Release
 on:
   push:
     branches:
-      - release
+      - main
 
 jobs:
   release:
@@ -49,10 +49,10 @@ jobs:
         cd docs
         make html
 
-    - name: Move docs to release subdirectory
+    - name: Move docs to main subdirectory
       run: |
-        mkdir -p ./docs/_build/html/release
-        rsync -av --exclude=main ./docs/_build/html/ ./docs/_build/html/release/
+        mkdir -p ./docs/_build/html/main
+        rsync -av --exclude=main ./docs/_build/html/ ./docs/_build/html/main/
 
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
