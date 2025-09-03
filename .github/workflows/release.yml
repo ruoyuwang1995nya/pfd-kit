@@ -16,7 +16,7 @@ jobs:
       with:
         fetch-depth: 0
         persist-credentials: false # <--- this
-        ref: ${{ github.head_ref }} 
+        #ref: ${{ github.head_ref }} 
 
     - name: Set up Python
       uses: actions/setup-python@v2
@@ -49,7 +49,7 @@ jobs:
     - name: Build documentation
       run: |
         cd docs
-        sphinx-multiversion  --root-ref ${{ github.ref_name }} . _build/html
+        sphinx-multiversion  --root-ref main . _build/html
 
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
