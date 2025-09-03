@@ -47,8 +47,13 @@ jobs:
         pip install sphinx-multiversion sphinx_rtd_theme recommonmark
 
     - name: Build documentation
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        persist-credentials: false
       run: |
-        sphinx-multiversion . docs/_build/html
+        cd docs
+        sphinx-multiversion --root-ref _build/html/${{ github.ref_name }} . _build/html
 
 
     - name: Deploy to GitHub Pages
