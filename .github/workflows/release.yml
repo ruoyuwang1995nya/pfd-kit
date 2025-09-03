@@ -48,7 +48,7 @@ jobs:
     - name: Build documentation
       run: |
         cd docs
-        make html
+        sphinx-multiversion --whitelist-branches "${{ github.ref_name }}" . docs/_build/html
 
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
@@ -56,4 +56,4 @@ jobs:
         github_token: ${{ secrets.GH_TOKEN }}
         publish_dir: ./docs/_build/html
         publish_branch: gh-pages
-        destination_dir: ${{ github.ref_name }}  # Deploy to a subdirectory named after the branch
+        #destination_dir: ${{ github.ref_name }}  # Deploy to a subdirectory named after the branch
