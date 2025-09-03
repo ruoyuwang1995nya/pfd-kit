@@ -16,7 +16,11 @@ jobs:
       with:
         fetch-depth: 0
         persist-credentials: false # <--- this
-        #ref: ${{ github.head_ref }} 
+        ref: ${{ github.head_ref }} 
+    
+    - name: Fetch all refs (only needed for multiversion)
+      if: github.event_name == 'push'
+      run: git fetch origin +refs/heads/*:refs/remotes/origin/* --tags
 
     - name: Set up Python
       uses: actions/setup-python@v2
