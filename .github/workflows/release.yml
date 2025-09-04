@@ -18,12 +18,12 @@ jobs:
         persist-credentials: false # <--- this
         ref: ${{ github.head_ref }} 
     
-    - name: Fetch all refs (only needed for multiversion)
-      if: github.event_name == 'push'
-      run: git fetch origin +refs/heads/*:refs/remotes/origin/* --tags
+    - name: Fetch all branches & tags (make sure remote refs are local)
+      run: |
+        git fetch origin +refs/heads/*:refs/remotes/origin/* --tags --prune
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: '3.12'
 
@@ -55,11 +55,6 @@ jobs:
         cd docs
         sphinx-multiversion . _build/html
 
-    - name: Make 'release' the root
-      run: |
-        if [ -d docs/_build/html/${{ github.ref_name }} ]; then
-          cp -r docs/_build/html/${{ github.ref_name }}/* docs/_build/html/
-        fi
 
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
