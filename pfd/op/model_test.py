@@ -1,13 +1,11 @@
-from math import log
 from pathlib import Path
 import json
-from typing import (
-    List,
-)
-
-from dflow.python import OP, OPIO, Artifact, BigParameter, OPIOSign, Parameter
-from pfd.exploration.inference import EvalModel, TestReports
+from dflow.python import OP, OPIO, Artifact, BigParameter, Parameter,OPIOSign
+from ase.io import read, write
+from pfd.exploration.converge.check_conv import CheckConv, ConvReport
+from pfd.exploration.inference import EvalModel
 import logging
+
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -19,10 +17,9 @@ class ModelTestOP(OP):
     def get_input_sign(cls):
         return OPIOSign(
             {
-                "systems": Artifact(List[Path]),
+                "structures": Artifact(Path), # 
                 "model": Artifact(Path),
-                "type_map": Parameter(List),
-                "inference_config": BigParameter(dict),
+                "config": BigParameter(dict),
             }
         )
 
@@ -31,8 +28,10 @@ class ModelTestOP(OP):
         return OPIOSign(
             {
                 "test_report": Artifact(Path),
-                "test_res": BigParameter(TestReports),
                 "test_res_dir": Artifact(Path),
+                "converged": Parameter(bool, default=False),
+                "selected_systems": Artifact(Path),
+                "report": Parameter(ConvReport),  # Report on convergence
             }
         )
 
@@ -41,37 +40,41 @@ class ModelTestOP(OP):
         self,
         ip: OPIO,
     ) -> OPIO:
-
-        systems = ip["systems"]
+        structures = ip["structures"]
         model_path = ip["model"]
-        type_map = ip["type_map"]
-        config = ip["inference_config"]
+        config = ip["config"]
         model_type = config.pop("model")
+        conv_config = config.pop("converge")
+        conv_type = conv_config.pop("type")
+        
+        ## evaluate model
         Eval = EvalModel.get_driver(model_type)
-        res_total = []
-        report = {}
         res_dir = Path("result")
         res_dir.mkdir(exist_ok=True)
-        evaluator = Eval(model=model_path, **config)
-        logging.info("##### Number of systems: %d" % len(systems))
-        res_total = TestReports()
-        for idx, sys in enumerate(systems):
-            if sys is None:
-                logging.warning("System at index %d is None, skipping..." % idx)
-                continue
-            name = "sys_%03d_%s" % (idx, sys.name)
-            logging.info("##### Testing: %s" % name)
-            evaluator.read_data(data=sys, type_map=type_map)
-            res, rep = evaluator.evaluate(name, prefix=str(res_dir))
-            res_total.add_report(res)
-            logging.info("##### Testing ends, : writing to report...")
-            report[name] = rep
+        evaluator = Eval(model_type, model=model_path, **config)
+        structures = read(structures,format='extxyz',index=':')
+        logging.info("##### Number of systems: %d" % len(structures))
+        name = "test_model"
+        if len(structures)==0:
+            logging.warning("Test system is None, skipping...")
+        logging.info("##### Testing..." )
+        evaluator.read_data(data=structures)
+        res, eval_rep = evaluator.evaluate(name, prefix=str(res_dir))
+        logging.info("##### Testing ends, : writing to report...")
+        
+        ## check convergence
+        conv = CheckConv.get_checker(conv_type)()
+        conv_rep = ConvReport()
+        converged, _ = conv.check_conv(res, conv_config, conv_rep)
+        write("selected_confs.extxyz", res.system, format="extxyz")
         with open("report.json", "w") as fp:
-            json.dump(report, fp, indent=4)
+            json.dump(eval_rep, fp, indent=4)
         return OPIO(
             {
-                "test_res": res_total,
                 "test_report": Path("report.json"),
                 "test_res_dir": res_dir,
+                "converged": converged,
+                "selected_systems": Path("selected_confs.extxyz"),
+                "report": conv_rep,
             }
         )

@@ -7,12 +7,14 @@ from typing import (
 )
 
 import dargs
-import dpdata
 import numpy as np
 from dargs import (
     Argument,
 )
-
+from ase import Atoms
+from ase.build import (
+    make_supercell,
+    )
 from . import (
     ConfFilter,
 )
@@ -139,31 +141,13 @@ class DistanceConfFilter(ConfFilter):
 
     def check(
         self,
-        frame: dpdata.System,
+        structure: Atoms,
     ):
-        from ase import (
-            Atoms,
-        )
-        from ase.build import (
-            make_supercell,
-        )
-
         safe_dist = deepcopy(safe_dist_dict)
         safe_dist.update(self.custom_safe_dist)
         for k in safe_dist:
             # bohr -> ang and multiply by a relaxation ratio
             safe_dist[k] *= 0.529 / 1.2 * self.safe_dist_ratio
-        atom_names = list(safe_dist)
-        structure = Atoms(
-            positions=frame["coords"][0],
-            numbers=[
-                atom_names.index(frame["atom_names"][t]) + 1
-                for t in frame["atom_types"]
-            ],
-            cell=frame["cells"][0],
-            pbc=(not frame.nopbc),
-        )
-
         P = [[2, 0, 0], [0, 2, 0], [0, 0, 2]]
         extended_structure = make_supercell(structure, P)
         symbols = extended_structure.get_chemical_symbols()
@@ -180,7 +164,6 @@ class DistanceConfFilter(ConfFilter):
                         f"Dangerous close for {type_i} - {type_j}, {dist:.5f} less than {dr:.5f}"
                     )
                     return False
-
         return True
 
     @staticmethod
@@ -223,25 +206,9 @@ class BoxSkewnessConfFilter(ConfFilter):
 
     def check(
         self,
-        frame: dpdata.System,
+        structure: Atoms,
     ):
-        from ase import (
-            Atoms,
-        )
-
-        atom_names = list(safe_dist_dict)
-        structure = Atoms(
-            positions=frame["coords"][0],
-            numbers=[
-                atom_names.index(frame["atom_names"][t]) + 1
-                for t in frame["atom_types"]
-            ],
-            cell=frame["cells"][0],
-            pbc=(not frame.nopbc),
-        )
-
         cell, _ = structure.get_cell().standard_form()
-
         if (
             cell[1][0] > np.tan(self.theta / 180.0 * np.pi) * cell[1][1]  # type: ignore
             or cell[2][0] > np.tan(self.theta / 180.0 * np.pi) * cell[2][2]  # type: ignore
@@ -283,23 +250,8 @@ class BoxLengthFilter(ConfFilter):
 
     def check(
         self,
-        frame: dpdata.System,
+        structure: Atoms,
     ):
-        from ase import (
-            Atoms,
-        )
-
-        atom_names = list(safe_dist_dict)
-        structure = Atoms(
-            positions=frame["coords"][0],
-            numbers=[
-                atom_names.index(frame["atom_names"][t]) + 1
-                for t in frame["atom_types"]
-            ],
-            cell=frame["cells"][0],
-            pbc=(not frame.nopbc),
-        )
-
         cell, _ = structure.get_cell().standard_form()
 
         a = cell[0][0]  # type: ignore

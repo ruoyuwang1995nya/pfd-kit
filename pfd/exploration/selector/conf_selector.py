@@ -12,12 +12,6 @@ from typing import (
     Tuple,
 )
 
-import dpdata
-
-from dpgen2.exploration.report import (
-    ExplorationReport,
-)
-
 from . import (
     ConfFilters,
 )

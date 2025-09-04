@@ -17,6 +17,7 @@ release = version
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
+    "sphinx_multiversion",
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
@@ -43,8 +44,15 @@ autodoc_default_options = {
 
 # html_theme = "alabaster"
 html_theme = "sphinx_rtd_theme"
+html_theme_options = {
+    "rightsidebar": "true",
+    "relbarbgcolor": "black"
+}
 html_static_path = ["_static", "images"]
 # html_css_files = ['custom.css']
+
+smv_tag_whitelist = r'^v1.*$'  # Include tags starting with "v"
+smv_branch_whitelist = r'^(main|release*)$'  # Include "main" and "release" branches
 
 # Register the custom directives
 def setup(app):

@@ -1,4 +1,4 @@
-import os
+
 from pathlib import (
     Path,
 )
@@ -7,14 +7,19 @@ from typing import (
     List,
     Optional,
     Union,
+    Tuple
 )
-
+import os
 import dflow
 
 from pfd.utils import (
     bohrium_config_from_dict,
     workflow_config_from_dict,
+    perturb
 )
+
+from ase import Atoms
+from ase.io import read,write
 
 
 def global_config_workflow(
@@ -61,3 +66,29 @@ def expand_idx(in_list) -> List[int]:
                 raise RuntimeError("not expected range string", step_str[0])
     ret = sorted(list(set(ret)))
     return ret
+
+
+def perturb_cli(
+    atoms_path_ls: List[Union[str,Path]], 
+    pert_num: int, 
+    cell_pert_fraction: float, 
+    atom_pert_distance: float, 
+    atom_pert_style: str, 
+    atom_pert_prob: float, 
+    supercell: Optional[Union[int, Tuple[int,int,int]]] = None,
+    ):
+    """A CLI function to perturb structures from file paths.
+    """
+    #pert_atoms_ls = []
+    for atoms_path in atoms_path_ls:
+        atoms_ls = read(atoms_path,index=':')
+        pert_atom_ls = perturb(
+            atoms_ls,
+            pert_num,
+            cell_pert_fraction,
+            atom_pert_distance,
+            atom_pert_style,
+            atom_pert_prob=atom_pert_prob,
+            supercell=supercell
+        )
+    write("pert_"+Path(atoms_path).stem+'.extxyz',pert_atom_ls)

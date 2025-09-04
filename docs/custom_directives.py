@@ -3,6 +3,11 @@ from sphinx.util.docutils import SphinxDirective
 from sphinx.util.parsing import nested_parse_to_nodes
 from importlib import import_module
 
+def resolve_attr(module, dotted_name):
+    obj = module
+    for part in dotted_name.split("."):
+        obj = getattr(obj, part)
+    return obj
 
 class Dargs(SphinxDirective):
     required_arguments = 0
@@ -25,7 +30,7 @@ class Dargs(SphinxDirective):
             return [error]
 
         module = import_module(module_name)
-        func = getattr(module, func_name)
+        func = resolve_attr(module, func_name)
         result = func()
         content = []
         if not isinstance(result, list):

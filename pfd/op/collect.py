@@ -1,12 +1,10 @@
-import dpdata
+from ase.io import read, write
+from ase.io.formats import UnknownFileTypeError
 from pathlib import Path
-import random
-from pathlib import (
-    Path,
-)
-from typing import List, Dict, Tuple, Union, Optional
-import random
-from dflow.python import OP, OPIO, Artifact, BigParameter, OPIOSign, Parameter
+from typing import List, Dict
+from dflow.python import OP, OPIO, Artifact, OPIOSign, Parameter
+from pfd.utils.ase2xyz import train_test_split
+
 import logging
 
 logging.basicConfig(
@@ -18,27 +16,36 @@ logger = logging.getLogger(__name__)
 
 
 class CollectData(OP):
-    """Collect data for further operations, return dpdata.Multisystems
-
-    Args:
-        OP (_type_): _description_
-
-    Raises:
-        NotImplementedError: _description_
-
-    Returns:
-        _type_: _description_
+    """Collect and process molecular systems data for machine learning workflows.
+    
+    This operation aggregates multiple atomic systems, applies optional sampling,
+    and converts them to dpdata.MultiSystems format for downstream ML training.
+    Supports both labeled and unlabeled data with optional train/test splitting.
+    
+    Examples
+    --------
+    >>> collector = CollectData()
+    >>> result = collector.execute({
+    ...     "systems": [Path("system1"), Path("system2")],
+    ...     "type_map": ["H", "O"],
+    ...     "optional_parameters": {"test_size": 0.2}
+    ... })
     """
 
     @classmethod
     def get_input_sign(cls):
+        r"""Get the input signature for the operation.
+        Returns:
+        -----------
+            OPIOSign: The input signature.
+        """
         return OPIOSign(
             {
-                "systems": Artifact(List[Path]),
-                "additional_systems": Artifact(List[Path], optional=True),
-                "additional_multi_systems": Artifact(List[Path], optional=True),
-                "type_map": Parameter(Union[List[str], None], default=None),
+                "structures": Artifact(List[Path]), # systems in the form of extxyz files
+                "pre_structures": Artifact(List[Path], optional=True), # all the previous systems
+                "optional_structures": Artifact(List[Path], optional=True), # additional systems
                 "optional_parameters": Parameter(Dict, default={}),
+                "iter_id":Parameter(str,default=None)
             }
         )
 
@@ -46,9 +53,9 @@ class CollectData(OP):
     def get_output_sign(cls):
         return OPIOSign(
             {
-                "systems": Artifact(List[Path]),
-                "multi_systems": Artifact(List[Path]),
-                "test_systems": Artifact(List[Path], optional=True),
+                "structures": Artifact(Path), 
+                "test_structures": Artifact(Path, optional=True),
+                "iter_structures": Artifact(Path),
             }
         )
 
@@ -63,7 +70,8 @@ class CollectData(OP):
         ----------
         ip : dict
             Input dict with components:
-            - `lmp_task_grp` : (`BigParameter(Path)`) Can be pickle loaded as a ExplorationTaskGroup. Definitions for LAMMPS tasks
+            - `structures` : (`Artifact(List[Path])`) configurations collected in this iteration
+            - `pre_structures` : (`Artifact(Path)`, optional) A single extxyz file, configurations collected in previous iterations at the CURRENT stage
 
         Returns
         -------
@@ -72,112 +80,60 @@ class CollectData(OP):
             - `task_names`: (`List[str]`) The name of tasks. Will be used as the identities of the tasks. The names of different tasks are different.
             - `task_paths`: (`Artifact(List[Path])`) The parepared working paths of the tasks. Contains all input files needed to start the LAMMPS simulation. The order fo the Paths should be consistent with `op["task_names"]`
         """
-        # List of systems
-        systems = ip["systems"]
-        if additional_systems := ip.get("additional_systems"):
-            systems.extend(additional_systems)
-        # List of multi_systems
-        if multi_system := ip.get("additional_multi_systems"):
-            print("Multi_sys is", multi_system)
-        else:
-            multi_system = []
+        # structures collected in this iteration
+        iter_structures = ip["structures"]
+        pre_structures = ip.get("pre_structures")
+        optional_structures = ip.get("optional_structures")
         # Collects various types of data
-        type_map = ip["type_map"]
         optional_parameters = ip["optional_parameters"]
-        labeled = optional_parameters.get("labeled_data", False)
-        test_size = optional_parameters.get("test_size")
-        multi_sys_name = optional_parameters.pop("multi_sys_name", "multi_system")
-        multi_sys = dpdata.MultiSystems()
+        test_size = optional_parameters.get("test_size",0.1)
+        structures_name = optional_parameters.pop("structures", "structures")
+        iter_id = ip.get("iter_id")
 
-        def read_sys(
-            sys_path: Union[Path, str],
-            labeled: bool = False,
-            fmt: Optional[str] = None,
-            type_map: Optional[List[str]] = None,
-        ):
-            if fmt is None:
-                fmt = get_sys_fmt(sys_path)
-            if not labeled:
-                sys = dpdata.System(sys_path, fmt, type_map=type_map)
-            else:
-                sys = dpdata.LabeledSystem(sys_path, fmt, type_map=type_map)
-            return sys
-
-        if sample_param := optional_parameters.get("sample_conf"):
-            for sys_path in [systems[ii] for ii in sample_param["confs"]]:
-                logging.info("-----------------------------------")
-                logging.info("## Collecting system: %03s" % sys_path)
-                # logging.info("-----------------")
-                sys = sample_sys(
-                    read_sys(sys_path, labeled=labeled, type_map=type_map),
-                    sample_param["n_sample"],
-                )
-                logging.info("%d frames collected" % sys.get_nframes())
-                multi_sys.append(sys)
+        structures = []
+        for path in iter_structures:
+            try:
+                structures.extend(read(path,index=":"))
+            except UnknownFileTypeError as e:
+                logging.warning(f"Unknown file type for {path}: {e}")
+                continue
+        # label iteration id
+        if iter_id:
+            for atoms in structures:
+                atoms.info['iter']=iter_id
+        train_structures = structures
+        if optional_structures:
+            test_structures = optional_structures
         else:
-            for sys_path in systems:
-                logging.info("-----------------------------------")
-                logging.info("## Collecting system: %03s\n" % sys_path)
-                # logging.info("-----------------")
-                multi_sys.append(read_sys(sys_path, labeled=labeled, type_map=type_map))
-
-        if test_size:
-            multi_sys, test_sys, _ = multi_sys.train_test_split(
-                test_size=test_size, seed=random.randint(1, 100000)
-            )
+            train_structures, test_structures = train_test_split(structures, test_size=test_size,random_state=1)
+        
+        if pre_structures:
+            pre_structures_ls=[]
+            for path in pre_structures:
+                pre_structures_ls.extend(read(path,index=":"))
+                train_structures.extend(pre_structures_ls)
+            # append the current iteration to iter data
+            pre_structures_ls.extend(structures)
         else:
-            test_sys = dpdata.MultiSystems()
+            pre_structures_ls = structures
 
-        multi_sys.to("deepmd/npy", multi_sys_name)
-        test_multi_sys_name = "%s_test" % multi_sys_name
-        test_sys.to("deepmd/npy", test_multi_sys_name)
-        multi_system.append(Path(multi_sys_name))
+        # structures for training
+        train_structures_name = "%s_train.extxyz" % structures_name
+        write(train_structures_name, train_structures)
+
+        all_structures_name = "%s_all.extxyz" % structures_name
+        write(all_structures_name, pre_structures_ls)
+
+        # structures for testing
+        test_structures_name = "%s_test.extxyz" % structures_name
+        write(test_structures_name, test_structures)
         logging.info("-----------------------------------")
-        logging.info("Save to dpdata.MultiSystems: %s" % multi_sys_name)
-        logging.info("%d frames collected" % multi_sys.get_nframes())
-        # ensure multi_sys_name exist
-        Path(multi_sys_name).mkdir(exist_ok=True)
+        logging.info("Save to extxyz file: %s" % structures_name)
+        logging.info("%d frames collected" % len(structures))
         return OPIO(
             {
-                "multi_systems": multi_system,
-                "systems": sorted(
-                    [path for path in Path(multi_sys_name).iterdir() if path.is_dir()],
-                    key=lambda p: p.name,
-                ),
-                "test_systems": sorted(
-                    [
-                        path
-                        for path in Path(test_multi_sys_name).iterdir()
-                        if path.is_dir()
-                    ],
-                    key=lambda p: p.name,
-                )
-                if Path(test_multi_sys_name).is_dir()
-                else [],
+                "structures": train_structures_name,
+                "iter_structures": all_structures_name,
+                "test_structures": test_structures_name
             }
         )
-
-
-def get_sys_fmt(sys_path: Union[Path, str]):
-    "return dpdata format"
-    if not sys_path:
-        return "lammps/dump"
-    if isinstance(sys_path, str):
-        sys_path = Path(sys_path)
-    if (sys_path / "type.raw").is_file():
-        return "deepmd/npy"
-
-    elif sys_path.is_file() and sys_path.suffix == ".dump":
-        return "lammps/dump"
-    else:
-        raise NotImplementedError("Unknown data format")
-
-
-def sample_sys(sys: dpdata.System, n_sample: int = 1):
-    n_frame = sys.get_nframes()
-    if n_sample >= n_frame:
-        return sys
-    else:
-        frame_ls = [ii for ii in range(n_frame)]
-        random.shuffle(frame_ls)
-        return sys.sub_system(frame_ls[:n_sample])

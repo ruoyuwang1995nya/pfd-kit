@@ -1,9 +1,7 @@
 from typing import Dict, List
-from pfd.exploration import explore_styles
-from pfd.exploration.task import ExplorationStage, BaseExplorationTaskGroup
+from pfd.exploration.task import ExplorationStage
 from pfd.exploration.converge import ConvReport
 import logging
-
 
 class Scheduler:
     """
@@ -16,7 +14,7 @@ class Scheduler:
         explore_style: str = "lmp",
         mass_map: List = [],
         type_map: List = [],
-        explore_stages: List[List[Dict]] = [[{}]],
+        explore_stages: List[ExplorationStage] = [],
         max_iter: int = 1,
         train_config: dict = {},
         finetune: bool = False,
@@ -127,26 +125,10 @@ class Scheduler:
     def is_first_iteration(self, value: bool):
         self._is_first_iteration = value
 
-    def set_explore_tasks(self, systems):
-        _expl_stage = ExplorationStage()
-        for task_grp in self.expl_stages[self.idx_stage]:
-            if self.explore_style == "lmp":
-                for idx in task_grp["conf_idx"]:
-                    _expl_stage.add_task_group(
-                        explore_styles[self.model_style][self.explore_style]["task"](
-                            systems[idx],
-                            self.type_map,
-                            self.mass_map,
-                            task_grp,
-                        )
-                    )
-            elif self.explore_style == "calypso":
-                _expl_stage.add_task_group(
-                    explore_styles[self.model_style][self.explore_style]["task"](
-                        task_grp
-                    )
-                )
-        return _expl_stage.make_task()
+    
+    def set_explore_tasks(self,*args,**kwargs):
+        return self.expl_stages[self.idx_stage].make_task(*args, **kwargs)
+        
 
     def set_convergence(self, convergence_stage: bool = False) -> None:
         if not self.is_first_iteration:
@@ -165,6 +147,8 @@ class Scheduler:
                     "Task %s converged, continue to the next stage..." % self.idx_stage
                 )
                 self.next_stage()
+                
+        
 
     def next_iter(self) -> None:
         self._iter_numb += 1

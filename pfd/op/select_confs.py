@@ -3,25 +3,31 @@ import os
 from pathlib import (
     Path,
 )
+import re
+from token import AT
 from typing import (
     List,
     Set,
     Tuple,
+    Dict,
+    Optional
 )
 
 from dflow.python import (
     OP,
     OPIO,
     Artifact,
-    BigParameter,
-    FatalError,
     OPIOSign,
+    Parameter
 )
-
+from ase.io import read, write
+from ase import Atoms
+import numpy as np
 
 from pfd.exploration.selector import (
     ConfSelector,
 )
+
 
 import logging
 
@@ -35,15 +41,14 @@ logger = logging.getLogger(__name__)
 
 class SelectConfs(OP):
     """Select configurations from exploration trajectories for labeling."""
-
     @classmethod
     def get_input_sign(cls):
         return OPIOSign(
             {
                 "conf_selector": ConfSelector,
-                "type_map": List[str],
-                "trajs": Artifact(List[Path]),
-                # "model_devis": Artifact(List[Path]),
+                "confs": Artifact(List[Path]),
+                "pre_confs": Artifact(Path, optional=True),  # previous selected configurations
+                "optional_parameters": Parameter(Dict, default={}),
             }
         )
 
@@ -51,8 +56,7 @@ class SelectConfs(OP):
     def get_output_sign(cls):
         return OPIOSign(
             {
-                # "report": BigParameter(ExplorationReport),
-                "confs": Artifact(List[Path]),
+                "confs": Artifact(Path),
             }
         )
 
@@ -81,43 +85,101 @@ class SelectConfs(OP):
             - `conf`: (`Artifact(List[Path])`) The selected configurations.
 
         """
-
+        optional_parameters = ip["optional_parameters"]
         conf_selector = ip["conf_selector"]
-        type_map = ip["type_map"]
-
-        trajs = ip["trajs"]
-        # model_devis = ip["model_devis"]
-        # trajs, model_devis = SelectConfs.validate_trajs(trajs, model_devis)
-
+        trajs = ip["confs"]
+        pre_confs = ip.get("pre_confs")
+        
         confs = conf_selector.select(
             trajs,
-            # model_devis,
-            type_map=type_map,
         )
-
+        logger.info(f"Select {len(confs)} configurations from trajectories.")
+        # entropy based selection
+        h_filter = optional_parameters.get("h_filter")
+        if h_filter:
+            confs = self.filter_by_entropy(confs,referece=pre_confs, **h_filter)
+        
+        out_path = Path("confs")
+        out_path.mkdir(exist_ok=True)
+        max_sel = optional_parameters.get("max_sel")
+        if max_sel:
+            if len(confs) > max_sel:
+                logger.info(f"Selected {len(confs)} configurations, but max_sel is {max_sel}. Randomly select {max_sel} configurations.")
+                sel_indices = np.random.choice(len(confs), max_sel, replace=False)
+                confs = [confs[i] for i in sel_indices]
+        
+        write(out_path / "confs.extxyz", confs, format="extxyz")
         return OPIO(
             {
-                # "report": report,
-                "confs": confs,
+                "confs": out_path / "confs.extxyz",
             }
         )
-
-    @staticmethod
-    def validate_trajs(
-        trajs,
-        model_devis,
-    ):
-        ntrajs = len(trajs)
-        if ntrajs != len(model_devis):
-            raise FatalError(
-                "length of trajs list is not equal to the " "model_devis list"
+        
+    def filter_by_entropy(
+        self,
+        confs: List[Atoms],
+        reference: Optional[Path]=None,
+        k=32,
+        cutoff=5.0,
+        batch_size: int = 1000,
+        h = 0.015,
+        entropy_threshold: float = 0.01,
+        **kwargs
+        )-> List[Atoms]:
+        """Filter structures to maximize entropy/diversity."""
+        from quests.descriptor import get_descriptors
+        def create_entropy_function():
+            """Factory function to create the appropriate entropy function."""
+            try:
+                import torch
+                device = 'cuda' if torch.cuda.is_available() else 'cpu'
+                from quests.gpu.entropy import entropy as gpu_entropy
+        
+                def get_entropy(x: np.ndarray, **kwargs):
+                    x_tensor = torch.from_numpy(x)
+                    return gpu_entropy(x_tensor, device=device, **kwargs)
+            
+                logger.info(f"Using GPU entropy with device: {device}")
+                return get_entropy
+        
+            except ImportError:
+                from quests.entropy import entropy as cpu_entropy
+                def get_entropy(x: np.ndarray, **kwargs):
+                    return cpu_entropy(x, **kwargs)
+                logger.info("Using CPU entropy (torch not available)")
+                return get_entropy
+            
+        num_confs=len(confs)
+        get_entropy = create_entropy_function()
+        filtered_structures = []
+            
+        if reference is not None:
+            reference = read(reference, index=":")
+        else:
+            n_ref = max(1, min(100, len(confs) // 10))
+            ref_indices = np.random.choice(len(confs), n_ref, replace=False)
+            reference = [confs[i] for i in ref_indices]
+            write('text.extxyz', reference, format='extxyz')
+            other_indices = np.setdiff1d(np.arange(len(confs)), ref_indices)
+            confs = [confs[i] for i in other_indices]
+        current_descriptors = get_descriptors(reference,k=k,cutoff=cutoff)
+        
+        for atoms in confs:
+            cand_desc = get_descriptors([atoms],k=k,cutoff=cutoff)
+            current_entropy = get_entropy(
+                current_descriptors, 
+                h=h,
+                batch_size=batch_size,
             )
-        rett = []
-        retm = []
-        for tt, mm in zip(trajs, model_devis):  # type: ignore
-            if (tt is None and mm is not None) or (tt is not None and mm is None):
-                raise FatalError("trajs frame is {tt} while model_devis frame is {mm}")
-            elif tt is not None and mm is not None:
-                rett.append(tt)
-                retm.append(mm)
-        return rett, retm
+            tmp_descriptors = np.vstack([current_descriptors, cand_desc])
+            entropy_tmp = get_entropy(
+                tmp_descriptors, 
+                h=0.015, batch_size=10000
+            )
+            entropy_delta = entropy_tmp - current_entropy
+            if entropy_delta > entropy_threshold:
+                filtered_structures.append(atoms)
+                current_descriptors = tmp_descriptors
+        logger.info(f"Entropy filtering: selected {len(filtered_structures)} structures from {num_confs} candidates.")
+        logger.info(f"Entropy: {entropy_tmp}")
+        return filtered_structures
