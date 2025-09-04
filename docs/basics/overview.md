@@ -5,10 +5,7 @@
   }
 </style>
 > **⚠️ Warning:**  
-> The current version of `PFD-kit` is being **deprecated** and is in the process of being transferred to a new branch, **`pymatgen-ase`**.  
-> Users are encouraged to explore and transition to the new branch for continued updates, improved functionality, and long-term support.  
-> For more information, please visit the [pymatgen-ase branch](https://github.com/ruoyuwang1995nya/pfd-kit/tree/pymatgen-ase).
-
+> The latest version of `PFD-kit` has been restructured to integrate with the ASE package, offering enhanced functionality and compatibility with modern workflows. Users are encouraged to transition to this updated version for the best experience. For those who wish to access the older version of PFD-kit, it remains available.
 
 [PFD-kit](https://github.com/ruoyuwang1995nya/dp-distill) automates the fine-tuning and distillation process of pre-trained atomic models, such as [DPA-2](https://github.com/deepmodeling/deepmd-kit.git). It enables practical atomistic simualtion with the highly transferable, but computationally expensive pre-trained models. PFD-kit is built upon the  [DPGEN2](https://github.com/deepmodeling/dpgen2) workflow and supports the Deep Potential models. The best experience of PFD-kit is found on Bohrium platform.
 
