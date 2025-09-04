@@ -3,8 +3,6 @@ from ase.io.formats import UnknownFileTypeError
 from pathlib import Path
 from typing import List, Dict
 from dflow.python import OP, OPIO, Artifact, OPIOSign, Parameter
-from traitlets import default
-from pfd import op
 from pfd.utils.ase2xyz import train_test_split
 
 import logging
