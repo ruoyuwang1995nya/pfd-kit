@@ -1,8 +1,6 @@
 # PFD-kit: finetune and distillation from pre-trained atomic models
 > **⚠️ Warning:**  
-> The current version of `PFD-kit` is being **deprecated** and is in the process of being transferred to a new branch, **`pymatgen-ase`**.  
-> Users are encouraged to explore and transition to the new branch for continued updates, improved functionality, and long-term support.  
-> For more information, please visit the [pymatgen-ase branch](https://github.com/ruoyuwang1995nya/pfd-kit/tree/pymatgen-ase).
+> The latest version of `PFD-kit` has been restructured to integrate with the ASE package, offering enhanced functionality and compatibility with modern workflows. Users are encouraged to transition to this updated version for the best experience. For those who wish to access the older version of PFD-kit, it remains available.
 
 [PFD-kit](https://github.com/ruoyuwang1995nya/dp-distill) is a cloud-base workflow automating the generation of deep-learning based force fields from *pre-trained* atomic models (**P**) through fine-tuning (**F**) and distillation (**D**) for large scale atomic simulation of practical materials. Compared to training force fields from scratch, model generation using PFD workflow requires much less training data by exploiting the transferable knowledge already in the pre-trained model, saving significant time and computational resources by an order of magnitude. This makes the PFD workflow ideal for high-throughput calculations and addresses challenges in training force fields for complex material systems (*e.g.*, high-entropy alloys, surfaces/interfaces) that are previously intractable. With its easy-to-use interface and cloud-base feature, PFD-kit can be a powerful tool for researchers in computational materials science. </div>
 

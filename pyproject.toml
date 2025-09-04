@@ -25,13 +25,12 @@ dependencies = [
     "scipy",
     "lbg",
     "packaging",
-    "fpop==0.0.7",
-    "dpgui",
     "cp2kdata",
     "periodictable",
     "ase",
     "tabulate",
-    "dpgen2 @ git+https://github.com/ruoyuwang1995nya/dpgen2.git"
+    "quests",
+    "dpdispatcher"
 ]
 
 [project.urls]
@@ -99,3 +98,8 @@ insecure = false
 [semantic_release.remote.token]
 env = "GH_TOKEN"
 
+[project.optional-dependencies]
+gpu = [
+    "torch",
+    "torchvision"
+]

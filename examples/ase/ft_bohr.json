@@ -1,0 +1,191 @@
+{
+    "bohrium_config": {
+        "username": "xxxx",
+        "password": "xxxxx",
+        "project_id": 12345,
+        "_comment": "all"
+    },
+    "default_step_config": {
+        "template_config": {
+            "image":"registry.dp.tech/dptech/deepmd-kit:3.1.0-cuda12.1"
+        }
+    },
+    "step_configs": {
+        "run_fp_config": {
+            "template_config": {
+                "image": "registry.dp.tech/dptech/prod-28882/vasp:6.3.0"
+            },
+            "executor": {
+                "type": "dispatcher",
+                "image_pull_policy": "IfNotPresent",
+                "machine_dict": {
+                    "batch_type": "Bohrium",
+                    "context_type": "Bohrium",
+                    "remote_profile": {
+                        "input_data": {
+                            "job_type": "container",
+                            "platform": "ali",
+                            "scass_type": "c16_m32_cpu"
+                        }}},
+                "resources_dict":{
+                    "source_list":["/opt/intel/oneapi/setvars.sh"],
+                    "module_list": [
+                    ]
+                }
+                    },
+            "template_slice_config": {
+                "group_size": 1,
+                "pool_size": 1
+            }
+        },
+        "run_explore_config": {
+           "template_config": {
+                "image": "registry.dp.tech/dptech/deepmd-kit:3.1.0-cuda12.1"
+            },
+            "executor": {
+                "type": "dispatcher",
+                "image_pull_policy": "IfNotPresent",
+                "machine_dict": {
+                    "batch_type": "Bohrium",
+                    "context_type": "Bohrium",
+                    "remote_profile": {
+                        "input_data": {
+                            "job_type": "container",
+                            "platform": "ali",
+                            "scass_type": "c8_m16_cpu"
+                        }}},
+                "resources_dict":{
+                    "custom_flags": ["pip install --proxy='' ase"]
+                }
+                    },
+            "template_slice_config": {
+                "group_size": 1,
+                "pool_size": 1
+            }
+        },
+        "run_train_config": {
+            "template_config": {
+                "image": "registry.dp.tech/dptech/deepmd-kit:3.1.0-cuda12.1"
+            },
+            "executor": {
+                "type": "dispatcher",
+                "image_pull_policy": "IfNotPresent",
+                "machine_dict": {
+                    "batch_type": "Bohrium",
+                    "context_type": "Bohrium",
+                    "remote_profile": {
+                        "input_data": {
+                            "job_type": "container",
+                            "platform": "ali",
+                            "scass_type": "c8_m16_cpu"
+                        }}},
+                "resources_dict":{
+                    "custom_flags": ["pip install --proxy='' ase"]
+                }
+                    }
+        },
+        "select_confs_config":{
+            "template_config": {
+                "image": "registry.dp.tech/dptech/deepmd-kit:3.1.0-cuda12.1"
+            },
+            "executor": {
+                "type": "dispatcher",
+                "image_pull_policy": "IfNotPresent",
+                "machine_dict": {
+                    "batch_type": "Bohrium",
+                    "context_type": "Bohrium",
+                    "remote_profile": {
+                        "input_data": {
+                            "job_type": "container",
+                            "platform": "ali",
+                            "scass_type": "c8_m16_cpu"
+                        }}},
+                "resources_dict":{
+                    "custom_flags": ["pip install --proxy='' quests[gpu]"]
+                }
+                    }
+        }
+    },
+    "task": {
+        "type": "finetune",
+        "max_iter": 1,
+        "init_fp": false,
+        "init_train": false
+    },
+    "inputs": {
+        "base_model_path": "/home/ruoyu/dev/pfd-kit/.tests/dp/DPA2_medium_28_10M_rc0.pt",
+        "base_model_uri":null,
+        "init_confs":{
+            "prefix": "./",
+            "confs_paths": ["./pert_si_single.extxyz"]
+        },
+        "init_fp_confs":{
+            "prefix": "./",
+            "confs_paths": ["./pert_si_single.extxyz"]
+        },
+        "init_data_uri":null,
+        "init_data_sys":null
+    }, 
+    "select_confs":{
+        "max_sel":2,
+        "frame_filter": [
+            {"type": "distance"}
+        ],
+        "h_filter": {
+            "_comment":"_entropy based filter"
+        }
+
+    },
+    "evaluate": {
+        "test_size": 0.2,
+        "model":"dp",
+        "head":"MP_traj_v024_alldata_mixu",
+        "_comment":"The percentage for test",
+        "converge":{
+            "type": "energy_rmse",
+            "RMSE": 0.01
+        }
+    },
+
+    "exploration": {
+        "type": "ase",
+        "config": {
+            "calculator":"dp",
+            "head":"MP_traj_v024_alldata_mixu"
+        },
+        "stages": [
+            [
+                {
+                "conf_idx": [0],
+                "n_sample":1,
+                "ens": "nvt",
+                "dt": 10,
+                "nsteps": 1000,
+                "temps": [700],
+                "trj_freq": 1
+                }
+            ]
+        ]
+        
+    },
+    "fp": {
+        "type": "vasp",
+        "run_config": {
+            "command": "mpirun -n 16 vasp_std"
+        },
+        "inputs_config": {
+            "incar": "INCAR.fp",
+            "pp_files": {"Si": "POTCAR.Si"},
+            "kspacing":0.2
+            }
+        },
+    "train": {
+        "_comment": "Training script for downstream DeePMD model",
+        "type": "dp",
+        "config": {
+            "impl": "pytorch",
+            "head": "MP_traj_v024_alldata_mixu"
+        },
+        "template_script": "./dp/dist_train.json"
+    }
+}

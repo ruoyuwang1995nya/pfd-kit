@@ -18,12 +18,41 @@ Task definition
     :module: pfd.entrypoint.args
     :func: task_args
 
-Structure generation
---------------------
+Input definition
+----------------
 
 .. dargs:: 
     :module: pfd.entrypoint.args
-    :func: conf_generation_args
+    :func: inputs_args
+
+Exploration
+-----------
+
+.. dargs:: 
+    :module: pfd.entrypoint.args
+    :func: explore_args
+
+Explore task group definition
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ASE task group
+****************
+.. dargs:: 
+    :module: pfd.exploration.task
+    :func: AseTaskGroup.args
+
+Frame selection
+---------------
+
+.. dargs:: 
+    :module: pfd.entrypoint.args
+    :func: select_confs_args
+
+Labeling
+-------------------
+
+.. dargs:: 
+    :module: pfd.entrypoint.args
+    :func: label_args
 
 Model training
 --------------
@@ -32,24 +61,12 @@ Model training
     :module: pfd.entrypoint.args
     :func: training_args
 
-Inference & labeling
--------------------
+Evaluate
+--------
 
 .. dargs:: 
     :module: pfd.entrypoint.args
-    :func: label_args
-
-Exploration
------------
-.. dargs:: 
-    :module: pfd.entrypoint.args
-    :func: explore_args
+    :func: evaluate_args
 
 
-Explore task group definition
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-LAMMPS task group
-****************
-.. dargs:: 
-    :module: pfd.exploration.task
-    :func: lmp_task_group_args
+
