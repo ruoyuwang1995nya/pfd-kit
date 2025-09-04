@@ -8,6 +8,7 @@ on:
     tags:
       - 'v*'  # Trigger only when a version tag (e.g., v1.0.0) is pushed
 
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -38,3 +39,4 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}  # GitHub token for pushing tags
         run: semantic-release version
+
