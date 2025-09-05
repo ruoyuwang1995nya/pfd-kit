@@ -422,6 +422,7 @@ def pfd_step_config_args(default_config):
     doc_run_fp_config = "Configuration for run fp"
     doc_select_confs_config = "Configuration for the select confs"
     doc_collect_data_config = "Configuration for the collect data"
+    doc_evaluate_config = "Configuration for model evaluation"
 
     return [
         Argument(
@@ -479,6 +480,14 @@ def pfd_step_config_args(default_config):
             optional=True,
             default=default_config,
             doc=doc_collect_data_config,
+        ),
+        Argument(
+            "evaluate_config",
+            dict,
+            step_conf_args(),
+            optional=True,
+            default=default_config,
+            doc=doc_evaluate_config,
         ),
     ]
 
