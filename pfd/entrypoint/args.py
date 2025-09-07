@@ -41,7 +41,7 @@ def conf_args():
     return [
         Argument("prefix", str, optional=True, default=None),
         Argument("fmt", str, optional=True, default="extxyz", doc=doc_fmt),
-        Argument("confs_paths", [str, List[str]], optional=True, alias=["files"]),
+        Argument("confs_paths", [str, List[str]], optional=True,default=None, alias=["files"]),
         Argument("confs_uri", [str, List[str]], optional=True, default=None),
     ]
 
