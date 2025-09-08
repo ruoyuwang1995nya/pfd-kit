@@ -1,0 +1,412 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pfd.exploration.task package &mdash; pfd-kit 0.7.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=fe7df9b0"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pfd.exploration.task.calypso package" href="pfd.exploration.task.calypso.html" />
+    <link rel="prev" title="pfd.exploration.selector package" href="pfd.exploration.selector.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pfd-kit
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">The Basics</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../basics/overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../basics/getting-started.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../usage/guide-on-cli.html">Command guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/guide-on-script.html">Input script guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/argument-for-script.html">Arguments of the input script</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/examples.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer guide</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">API documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="pfd.html">pfd package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="pfd.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="pfd.entrypoint.html">pfd.entrypoint package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="pfd.exploration.html">pfd.exploration package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pfd.flow.html">pfd.flow package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pfd.fp.html">pfd.fp package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pfd.op.html">pfd.op package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pfd.superop.html">pfd.superop package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pfd.train.html">pfd.train package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pfd.utils.html">pfd.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pfd.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pfd.html#module-pfd.constants">pfd.constants module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pfd.html#module-pfd">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pfd-kit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">API documentation</a></li>
+          <li class="breadcrumb-item"><a href="pfd.html">pfd package</a></li>
+          <li class="breadcrumb-item"><a href="pfd.exploration.html">pfd.exploration package</a></li>
+      <li class="breadcrumb-item active">pfd.exploration.task package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/development/pfd.exploration.task.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pfd-exploration-task-package">
+<h1>pfd.exploration.task package<a class="headerlink" href="#pfd-exploration-task-package" title="Link to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pfd.exploration.task.calypso.html">pfd.exploration.task.calypso package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pfd.exploration.task.calypso.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pfd.exploration.task.calypso.html#pfd-exploration-task-calypso-caly-input-module">pfd.exploration.task.calypso.caly_input module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pfd.exploration.task.calypso.html#module-contents">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pfd.exploration.task.lmp.html">pfd.exploration.task.lmp package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pfd.exploration.task.lmp.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pfd.exploration.task.lmp.html#pfd-exploration-task-lmp-lmp-input-module">pfd.exploration.task.lmp.lmp_input module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pfd.exploration.task.lmp.html#module-contents">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="pfd-exploration-task-caly-task-group-module">
+<h2>pfd.exploration.task.caly_task_group module<a class="headerlink" href="#pfd-exploration-task-caly-task-group-module" title="Link to this heading"></a></h2>
+</section>
+<section id="module-pfd.exploration.task.conf_sampling_task_group">
+<span id="pfd-exploration-task-conf-sampling-task-group-module"></span><h2>pfd.exploration.task.conf_sampling_task_group module<a class="headerlink" href="#module-pfd.exploration.task.conf_sampling_task_group" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pfd.exploration.task.conf_sampling_task_group.ConfSamplingTaskGroup">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pfd.exploration.task.conf_sampling_task_group.</span></span><span class="sig-name descname"><span class="pre">ConfSamplingTaskGroup</span></span><a class="reference internal" href="../_modules/pfd/exploration/task/conf_sampling_task_group.html#ConfSamplingTaskGroup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pfd.exploration.task.conf_sampling_task_group.ConfSamplingTaskGroup" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pfd.exploration.task.task_group.ExplorationTaskGroup" title="pfd.exploration.task.task_group.ExplorationTaskGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExplorationTaskGroup</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pfd.exploration.task.conf_sampling_task_group.ConfSamplingTaskGroup.set_conf">
+<span class="sig-name descname"><span class="pre">set_conf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conf_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_sample</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_sample</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pfd/exploration/task/conf_sampling_task_group.html#ConfSamplingTaskGroup.set_conf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pfd.exploration.task.conf_sampling_task_group.ConfSamplingTaskGroup.set_conf" title="Link to this definition"></a></dt>
+<dd><p>Set the configurations of exploration</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>str</strong> (<em>conf_list</em>) – A list of file contents</p></li>
+<li><p><strong>int</strong> (<em>n_sample</em>) – Number of samples drawn from the conf list each time
+<cite>make_task</cite> is called. If set to <cite>None</cite>,
+<cite>n_sample</cite> is set to length of the conf_list.</p></li>
+<li><p><strong>bool</strong> (<em>random_sample</em>) – If true the confs are randomly sampled, otherwise are
+consecutively sampled from the conf_list</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="pfd-exploration-task-customized-lmp-template-task-group-module">
+<h2>pfd.exploration.task.customized_lmp_template_task_group module<a class="headerlink" href="#pfd-exploration-task-customized-lmp-template-task-group-module" title="Link to this heading"></a></h2>
+</section>
+<section id="pfd-exploration-task-gen-task-group-module">
+<h2>pfd.exploration.task.gen_task_group module<a class="headerlink" href="#pfd-exploration-task-gen-task-group-module" title="Link to this heading"></a></h2>
+</section>
+<section id="pfd-exploration-task-lmp-template-task-group-module">
+<h2>pfd.exploration.task.lmp_template_task_group module<a class="headerlink" href="#pfd-exploration-task-lmp-template-task-group-module" title="Link to this heading"></a></h2>
+</section>
+<section id="pfd-exploration-task-make-task-group-from-config-module">
+<h2>pfd.exploration.task.make_task_group_from_config module<a class="headerlink" href="#pfd-exploration-task-make-task-group-from-config-module" title="Link to this heading"></a></h2>
+</section>
+<section id="pfd-exploration-task-npt-task-group-module">
+<h2>pfd.exploration.task.npt_task_group module<a class="headerlink" href="#pfd-exploration-task-npt-task-group-module" title="Link to this heading"></a></h2>
+</section>
+<section id="module-pfd.exploration.task.stage">
+<span id="pfd-exploration-task-stage-module"></span><h2>pfd.exploration.task.stage module<a class="headerlink" href="#module-pfd.exploration.task.stage" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pfd.exploration.task.stage.ExplorationStage">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pfd.exploration.task.stage.</span></span><span class="sig-name descname"><span class="pre">ExplorationStage</span></span><a class="reference internal" href="../_modules/pfd/exploration/task/stage.html#ExplorationStage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pfd.exploration.task.stage.ExplorationStage" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The exploration stage.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pfd.exploration.task.stage.ExplorationStage.add_task_group">
+<span class="sig-name descname"><span class="pre">add_task_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pfd.exploration.task.task_group.ExplorationTaskGroup" title="pfd.exploration.task.task_group.ExplorationTaskGroup"><span class="pre">ExplorationTaskGroup</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pfd/exploration/task/stage.html#ExplorationStage.add_task_group"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pfd.exploration.task.stage.ExplorationStage.add_task_group" title="Link to this definition"></a></dt>
+<dd><p>Add an exploration group</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>grp</strong> (<a class="reference internal" href="#pfd.exploration.task.task_group.ExplorationTaskGroup" title="pfd.exploration.task.task_group.ExplorationTaskGroup"><em>ExplorationTaskGroup</em></a>) – The added exploration task group</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pfd.exploration.task.stage.ExplorationStage.clear">
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pfd/exploration/task/stage.html#ExplorationStage.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pfd.exploration.task.stage.ExplorationStage.clear" title="Link to this definition"></a></dt>
+<dd><p>Clear all exploration group.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pfd.exploration.task.stage.ExplorationStage.make_task">
+<span class="sig-name descname"><span class="pre">make_task</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pfd.exploration.task.task_group.BaseExplorationTaskGroup" title="pfd.exploration.task.task_group.BaseExplorationTaskGroup"><span class="pre">BaseExplorationTaskGroup</span></a></span></span><a class="reference internal" href="../_modules/pfd/exploration/task/stage.html#ExplorationStage.make_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pfd.exploration.task.stage.ExplorationStage.make_task" title="Link to this definition"></a></dt>
+<dd><p>Make the LAMMPS task group.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>task_grp</strong> – The returned lammps task group. The number of tasks is equal to
+the summation of task groups defined by all the exploration groups
+added to the stage.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#pfd.exploration.task.task_group.BaseExplorationTaskGroup" title="pfd.exploration.task.task_group.BaseExplorationTaskGroup">BaseExplorationTaskGroup</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pfd.exploration.task.task">
+<span id="pfd-exploration-task-task-module"></span><h2>pfd.exploration.task.task module<a class="headerlink" href="#module-pfd.exploration.task.task" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pfd.exploration.task.task.ExplorationTask">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pfd.exploration.task.task.</span></span><span class="sig-name descname"><span class="pre">ExplorationTask</span></span><a class="reference internal" href="../_modules/pfd/exploration/task/task.html#ExplorationTask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pfd.exploration.task.task.ExplorationTask" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Define the files needed by an exploration task.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># this example dumps all files needed by the task.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">files</span> <span class="o">=</span> <span class="n">exploration_task</span><span class="o">.</span><span class="n">files</span><span class="p">()</span>
+<span class="gp">... </span><span class="k">for</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">file_content</span> <span class="ow">in</span> <span class="n">files</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">file_content</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pfd.exploration.task.task.ExplorationTask.add_file">
+<span class="sig-name descname"><span class="pre">add_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fcont</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pfd/exploration/task/task.html#ExplorationTask.add_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pfd.exploration.task.task.ExplorationTask.add_file" title="Link to this definition"></a></dt>
+<dd><p>Add file to the task</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fname</strong> (<em>str</em>) – The name of the file</p></li>
+<li><p><strong>fcont</strong> (<em>str</em>) – The content of the file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pfd.exploration.task.task.ExplorationTask.files">
+<span class="sig-name descname"><span class="pre">files</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="reference internal" href="../_modules/pfd/exploration/task/task.html#ExplorationTask.files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pfd.exploration.task.task.ExplorationTask.files" title="Link to this definition"></a></dt>
+<dd><p>Get all files for the task.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>files</strong> – The dict storing all files for the task. The file name is a key of the dict, and the file content is the corresponding value.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pfd.exploration.task.task_group">
+<span id="pfd-exploration-task-task-group-module"></span><h2>pfd.exploration.task.task_group module<a class="headerlink" href="#module-pfd.exploration.task.task_group" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pfd.exploration.task.task_group.BaseExplorationTaskGroup">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pfd.exploration.task.task_group.</span></span><span class="sig-name descname"><span class="pre">BaseExplorationTaskGroup</span></span><a class="reference internal" href="../_modules/pfd/exploration/task/task_group.html#BaseExplorationTaskGroup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pfd.exploration.task.task_group.BaseExplorationTaskGroup" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></p>
+<p>A group of exploration tasks. Implemented as a <cite>list</cite> of <cite>ExplorationTask</cite>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pfd.exploration.task.task_group.BaseExplorationTaskGroup.add_group">
+<span class="sig-name descname"><span class="pre">add_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pfd.exploration.task.task_group.ExplorationTaskGroup" title="pfd.exploration.task.task_group.ExplorationTaskGroup"><span class="pre">ExplorationTaskGroup</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pfd/exploration/task/task_group.html#BaseExplorationTaskGroup.add_group"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pfd.exploration.task.task_group.BaseExplorationTaskGroup.add_group" title="Link to this definition"></a></dt>
+<dd><p>Add another group to the group.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pfd.exploration.task.task_group.BaseExplorationTaskGroup.add_task">
+<span class="sig-name descname"><span class="pre">add_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pfd.exploration.task.task.ExplorationTask" title="pfd.exploration.task.task.ExplorationTask"><span class="pre">ExplorationTask</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pfd/exploration/task/task_group.html#BaseExplorationTaskGroup.add_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pfd.exploration.task.task_group.BaseExplorationTaskGroup.add_task" title="Link to this definition"></a></dt>
+<dd><p>Add one task to the group.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pfd.exploration.task.task_group.BaseExplorationTaskGroup.clear">
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/pfd/exploration/task/task_group.html#BaseExplorationTaskGroup.clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pfd.exploration.task.task_group.BaseExplorationTaskGroup.clear" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pfd.exploration.task.task_group.BaseExplorationTaskGroup.task_list">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">task_list</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#pfd.exploration.task.task.ExplorationTask" title="pfd.exploration.task.task.ExplorationTask"><span class="pre">ExplorationTask</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#pfd.exploration.task.task_group.BaseExplorationTaskGroup.task_list" title="Link to this definition"></a></dt>
+<dd><p>Get the <cite>list</cite> of <cite>ExplorationTask</cite></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pfd.exploration.task.task_group.ExplorationTaskGroup">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pfd.exploration.task.task_group.</span></span><span class="sig-name descname"><span class="pre">ExplorationTaskGroup</span></span><a class="reference internal" href="../_modules/pfd/exploration/task/task_group.html#ExplorationTaskGroup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pfd.exploration.task.task_group.ExplorationTaskGroup" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code>, <a class="reference internal" href="#pfd.exploration.task.task_group.BaseExplorationTaskGroup" title="pfd.exploration.task.task_group.BaseExplorationTaskGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseExplorationTaskGroup</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pfd.exploration.task.task_group.ExplorationTaskGroup.make_task">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">make_task</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pfd.exploration.task.task_group.ExplorationTaskGroup" title="pfd.exploration.task.task_group.ExplorationTaskGroup"><span class="pre">ExplorationTaskGroup</span></a></span></span><a class="reference internal" href="../_modules/pfd/exploration/task/task_group.html#ExplorationTaskGroup.make_task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pfd.exploration.task.task_group.ExplorationTaskGroup.make_task" title="Link to this definition"></a></dt>
+<dd><p>Make the task group.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pfd.exploration.task.task_group.FooTask">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pfd.exploration.task.task_group.</span></span><span class="sig-name descname"><span class="pre">FooTask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conf_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'conf.lmp'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conf_cont</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inpu_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'in.lammps'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inpu_cont</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pfd/exploration/task/task_group.html#FooTask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pfd.exploration.task.task_group.FooTask" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pfd.exploration.task.task.ExplorationTask" title="pfd.exploration.task.task.ExplorationTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExplorationTask</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pfd.exploration.task.task_group.FooTaskGroup">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pfd.exploration.task.task_group.</span></span><span class="sig-name descname"><span class="pre">FooTaskGroup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">numb_task</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pfd/exploration/task/task_group.html#FooTaskGroup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pfd.exploration.task.task_group.FooTaskGroup" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pfd.exploration.task.task_group.BaseExplorationTaskGroup" title="pfd.exploration.task.task_group.BaseExplorationTaskGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseExplorationTaskGroup</span></code></a></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="pfd.exploration.task.task_group.FooTaskGroup.task_list">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">task_list</span></span><a class="headerlink" href="#pfd.exploration.task.task_group.FooTaskGroup.task_list" title="Link to this definition"></a></dt>
+<dd><p>Get the <cite>list</cite> of <cite>ExplorationTask</cite></p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pfd.exploration.task">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pfd.exploration.task" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pfd.exploration.selector.html" class="btn btn-neutral float-left" title="pfd.exploration.selector package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pfd.exploration.task.calypso.html" class="btn btn-neutral float-right" title="pfd.exploration.task.calypso package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Ruoyu Wang, Hongyu Wu.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: main
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="../../v0.0.12/index.html">v0.0.12</a></dd>
+      <dd><a href="../../v0.0.13/index.html">v0.0.13</a></dd>
+      <dd><a href="../../v0.0.14/index.html">v0.0.14</a></dd>
+      <dd><a href="../../v0.1.0/index.html">v0.1.0</a></dd>
+      <dd><a href="../../v0.1.1/index.html">v0.1.1</a></dd>
+      <dd><a href="../../v0.1.2/index.html">v0.1.2</a></dd>
+      <dd><a href="../../v0.1.3/index.html">v0.1.3</a></dd>
+      <dd><a href="../../v0.1.4/index.html">v0.1.4</a></dd>
+      <dd><a href="../../v0.2.0/index.html">v0.2.0</a></dd>
+      <dd><a href="../../v0.3.0/index.html">v0.3.0</a></dd>
+      <dd><a href="../../v0.3.1/development/pfd.exploration.task.html">v0.3.1</a></dd>
+      <dd><a href="../../v0.3.2/development/pfd.exploration.task.html">v0.3.2</a></dd>
+      <dd><a href="../../v0.3.3/development/pfd.exploration.task.html">v0.3.3</a></dd>
+      <dd><a href="../../v0.3.4/development/pfd.exploration.task.html">v0.3.4</a></dd>
+      <dd><a href="../../v0.3.5/development/pfd.exploration.task.html">v0.3.5</a></dd>
+      <dd><a href="../../v0.4.0/development/pfd.exploration.task.html">v0.4.0</a></dd>
+      <dd><a href="../../v0.4.1/development/pfd.exploration.task.html">v0.4.1</a></dd>
+      <dd><a href="../../v0.4.2/development/pfd.exploration.task.html">v0.4.2</a></dd>
+      <dd><a href="../../v0.4.3/development/pfd.exploration.task.html">v0.4.3</a></dd>
+      <dd><a href="../../v0.5.0/development/pfd.exploration.task.html">v0.5.0</a></dd>
+      <dd><a href="../../v0.5.1/development/pfd.exploration.task.html">v0.5.1</a></dd>
+      <dd><a href="../../v0.5.2/development/pfd.exploration.task.html">v0.5.2</a></dd>
+      <dd><a href="../../v0.5.3/development/pfd.exploration.task.html">v0.5.3</a></dd>
+      <dd><a href="../../v0.6.0/development/pfd.exploration.task.html">v0.6.0</a></dd>
+      <dd><a href="../../v0.6.1/development/pfd.exploration.task.html">v0.6.1</a></dd>
+      <dd><a href="../../v0.6.2/development/pfd.exploration.task.html">v0.6.2</a></dd>
+      <dd><a href="../../v0.6.3/development/pfd.exploration.task.html">v0.6.3</a></dd>
+      <dd><a href="../../v0.6.4/development/pfd.exploration.task.html">v0.6.4</a></dd>
+      <dd><a href="../../v0.6.5/development/pfd.exploration.task.html">v0.6.5</a></dd>
+      <dd><a href="../../v0.7.0/development/pfd.exploration.task.html">v0.7.0</a></dd>
+      <dd><a href="../../v0.8.0/development/pfd.exploration.task.html">v0.8.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="pfd.exploration.task.html">main</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,311 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pfd.op.collect &mdash; pfd-kit 0.7.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=fe7df9b0"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            pfd-kit
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">The Basics</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../basics/overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../basics/getting-started.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage/guide-on-cli.html">Command guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage/guide-on-script.html">Input script guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage/argument-for-script.html">Arguments of the input script</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage/examples.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../development/modules.html">API documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">pfd-kit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pfd.op.collect</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pfd.op.collect</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ase.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">read</span><span class="p">,</span> <span class="n">write</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ase.io.formats</span><span class="w"> </span><span class="kn">import</span> <span class="n">UnknownFileTypeError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dflow.python</span><span class="w"> </span><span class="kn">import</span> <span class="n">OP</span><span class="p">,</span> <span class="n">OPIO</span><span class="p">,</span> <span class="n">Artifact</span><span class="p">,</span> <span class="n">OPIOSign</span><span class="p">,</span> <span class="n">Parameter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pfd.utils.ase2xyz</span><span class="w"> </span><span class="kn">import</span> <span class="n">train_test_split</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
+    <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span>
+    <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> - </span><span class="si">%(name)s</span><span class="s2"> - </span><span class="si">%(levelname)s</span><span class="s2"> - </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="n">handlers</span><span class="o">=</span><span class="p">[</span><span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="s2">&quot;collect.log&quot;</span><span class="p">),</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()],</span>
+<span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="CollectData">
+<a class="viewcode-back" href="../../../development/pfd.op.html#pfd.op.collect.CollectData">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CollectData</span><span class="p">(</span><span class="n">OP</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Collect and process molecular systems data for machine learning workflows.</span>
+<span class="sd">    </span>
+<span class="sd">    This operation aggregates multiple atomic systems, applies optional sampling,</span>
+<span class="sd">    and converts them to dpdata.MultiSystems format for downstream ML training.</span>
+<span class="sd">    Supports both labeled and unlabeled data with optional train/test splitting.</span>
+<span class="sd">    </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; collector = CollectData()</span>
+<span class="sd">    &gt;&gt;&gt; result = collector.execute({</span>
+<span class="sd">    ...     &quot;systems&quot;: [Path(&quot;system1&quot;), Path(&quot;system2&quot;)],</span>
+<span class="sd">    ...     &quot;type_map&quot;: [&quot;H&quot;, &quot;O&quot;],</span>
+<span class="sd">    ...     &quot;optional_parameters&quot;: {&quot;test_size&quot;: 0.2}</span>
+<span class="sd">    ... })</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="CollectData.get_input_sign">
+<a class="viewcode-back" href="../../../development/pfd.op.html#pfd.op.collect.CollectData.get_input_sign">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_input_sign</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Get the input signature for the operation.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">        -----------</span>
+<span class="sd">            OPIOSign: The input signature.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">OPIOSign</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;structures&quot;</span><span class="p">:</span> <span class="n">Artifact</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]),</span> <span class="c1"># systems in the form of extxyz files</span>
+                <span class="s2">&quot;pre_structures&quot;</span><span class="p">:</span> <span class="n">Artifact</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">],</span> <span class="n">optional</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="c1"># all the previous systems</span>
+                <span class="s2">&quot;optional_structures&quot;</span><span class="p">:</span> <span class="n">Artifact</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">],</span> <span class="n">optional</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="c1"># additional systems</span>
+                <span class="s2">&quot;optional_parameters&quot;</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">Dict</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">{}),</span>
+                <span class="s2">&quot;iter_id&quot;</span><span class="p">:</span><span class="n">Parameter</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+            <span class="p">}</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CollectData.get_output_sign">
+<a class="viewcode-back" href="../../../development/pfd.op.html#pfd.op.collect.CollectData.get_output_sign">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_output_sign</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">OPIOSign</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;structures&quot;</span><span class="p">:</span> <span class="n">Artifact</span><span class="p">(</span><span class="n">Path</span><span class="p">),</span> 
+                <span class="s2">&quot;test_structures&quot;</span><span class="p">:</span> <span class="n">Artifact</span><span class="p">(</span><span class="n">Path</span><span class="p">,</span> <span class="n">optional</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                <span class="s2">&quot;iter_structures&quot;</span><span class="p">:</span> <span class="n">Artifact</span><span class="p">(</span><span class="n">Path</span><span class="p">),</span>
+            <span class="p">}</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CollectData.execute">
+<a class="viewcode-back" href="../../../development/pfd.op.html#pfd.op.collect.CollectData.execute">[docs]</a>
+    <span class="nd">@OP</span><span class="o">.</span><span class="n">exec_sign_check</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">ip</span><span class="p">:</span> <span class="n">OPIO</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OPIO</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Execute the OP.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        ip : dict</span>
+<span class="sd">            Input dict with components:</span>
+<span class="sd">            - `structures` : (`Artifact(List[Path])`) configurations collected in this iteration</span>
+<span class="sd">            - `pre_structures` : (`Artifact(Path)`, optional) A single extxyz file, configurations collected in previous iterations at the CURRENT stage</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        op : dict</span>
+<span class="sd">            Output dict with components:</span>
+<span class="sd">            - `task_names`: (`List[str]`) The name of tasks. Will be used as the identities of the tasks. The names of different tasks are different.</span>
+<span class="sd">            - `task_paths`: (`Artifact(List[Path])`) The parepared working paths of the tasks. Contains all input files needed to start the LAMMPS simulation. The order fo the Paths should be consistent with `op[&quot;task_names&quot;]`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># structures collected in this iteration</span>
+        <span class="n">iter_structures</span> <span class="o">=</span> <span class="n">ip</span><span class="p">[</span><span class="s2">&quot;structures&quot;</span><span class="p">]</span>
+        <span class="n">pre_structures</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pre_structures&quot;</span><span class="p">)</span>
+        <span class="n">optional_structures</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;optional_structures&quot;</span><span class="p">)</span>
+        <span class="c1"># Collects various types of data</span>
+        <span class="n">optional_parameters</span> <span class="o">=</span> <span class="n">ip</span><span class="p">[</span><span class="s2">&quot;optional_parameters&quot;</span><span class="p">]</span>
+        <span class="n">test_size</span> <span class="o">=</span> <span class="n">optional_parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;test_size&quot;</span><span class="p">,</span><span class="mf">0.1</span><span class="p">)</span>
+        <span class="n">structures_name</span> <span class="o">=</span> <span class="n">optional_parameters</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;structures&quot;</span><span class="p">,</span> <span class="s2">&quot;structures&quot;</span><span class="p">)</span>
+        <span class="n">iter_id</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;iter_id&quot;</span><span class="p">)</span>
+
+        <span class="n">structures</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">iter_structures</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">structures</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">read</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">))</span>
+            <span class="k">except</span> <span class="n">UnknownFileTypeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown file type for </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+        <span class="c1"># label iteration id</span>
+        <span class="k">if</span> <span class="n">iter_id</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">atoms</span> <span class="ow">in</span> <span class="n">structures</span><span class="p">:</span>
+                <span class="n">atoms</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;iter&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">iter_id</span>
+        <span class="n">train_structures</span> <span class="o">=</span> <span class="n">structures</span>
+        <span class="k">if</span> <span class="n">optional_structures</span><span class="p">:</span>
+            <span class="n">test_structures</span> <span class="o">=</span> <span class="n">optional_structures</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">train_structures</span><span class="p">,</span> <span class="n">test_structures</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">structures</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="n">test_size</span><span class="p">,</span><span class="n">random_state</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">pre_structures</span><span class="p">:</span>
+            <span class="n">pre_structures_ls</span><span class="o">=</span><span class="p">[]</span>
+            <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">pre_structures</span><span class="p">:</span>
+                <span class="n">pre_structures_ls</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">read</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">))</span>
+                <span class="n">train_structures</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">pre_structures_ls</span><span class="p">)</span>
+            <span class="c1"># append the current iteration to iter data</span>
+            <span class="n">pre_structures_ls</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">structures</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pre_structures_ls</span> <span class="o">=</span> <span class="n">structures</span>
+
+        <span class="c1"># structures for training</span>
+        <span class="n">train_structures_name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_train.extxyz&quot;</span> <span class="o">%</span> <span class="n">structures_name</span>
+        <span class="n">write</span><span class="p">(</span><span class="n">train_structures_name</span><span class="p">,</span> <span class="n">train_structures</span><span class="p">)</span>
+
+        <span class="n">all_structures_name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_all.extxyz&quot;</span> <span class="o">%</span> <span class="n">structures_name</span>
+        <span class="n">write</span><span class="p">(</span><span class="n">all_structures_name</span><span class="p">,</span> <span class="n">pre_structures_ls</span><span class="p">)</span>
+
+        <span class="c1"># structures for testing</span>
+        <span class="n">test_structures_name</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_test.extxyz&quot;</span> <span class="o">%</span> <span class="n">structures_name</span>
+        <span class="n">write</span><span class="p">(</span><span class="n">test_structures_name</span><span class="p">,</span> <span class="n">test_structures</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;-----------------------------------&quot;</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Save to extxyz file: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">structures_name</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> frames collected&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">structures</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">OPIO</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;structures&quot;</span><span class="p">:</span> <span class="n">train_structures_name</span><span class="p">,</span>
+                <span class="s2">&quot;iter_structures&quot;</span><span class="p">:</span> <span class="n">all_structures_name</span><span class="p">,</span>
+                <span class="s2">&quot;test_structures&quot;</span><span class="p">:</span> <span class="n">test_structures_name</span>
+            <span class="p">}</span>
+        <span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Ruoyu Wang, Hongyu Wu.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: main
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="../../../../v0.0.12/index.html">v0.0.12</a></dd>
+      <dd><a href="../../../../v0.0.13/index.html">v0.0.13</a></dd>
+      <dd><a href="../../../../v0.0.14/index.html">v0.0.14</a></dd>
+      <dd><a href="../../../../v0.1.0/index.html">v0.1.0</a></dd>
+      <dd><a href="../../../../v0.1.1/index.html">v0.1.1</a></dd>
+      <dd><a href="../../../../v0.1.2/index.html">v0.1.2</a></dd>
+      <dd><a href="../../../../v0.1.3/index.html">v0.1.3</a></dd>
+      <dd><a href="../../../../v0.1.4/index.html">v0.1.4</a></dd>
+      <dd><a href="../../../../v0.2.0/index.html">v0.2.0</a></dd>
+      <dd><a href="../../../../v0.3.0/index.html">v0.3.0</a></dd>
+      <dd><a href="../../../../v0.3.1/index.html">v0.3.1</a></dd>
+      <dd><a href="../../../../v0.3.2/index.html">v0.3.2</a></dd>
+      <dd><a href="../../../../v0.3.3/index.html">v0.3.3</a></dd>
+      <dd><a href="../../../../v0.3.4/index.html">v0.3.4</a></dd>
+      <dd><a href="../../../../v0.3.5/index.html">v0.3.5</a></dd>
+      <dd><a href="../../../../v0.4.0/index.html">v0.4.0</a></dd>
+      <dd><a href="../../../../v0.4.1/index.html">v0.4.1</a></dd>
+      <dd><a href="../../../../v0.4.2/index.html">v0.4.2</a></dd>
+      <dd><a href="../../../../v0.4.3/index.html">v0.4.3</a></dd>
+      <dd><a href="../../../../v0.5.0/index.html">v0.5.0</a></dd>
+      <dd><a href="../../../../v0.5.1/index.html">v0.5.1</a></dd>
+      <dd><a href="../../../../v0.5.2/index.html">v0.5.2</a></dd>
+      <dd><a href="../../../../v0.5.3/index.html">v0.5.3</a></dd>
+      <dd><a href="../../../../v0.6.0/index.html">v0.6.0</a></dd>
+      <dd><a href="../../../../v0.6.1/index.html">v0.6.1</a></dd>
+      <dd><a href="../../../../v0.6.2/index.html">v0.6.2</a></dd>
+      <dd><a href="../../../../v0.6.3/index.html">v0.6.3</a></dd>
+      <dd><a href="../../../../v0.6.4/index.html">v0.6.4</a></dd>
+      <dd><a href="../../../../v0.6.5/index.html">v0.6.5</a></dd>
+      <dd><a href="../../../../v0.7.0/index.html">v0.7.0</a></dd>
+      <dd><a href="../../../../v0.8.0/index.html">v0.8.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="collect.html">main</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

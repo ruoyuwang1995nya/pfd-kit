@@ -1,0 +1,199 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Overview &mdash; pfd-kit 0.7.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=fe7df9b0"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Quickstart" href="getting-started.html" />
+    <link rel="prev" title="PFD-kit documentation" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pfd-kit
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">The Basics</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#backgrounds">Backgrounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#workflows">Workflows</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../usage/guide-on-cli.html">Command guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/guide-on-script.html">Input script guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/argument-for-script.html">Arguments of the input script</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/examples.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/modules.html">API documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pfd-kit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Overview</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/basics/overview.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="overview">
+<h1>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h1>
+<style>
+  p {
+    text-align: justify;
+  }
+</style><blockquote>
+<div><p><strong>⚠️ Warning:</strong><br />The latest version of <code class="docutils literal notranslate"><span class="pre">PFD-kit</span></code> has been restructured to integrate with the ASE package, offering enhanced functionality and compatibility with modern workflows. Users are encouraged to transition to this updated version for the best experience. For those who wish to access the older version of PFD-kit, it remains available.</p>
+</div></blockquote>
+<p><a class="reference external" href="https://github.com/ruoyuwang1995nya/dp-distill">PFD-kit</a> automates the fine-tuning and distillation process of pre-trained atomic models, such as <a class="reference external" href="https://github.com/deepmodeling/deepmd-kit.git">DPA-2</a>. It enables practical atomistic simualtion with the highly transferable, but computationally expensive pre-trained models. PFD-kit is built upon the  <a class="reference external" href="https://github.com/deepmodeling/dpgen2">DPGEN2</a> workflow and supports the Deep Potential models. The best experience of PFD-kit is found on Bohrium platform.</p>
+<section id="backgrounds">
+<h2>Backgrounds<a class="headerlink" href="#backgrounds" title="Link to this heading"></a></h2>
+<p>Machine learning force fields (e.g., Deep Potential) combine quantum mechanics principles with data-driven algorithms to achieve large-scale atomic simulations with first-principle accuracy. However, machine learning force fields often suffer from limited transferability, high costs in data generation, and extensive human inteference during training, which lead to significant resource expenses. These challenges make training machine learning force fields a difficult task for practical material systems. Figure 1 illustrates two typical material systems. The first is <strong>carbon materials</strong>. Training for bulk carbon with a small unit cell seems easy, but the carbon surface structures or the disordered phases require large supercells and extensive sampling within the huge configuration space, making training almost intractable. The second is high-entropy alloys. In these materials, spatial arrangements of atoms of different elements lead to varying interactions, and as the number of elements increases, the possible chemical space grow exponentially, making comprehensive sampling nearly impossible.</p>
+<div>
+    <img src="../_static/mat_sys.png" alt="Fig1" style="zoom: 35%;">
+    <p style='font-size:1.0rem; font-weight:none;text-align: center'>Figure 1. Typical material systems that pose significant challenges to force field training.</p>
+</div><p>Large atom models (LAM, such as DPA-2) pre-trained on extensive datasets and embed transferable knowdge across vast chemical and configuration space, potentially address the above issues. Utilizing the transferable knowledge, fine-tuning of the pretrained LAM can yield high-accuracy among specific material domains with much smaller data sets, usually only one-tenth or even one-hundredth of the data required for training from scratch. The fine-tuned models can predict energy and atomic forces with DFT accuracy at much lower costs, replacing DFT for efficient data sampling and labeling. After extensive data sampling, knowledge distillation can create distilled models from the sampled data. The distilled model has fewer parameters, but still accurately predicts the specific domain of interst. Thus, it is suitable for large scale simulations of millions of atoms over a long periods of time (e.g., nanoseconds). Possible application include two-dimensional materials, metamaterials, semiconductor materials, energy materials, and alloys.</p>
+<p>PFD-kit streamlines the above process, automatically generate from pre-trained model (<strong>P</strong>) an end model through fine-tuning (<strong>F</strong>) and distillation (<strong>D</strong>). PFD-kit reduces the time and computational costs of force fields generation by an order of magnitude compared to traditional from-scratch method, and requires with minimal human interference, thus significantly accelerates high-throughput computing and complex material simulations.</p>
+<div>
+    <img src="../_static/workflow.png" alt="Fig2" style="zoom: 100%;">
+    <p style='font-size:1.0rem; font-weight:none;text-align: center; margin-top: 10px;'>Figure 2. The general conception of PFD-kit workflow.</p>
+</div></section>
+<section id="workflows">
+<h2>Workflows<a class="headerlink" href="#workflows" title="Link to this heading"></a></h2>
+<p>Fig.3 shows the workflow design of pfd-kit, which includes the fine-tuning and distillation components.</p>
+<div>
+    <img src="../_static/pfd-kit-workflow.png" alt="Fig3" style="zoom: 100%;">
+    <p style='font-size:1.0rem; font-weight:none;text-align: center'>Figure 3. Schematics of pfd-kit workflow.</p>
+</div></section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="PFD-kit documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="getting-started.html" class="btn btn-neutral float-right" title="Quickstart" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Ruoyu Wang, Hongyu Wu.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: main
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="../../v0.0.12/basics/overview.html">v0.0.12</a></dd>
+      <dd><a href="../../v0.0.13/basics/overview.html">v0.0.13</a></dd>
+      <dd><a href="../../v0.0.14/basics/overview.html">v0.0.14</a></dd>
+      <dd><a href="../../v0.1.0/basics/overview.html">v0.1.0</a></dd>
+      <dd><a href="../../v0.1.1/basics/overview.html">v0.1.1</a></dd>
+      <dd><a href="../../v0.1.2/basics/overview.html">v0.1.2</a></dd>
+      <dd><a href="../../v0.1.3/basics/overview.html">v0.1.3</a></dd>
+      <dd><a href="../../v0.1.4/basics/overview.html">v0.1.4</a></dd>
+      <dd><a href="../../v0.2.0/basics/overview.html">v0.2.0</a></dd>
+      <dd><a href="../../v0.3.0/basics/overview.html">v0.3.0</a></dd>
+      <dd><a href="../../v0.3.1/basics/overview.html">v0.3.1</a></dd>
+      <dd><a href="../../v0.3.2/basics/overview.html">v0.3.2</a></dd>
+      <dd><a href="../../v0.3.3/basics/overview.html">v0.3.3</a></dd>
+      <dd><a href="../../v0.3.4/basics/overview.html">v0.3.4</a></dd>
+      <dd><a href="../../v0.3.5/basics/overview.html">v0.3.5</a></dd>
+      <dd><a href="../../v0.4.0/basics/overview.html">v0.4.0</a></dd>
+      <dd><a href="../../v0.4.1/basics/overview.html">v0.4.1</a></dd>
+      <dd><a href="../../v0.4.2/basics/overview.html">v0.4.2</a></dd>
+      <dd><a href="../../v0.4.3/basics/overview.html">v0.4.3</a></dd>
+      <dd><a href="../../v0.5.0/basics/overview.html">v0.5.0</a></dd>
+      <dd><a href="../../v0.5.1/basics/overview.html">v0.5.1</a></dd>
+      <dd><a href="../../v0.5.2/basics/overview.html">v0.5.2</a></dd>
+      <dd><a href="../../v0.5.3/basics/overview.html">v0.5.3</a></dd>
+      <dd><a href="../../v0.6.0/basics/overview.html">v0.6.0</a></dd>
+      <dd><a href="../../v0.6.1/basics/overview.html">v0.6.1</a></dd>
+      <dd><a href="../../v0.6.2/basics/overview.html">v0.6.2</a></dd>
+      <dd><a href="../../v0.6.3/basics/overview.html">v0.6.3</a></dd>
+      <dd><a href="../../v0.6.4/basics/overview.html">v0.6.4</a></dd>
+      <dd><a href="../../v0.6.5/basics/overview.html">v0.6.5</a></dd>
+      <dd><a href="../../v0.7.0/basics/overview.html">v0.7.0</a></dd>
+      <dd><a href="../../v0.8.0/basics/overview.html">v0.8.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="overview.html">main</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

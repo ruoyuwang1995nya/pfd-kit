@@ -1,0 +1,2436 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arguments of the input script &mdash; pfd-kit 0.7.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=fe7df9b0"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Examples" href="examples.html" />
+    <link rel="prev" title="Input script guide" href="guide-on-script.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pfd-kit
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">The Basics</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../basics/overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../basics/getting-started.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="guide-on-cli.html">Command guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide-on-script.html">Input script guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Arguments of the input script</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#host-and-nodes">Host and nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#task-definition">Task definition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#input-definition">Input definition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#exploration">Exploration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#explore-task-group-definition">Explore task group definition</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ase-task-group">ASE task group</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#frame-selection">Frame selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#labeling">Labeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model-training">Model training</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#evaluate">Evaluate</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/modules.html">API documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pfd-kit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Arguments of the input script</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/usage/argument-for-script.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="arguments-of-the-input-script">
+<span id="submitargs"></span><h1>Arguments of the input script<a class="headerlink" href="#arguments-of-the-input-script" title="Link to this heading"></a></h1>
+<section id="host-and-nodes">
+<h2>Host and nodes<a class="headerlink" href="#host-and-nodes" title="Link to this heading"></a></h2>
+<dl id="name">
+<dt>name:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">pfd</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">name</span></code></div>
+</div>
+<p>The workflow name, ‘pfd’ for default</p>
+</dd>
+</dl>
+<dl id="dflow-config">
+<dt>dflow_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">dflow_config</span></code></div>
+</div>
+<p>The configuration passed to dflow</p>
+</dd>
+</dl>
+<dl id="dflow-s3-config">
+<dt>dflow_s3_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">dflow_s3_config</span></code></div>
+</div>
+<p>The S3 configuration passed to dflow</p>
+</dd>
+</dl>
+<dl id="default-step-config">
+<dt>default_step_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">{}</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">default_step_config</span></code></div>
+</div>
+<p>The default step configuration.</p>
+<dl id="default-step-config-template-config">
+<dt>template_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">{'image':</span> <span class="pre">'registry.dp.tech/dptech/deepmd-kit:v3.0.0a1-2024Q1'}</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">default_step_config/template_config</span></code></div>
+</div>
+<p>The configs passed to the PythonOPTemplate.</p>
+<dl id="default-step-config-template-config-image">
+<dt>image:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">registry.dp.tech/dptech/deepmd-kit:v3.0.0a1-2024Q1</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">default_step_config/template_config/image</span></code></div>
+</div>
+<p>The image to run the step.</p>
+</dd>
+</dl>
+<dl id="default-step-config-template-config-timeout">
+<dt>timeout:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">default_step_config/template_config/timeout</span></code></div>
+</div>
+<p>The time limit of the OP. Unit is second.</p>
+</dd>
+</dl>
+<dl id="default-step-config-template-config-retry-on-transient-error">
+<dt>retry_on_transient_error:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">default_step_config/template_config/retry_on_transient_error</span></code></div>
+</div>
+<p>The number of retry times if a TransientError is raised.</p>
+</dd>
+</dl>
+<dl id="default-step-config-template-config-timeout-as-transient-error">
+<dt>timeout_as_transient_error:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">False</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">default_step_config/template_config/timeout_as_transient_error</span></code></div>
+</div>
+<p>Treat the timeout as TransientError.</p>
+</dd>
+</dl>
+<dl id="default-step-config-template-config-envs">
+<dt>envs:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">default_step_config/template_config/envs</span></code></div>
+</div>
+<p>The environmental variables.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="default-step-config-template-slice-config">
+<dt>template_slice_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional</div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">default_step_config/template_slice_config</span></code></div>
+</div>
+<p>The configs passed to the Slices.</p>
+<dl id="default-step-config-template-slice-config-group-size">
+<dt>group_size:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">default_step_config/template_slice_config/group_size</span></code></div>
+</div>
+<p>The number of tasks running on a single node. It is efficient for a large number of short tasks.</p>
+</dd>
+</dl>
+<dl id="default-step-config-template-slice-config-pool-size">
+<dt>pool_size:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">default_step_config/template_slice_config/pool_size</span></code></div>
+</div>
+<p>The number of tasks running at the same time on one node.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="default-step-config-continue-on-failed">
+<dt>continue_on_failed:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">False</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">default_step_config/continue_on_failed</span></code></div>
+</div>
+<p>If continue the the step is failed (FatalError, TransientError, A certain number of retrial is reached…).</p>
+</dd>
+</dl>
+<dl id="default-step-config-continue-on-num-success">
+<dt>continue_on_num_success:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">default_step_config/continue_on_num_success</span></code></div>
+</div>
+<p>Only in the sliced OP case. Continue the workflow if a certain number of the sliced jobs are successful.</p>
+</dd>
+</dl>
+<dl id="default-step-config-continue-on-success-ratio">
+<dt>continue_on_success_ratio:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">default_step_config/continue_on_success_ratio</span></code></div>
+</div>
+<p>Only in the sliced OP case. Continue the workflow if a certain ratio of the sliced jobs are successful.</p>
+</dd>
+</dl>
+<dl id="default-step-config-parallelism">
+<dt>parallelism:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">default_step_config/parallelism</span></code></div>
+</div>
+<p>The parallelism for the step</p>
+</dd>
+</dl>
+<dl id="default-step-config-executor">
+<dt>executor:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">default_step_config/executor</span></code></div>
+</div>
+<p>The executor of the step.</p>
+<p>Depending on the value of <em>type</em>, different sub args are accepted.</p>
+<dl id="default-step-config-executor-type">
+<dt>type:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code> (flag key)</div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">default_step_config/executor/type</span></code></div>
+<div class="line">possible choices: <a class="reference internal" href="#default-step-config-executor-dispatcher"><code class="docutils literal notranslate"><span class="pre">dispatcher</span></code></a></div>
+</div>
+<p>The type of the executor.</p>
+</dd>
+</dl>
+<p id="default-step-config-executor-dispatcher">When <a class="reference internal" href="#default-step-config-executor-type"><em>type</em></a> is set to <code class="docutils literal notranslate"><span class="pre">dispatcher</span></code>:</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="parallelism">
+<dt>parallelism:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">parallelism</span></code></div>
+</div>
+<p>The parallelism for the workflow. Accept an int that stands for the maximum number of running pods for the workflow. None for default</p>
+</dd>
+</dl>
+<dl id="bohrium-config">
+<dt>bohrium_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code> | <code class="docutils literal notranslate"><span class="pre">NoneType</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">bohrium_config</span></code></div>
+</div>
+<p>Configurations for the Bohrium platform.</p>
+<dl id="bohrium-config-username">
+<dt>username:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">bohrium_config/username</span></code></div>
+</div>
+<p>The username of the Bohrium platform</p>
+</dd>
+</dl>
+<dl id="bohrium-config-password">
+<dt>password:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional</div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">bohrium_config/password</span></code></div>
+</div>
+<p>The password of the Bohrium platform</p>
+</dd>
+</dl>
+<dl id="bohrium-config-project-id">
+<dt>project_id:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">int</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">bohrium_config/project_id</span></code></div>
+</div>
+<p>The project ID of the Bohrium platform</p>
+</dd>
+</dl>
+<dl id="bohrium-config-ticket">
+<dt>ticket:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional</div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">bohrium_config/ticket</span></code></div>
+</div>
+</dd>
+</dl>
+<dl id="bohrium-config-host">
+<dt>host:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">https://workflows.deepmodeling.com</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">bohrium_config/host</span></code></div>
+</div>
+<p>The host name of the Bohrium platform. Will overwrite <cite>dflow_config[‘host’]</cite></p>
+</dd>
+</dl>
+<dl id="bohrium-config-k8s-api-server">
+<dt>k8s_api_server:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">https://workflows.deepmodeling.com</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">bohrium_config/k8s_api_server</span></code></div>
+</div>
+<p>The k8s server of the Bohrium platform. Will overwrite <cite>dflow_config[‘k8s_api_server’]</cite></p>
+</dd>
+</dl>
+<dl id="bohrium-config-repo-key">
+<dt>repo_key:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">oss-bohrium</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">bohrium_config/repo_key</span></code></div>
+</div>
+<p>The repo key of the Bohrium platform. Will overwrite <cite>dflow_s3_config[‘repo_key’]</cite></p>
+</dd>
+</dl>
+<dl id="bohrium-config-storage-client">
+<dt>storage_client:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">dflow.plugins.bohrium.TiefblueClient</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">bohrium_config/storage_client</span></code></div>
+</div>
+<p>The storage client of the Bohrium platform. Will overwrite <cite>dflow_s3_config[‘storage_client’]</cite></p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="step-configs">
+<dt>step_configs:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">{}</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs</span></code></div>
+</div>
+<p>Configurations for executing dflow steps</p>
+<dl id="step-configs-run-train-config">
+<dt>run_train_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">{'template_config':</span> <span class="pre">{'image':</span> <span class="pre">'registry.dp.tech/dptech/deepmd-kit:v3.0.0a1-2024Q1',</span> <span class="pre">'timeout':</span> <span class="pre">None,</span> <span class="pre">'retry_on_transient_error':</span> <span class="pre">None,</span> <span class="pre">'timeout_as_transient_error':</span> <span class="pre">False,</span> <span class="pre">'envs':</span> <span class="pre">None},</span> <span class="pre">'continue_on_failed':</span> <span class="pre">False,</span> <span class="pre">'continue_on_num_success':</span> <span class="pre">None,</span> <span class="pre">'continue_on_success_ratio':</span> <span class="pre">None,</span> <span class="pre">'parallelism':</span> <span class="pre">None,</span> <span class="pre">'executor':</span> <span class="pre">None}</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_train_config</span></code></div>
+</div>
+<p>Configuration for run train</p>
+<dl id="step-configs-run-train-config-template-config">
+<dt>template_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">{'image':</span> <span class="pre">'registry.dp.tech/dptech/deepmd-kit:v3.0.0a1-2024Q1'}</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_train_config/template_config</span></code></div>
+</div>
+<p>The configs passed to the PythonOPTemplate.</p>
+<dl id="step-configs-run-train-config-template-config-image">
+<dt>image:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">registry.dp.tech/dptech/deepmd-kit:v3.0.0a1-2024Q1</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_train_config/template_config/image</span></code></div>
+</div>
+<p>The image to run the step.</p>
+</dd>
+</dl>
+<dl id="step-configs-run-train-config-template-config-timeout">
+<dt>timeout:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_train_config/template_config/timeout</span></code></div>
+</div>
+<p>The time limit of the OP. Unit is second.</p>
+</dd>
+</dl>
+<dl id="step-configs-run-train-config-template-config-retry-on-transient-error">
+<dt>retry_on_transient_error:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_train_config/template_config/retry_on_transient_error</span></code></div>
+</div>
+<p>The number of retry times if a TransientError is raised.</p>
+</dd>
+</dl>
+<dl id="step-configs-run-train-config-template-config-timeout-as-transient-error">
+<dt>timeout_as_transient_error:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">False</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_train_config/template_config/timeout_as_transient_error</span></code></div>
+</div>
+<p>Treat the timeout as TransientError.</p>
+</dd>
+</dl>
+<dl id="step-configs-run-train-config-template-config-envs">
+<dt>envs:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_train_config/template_config/envs</span></code></div>
+</div>
+<p>The environmental variables.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="step-configs-run-train-config-template-slice-config">
+<dt>template_slice_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional</div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_train_config/template_slice_config</span></code></div>
+</div>
+<p>The configs passed to the Slices.</p>
+<dl id="step-configs-run-train-config-template-slice-config-group-size">
+<dt>group_size:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_train_config/template_slice_config/group_size</span></code></div>
+</div>
+<p>The number of tasks running on a single node. It is efficient for a large number of short tasks.</p>
+</dd>
+</dl>
+<dl id="step-configs-run-train-config-template-slice-config-pool-size">
+<dt>pool_size:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_train_config/template_slice_config/pool_size</span></code></div>
+</div>
+<p>The number of tasks running at the same time on one node.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="step-configs-run-train-config-continue-on-failed">
+<dt>continue_on_failed:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">False</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_train_config/continue_on_failed</span></code></div>
+</div>
+<p>If continue the the step is failed (FatalError, TransientError, A certain number of retrial is reached…).</p>
+</dd>
+</dl>
+<dl id="step-configs-run-train-config-continue-on-num-success">
+<dt>continue_on_num_success:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_train_config/continue_on_num_success</span></code></div>
+</div>
+<p>Only in the sliced OP case. Continue the workflow if a certain number of the sliced jobs are successful.</p>
+</dd>
+</dl>
+<dl id="step-configs-run-train-config-continue-on-success-ratio">
+<dt>continue_on_success_ratio:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_train_config/continue_on_success_ratio</span></code></div>
+</div>
+<p>Only in the sliced OP case. Continue the workflow if a certain ratio of the sliced jobs are successful.</p>
+</dd>
+</dl>
+<dl id="step-configs-run-train-config-parallelism">
+<dt>parallelism:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_train_config/parallelism</span></code></div>
+</div>
+<p>The parallelism for the step</p>
+</dd>
+</dl>
+<dl id="step-configs-run-train-config-executor">
+<dt>executor:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_train_config/executor</span></code></div>
+</div>
+<p>The executor of the step.</p>
+<p>Depending on the value of <em>type</em>, different sub args are accepted.</p>
+<dl id="step-configs-run-train-config-executor-type">
+<dt>type:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code> (flag key)</div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_train_config/executor/type</span></code></div>
+<div class="line">possible choices: <a class="reference internal" href="#step-configs-run-train-config-executor-dispatcher"><code class="docutils literal notranslate"><span class="pre">dispatcher</span></code></a></div>
+</div>
+<p>The type of the executor.</p>
+</dd>
+</dl>
+<p id="step-configs-run-train-config-executor-dispatcher">When <a class="reference internal" href="#step-configs-run-train-config-executor-type"><em>type</em></a> is set to <code class="docutils literal notranslate"><span class="pre">dispatcher</span></code>:</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="step-configs-prep-explore-config">
+<dt>prep_explore_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">{'template_config':</span> <span class="pre">{'image':</span> <span class="pre">'registry.dp.tech/dptech/deepmd-kit:v3.0.0a1-2024Q1',</span> <span class="pre">'timeout':</span> <span class="pre">None,</span> <span class="pre">'retry_on_transient_error':</span> <span class="pre">None,</span> <span class="pre">'timeout_as_transient_error':</span> <span class="pre">False,</span> <span class="pre">'envs':</span> <span class="pre">None},</span> <span class="pre">'continue_on_failed':</span> <span class="pre">False,</span> <span class="pre">'continue_on_num_success':</span> <span class="pre">None,</span> <span class="pre">'continue_on_success_ratio':</span> <span class="pre">None,</span> <span class="pre">'parallelism':</span> <span class="pre">None,</span> <span class="pre">'executor':</span> <span class="pre">None}</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/prep_explore_config</span></code></div>
+</div>
+<p>Configuration for prepare exploration</p>
+<dl id="step-configs-prep-explore-config-template-config">
+<dt>template_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">{'image':</span> <span class="pre">'registry.dp.tech/dptech/deepmd-kit:v3.0.0a1-2024Q1'}</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/prep_explore_config/template_config</span></code></div>
+</div>
+<p>The configs passed to the PythonOPTemplate.</p>
+<dl id="step-configs-prep-explore-config-template-config-image">
+<dt>image:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">registry.dp.tech/dptech/deepmd-kit:v3.0.0a1-2024Q1</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/prep_explore_config/template_config/image</span></code></div>
+</div>
+<p>The image to run the step.</p>
+</dd>
+</dl>
+<dl id="step-configs-prep-explore-config-template-config-timeout">
+<dt>timeout:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/prep_explore_config/template_config/timeout</span></code></div>
+</div>
+<p>The time limit of the OP. Unit is second.</p>
+</dd>
+</dl>
+<dl id="step-configs-prep-explore-config-template-config-retry-on-transient-error">
+<dt>retry_on_transient_error:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/prep_explore_config/template_config/retry_on_transient_error</span></code></div>
+</div>
+<p>The number of retry times if a TransientError is raised.</p>
+</dd>
+</dl>
+<dl id="step-configs-prep-explore-config-template-config-timeout-as-transient-error">
+<dt>timeout_as_transient_error:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">False</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/prep_explore_config/template_config/timeout_as_transient_error</span></code></div>
+</div>
+<p>Treat the timeout as TransientError.</p>
+</dd>
+</dl>
+<dl id="step-configs-prep-explore-config-template-config-envs">
+<dt>envs:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/prep_explore_config/template_config/envs</span></code></div>
+</div>
+<p>The environmental variables.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="step-configs-prep-explore-config-template-slice-config">
+<dt>template_slice_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional</div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/prep_explore_config/template_slice_config</span></code></div>
+</div>
+<p>The configs passed to the Slices.</p>
+<dl id="step-configs-prep-explore-config-template-slice-config-group-size">
+<dt>group_size:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/prep_explore_config/template_slice_config/group_size</span></code></div>
+</div>
+<p>The number of tasks running on a single node. It is efficient for a large number of short tasks.</p>
+</dd>
+</dl>
+<dl id="step-configs-prep-explore-config-template-slice-config-pool-size">
+<dt>pool_size:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/prep_explore_config/template_slice_config/pool_size</span></code></div>
+</div>
+<p>The number of tasks running at the same time on one node.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="step-configs-prep-explore-config-continue-on-failed">
+<dt>continue_on_failed:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">False</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/prep_explore_config/continue_on_failed</span></code></div>
+</div>
+<p>If continue the the step is failed (FatalError, TransientError, A certain number of retrial is reached…).</p>
+</dd>
+</dl>
+<dl id="step-configs-prep-explore-config-continue-on-num-success">
+<dt>continue_on_num_success:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/prep_explore_config/continue_on_num_success</span></code></div>
+</div>
+<p>Only in the sliced OP case. Continue the workflow if a certain number of the sliced jobs are successful.</p>
+</dd>
+</dl>
+<dl id="step-configs-prep-explore-config-continue-on-success-ratio">
+<dt>continue_on_success_ratio:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/prep_explore_config/continue_on_success_ratio</span></code></div>
+</div>
+<p>Only in the sliced OP case. Continue the workflow if a certain ratio of the sliced jobs are successful.</p>
+</dd>
+</dl>
+<dl id="step-configs-prep-explore-config-parallelism">
+<dt>parallelism:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/prep_explore_config/parallelism</span></code></div>
+</div>
+<p>The parallelism for the step</p>
+</dd>
+</dl>
+<dl id="step-configs-prep-explore-config-executor">
+<dt>executor:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/prep_explore_config/executor</span></code></div>
+</div>
+<p>The executor of the step.</p>
+<p>Depending on the value of <em>type</em>, different sub args are accepted.</p>
+<dl id="step-configs-prep-explore-config-executor-type">
+<dt>type:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code> (flag key)</div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/prep_explore_config/executor/type</span></code></div>
+<div class="line">possible choices: <a class="reference internal" href="#step-configs-prep-explore-config-executor-dispatcher"><code class="docutils literal notranslate"><span class="pre">dispatcher</span></code></a></div>
+</div>
+<p>The type of the executor.</p>
+</dd>
+</dl>
+<p id="step-configs-prep-explore-config-executor-dispatcher">When <a class="reference internal" href="#step-configs-prep-explore-config-executor-type"><em>type</em></a> is set to <code class="docutils literal notranslate"><span class="pre">dispatcher</span></code>:</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="step-configs-run-explore-config">
+<dt>run_explore_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">{'template_config':</span> <span class="pre">{'image':</span> <span class="pre">'registry.dp.tech/dptech/deepmd-kit:v3.0.0a1-2024Q1',</span> <span class="pre">'timeout':</span> <span class="pre">None,</span> <span class="pre">'retry_on_transient_error':</span> <span class="pre">None,</span> <span class="pre">'timeout_as_transient_error':</span> <span class="pre">False,</span> <span class="pre">'envs':</span> <span class="pre">None},</span> <span class="pre">'continue_on_failed':</span> <span class="pre">False,</span> <span class="pre">'continue_on_num_success':</span> <span class="pre">None,</span> <span class="pre">'continue_on_success_ratio':</span> <span class="pre">None,</span> <span class="pre">'parallelism':</span> <span class="pre">None,</span> <span class="pre">'executor':</span> <span class="pre">None}</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_explore_config</span></code></div>
+</div>
+<p>Configuration for run exploration</p>
+<dl id="step-configs-run-explore-config-template-config">
+<dt>template_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">{'image':</span> <span class="pre">'registry.dp.tech/dptech/deepmd-kit:v3.0.0a1-2024Q1'}</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_explore_config/template_config</span></code></div>
+</div>
+<p>The configs passed to the PythonOPTemplate.</p>
+<dl id="step-configs-run-explore-config-template-config-image">
+<dt>image:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">registry.dp.tech/dptech/deepmd-kit:v3.0.0a1-2024Q1</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_explore_config/template_config/image</span></code></div>
+</div>
+<p>The image to run the step.</p>
+</dd>
+</dl>
+<dl id="step-configs-run-explore-config-template-config-timeout">
+<dt>timeout:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_explore_config/template_config/timeout</span></code></div>
+</div>
+<p>The time limit of the OP. Unit is second.</p>
+</dd>
+</dl>
+<dl id="step-configs-run-explore-config-template-config-retry-on-transient-error">
+<dt>retry_on_transient_error:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_explore_config/template_config/retry_on_transient_error</span></code></div>
+</div>
+<p>The number of retry times if a TransientError is raised.</p>
+</dd>
+</dl>
+<dl id="step-configs-run-explore-config-template-config-timeout-as-transient-error">
+<dt>timeout_as_transient_error:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">False</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_explore_config/template_config/timeout_as_transient_error</span></code></div>
+</div>
+<p>Treat the timeout as TransientError.</p>
+</dd>
+</dl>
+<dl id="step-configs-run-explore-config-template-config-envs">
+<dt>envs:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_explore_config/template_config/envs</span></code></div>
+</div>
+<p>The environmental variables.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="step-configs-run-explore-config-template-slice-config">
+<dt>template_slice_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional</div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_explore_config/template_slice_config</span></code></div>
+</div>
+<p>The configs passed to the Slices.</p>
+<dl id="step-configs-run-explore-config-template-slice-config-group-size">
+<dt>group_size:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_explore_config/template_slice_config/group_size</span></code></div>
+</div>
+<p>The number of tasks running on a single node. It is efficient for a large number of short tasks.</p>
+</dd>
+</dl>
+<dl id="step-configs-run-explore-config-template-slice-config-pool-size">
+<dt>pool_size:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_explore_config/template_slice_config/pool_size</span></code></div>
+</div>
+<p>The number of tasks running at the same time on one node.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="step-configs-run-explore-config-continue-on-failed">
+<dt>continue_on_failed:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">False</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_explore_config/continue_on_failed</span></code></div>
+</div>
+<p>If continue the the step is failed (FatalError, TransientError, A certain number of retrial is reached…).</p>
+</dd>
+</dl>
+<dl id="step-configs-run-explore-config-continue-on-num-success">
+<dt>continue_on_num_success:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_explore_config/continue_on_num_success</span></code></div>
+</div>
+<p>Only in the sliced OP case. Continue the workflow if a certain number of the sliced jobs are successful.</p>
+</dd>
+</dl>
+<dl id="step-configs-run-explore-config-continue-on-success-ratio">
+<dt>continue_on_success_ratio:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_explore_config/continue_on_success_ratio</span></code></div>
+</div>
+<p>Only in the sliced OP case. Continue the workflow if a certain ratio of the sliced jobs are successful.</p>
+</dd>
+</dl>
+<dl id="step-configs-run-explore-config-parallelism">
+<dt>parallelism:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_explore_config/parallelism</span></code></div>
+</div>
+<p>The parallelism for the step</p>
+</dd>
+</dl>
+<dl id="step-configs-run-explore-config-executor">
+<dt>executor:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_explore_config/executor</span></code></div>
+</div>
+<p>The executor of the step.</p>
+<p>Depending on the value of <em>type</em>, different sub args are accepted.</p>
+<dl id="step-configs-run-explore-config-executor-type">
+<dt>type:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code> (flag key)</div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_explore_config/executor/type</span></code></div>
+<div class="line">possible choices: <a class="reference internal" href="#step-configs-run-explore-config-executor-dispatcher"><code class="docutils literal notranslate"><span class="pre">dispatcher</span></code></a></div>
+</div>
+<p>The type of the executor.</p>
+</dd>
+</dl>
+<p id="step-configs-run-explore-config-executor-dispatcher">When <a class="reference internal" href="#step-configs-run-explore-config-executor-type"><em>type</em></a> is set to <code class="docutils literal notranslate"><span class="pre">dispatcher</span></code>:</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="step-configs-prep-fp-config">
+<dt>prep_fp_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">{'template_config':</span> <span class="pre">{'image':</span> <span class="pre">'registry.dp.tech/dptech/deepmd-kit:v3.0.0a1-2024Q1',</span> <span class="pre">'timeout':</span> <span class="pre">None,</span> <span class="pre">'retry_on_transient_error':</span> <span class="pre">None,</span> <span class="pre">'timeout_as_transient_error':</span> <span class="pre">False,</span> <span class="pre">'envs':</span> <span class="pre">None},</span> <span class="pre">'continue_on_failed':</span> <span class="pre">False,</span> <span class="pre">'continue_on_num_success':</span> <span class="pre">None,</span> <span class="pre">'continue_on_success_ratio':</span> <span class="pre">None,</span> <span class="pre">'parallelism':</span> <span class="pre">None,</span> <span class="pre">'executor':</span> <span class="pre">None}</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/prep_fp_config</span></code></div>
+</div>
+<p>Configuration for prepare fp</p>
+<dl id="step-configs-prep-fp-config-template-config">
+<dt>template_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">{'image':</span> <span class="pre">'registry.dp.tech/dptech/deepmd-kit:v3.0.0a1-2024Q1'}</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/prep_fp_config/template_config</span></code></div>
+</div>
+<p>The configs passed to the PythonOPTemplate.</p>
+<dl id="step-configs-prep-fp-config-template-config-image">
+<dt>image:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">registry.dp.tech/dptech/deepmd-kit:v3.0.0a1-2024Q1</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/prep_fp_config/template_config/image</span></code></div>
+</div>
+<p>The image to run the step.</p>
+</dd>
+</dl>
+<dl id="step-configs-prep-fp-config-template-config-timeout">
+<dt>timeout:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/prep_fp_config/template_config/timeout</span></code></div>
+</div>
+<p>The time limit of the OP. Unit is second.</p>
+</dd>
+</dl>
+<dl id="step-configs-prep-fp-config-template-config-retry-on-transient-error">
+<dt>retry_on_transient_error:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/prep_fp_config/template_config/retry_on_transient_error</span></code></div>
+</div>
+<p>The number of retry times if a TransientError is raised.</p>
+</dd>
+</dl>
+<dl id="step-configs-prep-fp-config-template-config-timeout-as-transient-error">
+<dt>timeout_as_transient_error:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">False</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/prep_fp_config/template_config/timeout_as_transient_error</span></code></div>
+</div>
+<p>Treat the timeout as TransientError.</p>
+</dd>
+</dl>
+<dl id="step-configs-prep-fp-config-template-config-envs">
+<dt>envs:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/prep_fp_config/template_config/envs</span></code></div>
+</div>
+<p>The environmental variables.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="step-configs-prep-fp-config-template-slice-config">
+<dt>template_slice_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional</div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/prep_fp_config/template_slice_config</span></code></div>
+</div>
+<p>The configs passed to the Slices.</p>
+<dl id="step-configs-prep-fp-config-template-slice-config-group-size">
+<dt>group_size:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/prep_fp_config/template_slice_config/group_size</span></code></div>
+</div>
+<p>The number of tasks running on a single node. It is efficient for a large number of short tasks.</p>
+</dd>
+</dl>
+<dl id="step-configs-prep-fp-config-template-slice-config-pool-size">
+<dt>pool_size:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/prep_fp_config/template_slice_config/pool_size</span></code></div>
+</div>
+<p>The number of tasks running at the same time on one node.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="step-configs-prep-fp-config-continue-on-failed">
+<dt>continue_on_failed:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">False</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/prep_fp_config/continue_on_failed</span></code></div>
+</div>
+<p>If continue the the step is failed (FatalError, TransientError, A certain number of retrial is reached…).</p>
+</dd>
+</dl>
+<dl id="step-configs-prep-fp-config-continue-on-num-success">
+<dt>continue_on_num_success:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/prep_fp_config/continue_on_num_success</span></code></div>
+</div>
+<p>Only in the sliced OP case. Continue the workflow if a certain number of the sliced jobs are successful.</p>
+</dd>
+</dl>
+<dl id="step-configs-prep-fp-config-continue-on-success-ratio">
+<dt>continue_on_success_ratio:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/prep_fp_config/continue_on_success_ratio</span></code></div>
+</div>
+<p>Only in the sliced OP case. Continue the workflow if a certain ratio of the sliced jobs are successful.</p>
+</dd>
+</dl>
+<dl id="step-configs-prep-fp-config-parallelism">
+<dt>parallelism:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/prep_fp_config/parallelism</span></code></div>
+</div>
+<p>The parallelism for the step</p>
+</dd>
+</dl>
+<dl id="step-configs-prep-fp-config-executor">
+<dt>executor:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/prep_fp_config/executor</span></code></div>
+</div>
+<p>The executor of the step.</p>
+<p>Depending on the value of <em>type</em>, different sub args are accepted.</p>
+<dl id="step-configs-prep-fp-config-executor-type">
+<dt>type:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code> (flag key)</div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/prep_fp_config/executor/type</span></code></div>
+<div class="line">possible choices: <a class="reference internal" href="#step-configs-prep-fp-config-executor-dispatcher"><code class="docutils literal notranslate"><span class="pre">dispatcher</span></code></a></div>
+</div>
+<p>The type of the executor.</p>
+</dd>
+</dl>
+<p id="step-configs-prep-fp-config-executor-dispatcher">When <a class="reference internal" href="#step-configs-prep-fp-config-executor-type"><em>type</em></a> is set to <code class="docutils literal notranslate"><span class="pre">dispatcher</span></code>:</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="step-configs-run-fp-config">
+<dt>run_fp_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">{'template_config':</span> <span class="pre">{'image':</span> <span class="pre">'registry.dp.tech/dptech/deepmd-kit:v3.0.0a1-2024Q1',</span> <span class="pre">'timeout':</span> <span class="pre">None,</span> <span class="pre">'retry_on_transient_error':</span> <span class="pre">None,</span> <span class="pre">'timeout_as_transient_error':</span> <span class="pre">False,</span> <span class="pre">'envs':</span> <span class="pre">None},</span> <span class="pre">'continue_on_failed':</span> <span class="pre">False,</span> <span class="pre">'continue_on_num_success':</span> <span class="pre">None,</span> <span class="pre">'continue_on_success_ratio':</span> <span class="pre">None,</span> <span class="pre">'parallelism':</span> <span class="pre">None,</span> <span class="pre">'executor':</span> <span class="pre">None}</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_fp_config</span></code></div>
+</div>
+<p>Configuration for run fp</p>
+<dl id="step-configs-run-fp-config-template-config">
+<dt>template_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">{'image':</span> <span class="pre">'registry.dp.tech/dptech/deepmd-kit:v3.0.0a1-2024Q1'}</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_fp_config/template_config</span></code></div>
+</div>
+<p>The configs passed to the PythonOPTemplate.</p>
+<dl id="step-configs-run-fp-config-template-config-image">
+<dt>image:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">registry.dp.tech/dptech/deepmd-kit:v3.0.0a1-2024Q1</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_fp_config/template_config/image</span></code></div>
+</div>
+<p>The image to run the step.</p>
+</dd>
+</dl>
+<dl id="step-configs-run-fp-config-template-config-timeout">
+<dt>timeout:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_fp_config/template_config/timeout</span></code></div>
+</div>
+<p>The time limit of the OP. Unit is second.</p>
+</dd>
+</dl>
+<dl id="step-configs-run-fp-config-template-config-retry-on-transient-error">
+<dt>retry_on_transient_error:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_fp_config/template_config/retry_on_transient_error</span></code></div>
+</div>
+<p>The number of retry times if a TransientError is raised.</p>
+</dd>
+</dl>
+<dl id="step-configs-run-fp-config-template-config-timeout-as-transient-error">
+<dt>timeout_as_transient_error:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">False</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_fp_config/template_config/timeout_as_transient_error</span></code></div>
+</div>
+<p>Treat the timeout as TransientError.</p>
+</dd>
+</dl>
+<dl id="step-configs-run-fp-config-template-config-envs">
+<dt>envs:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_fp_config/template_config/envs</span></code></div>
+</div>
+<p>The environmental variables.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="step-configs-run-fp-config-template-slice-config">
+<dt>template_slice_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional</div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_fp_config/template_slice_config</span></code></div>
+</div>
+<p>The configs passed to the Slices.</p>
+<dl id="step-configs-run-fp-config-template-slice-config-group-size">
+<dt>group_size:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_fp_config/template_slice_config/group_size</span></code></div>
+</div>
+<p>The number of tasks running on a single node. It is efficient for a large number of short tasks.</p>
+</dd>
+</dl>
+<dl id="step-configs-run-fp-config-template-slice-config-pool-size">
+<dt>pool_size:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_fp_config/template_slice_config/pool_size</span></code></div>
+</div>
+<p>The number of tasks running at the same time on one node.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="step-configs-run-fp-config-continue-on-failed">
+<dt>continue_on_failed:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">False</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_fp_config/continue_on_failed</span></code></div>
+</div>
+<p>If continue the the step is failed (FatalError, TransientError, A certain number of retrial is reached…).</p>
+</dd>
+</dl>
+<dl id="step-configs-run-fp-config-continue-on-num-success">
+<dt>continue_on_num_success:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_fp_config/continue_on_num_success</span></code></div>
+</div>
+<p>Only in the sliced OP case. Continue the workflow if a certain number of the sliced jobs are successful.</p>
+</dd>
+</dl>
+<dl id="step-configs-run-fp-config-continue-on-success-ratio">
+<dt>continue_on_success_ratio:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_fp_config/continue_on_success_ratio</span></code></div>
+</div>
+<p>Only in the sliced OP case. Continue the workflow if a certain ratio of the sliced jobs are successful.</p>
+</dd>
+</dl>
+<dl id="step-configs-run-fp-config-parallelism">
+<dt>parallelism:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_fp_config/parallelism</span></code></div>
+</div>
+<p>The parallelism for the step</p>
+</dd>
+</dl>
+<dl id="step-configs-run-fp-config-executor">
+<dt>executor:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_fp_config/executor</span></code></div>
+</div>
+<p>The executor of the step.</p>
+<p>Depending on the value of <em>type</em>, different sub args are accepted.</p>
+<dl id="step-configs-run-fp-config-executor-type">
+<dt>type:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code> (flag key)</div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/run_fp_config/executor/type</span></code></div>
+<div class="line">possible choices: <a class="reference internal" href="#step-configs-run-fp-config-executor-dispatcher"><code class="docutils literal notranslate"><span class="pre">dispatcher</span></code></a></div>
+</div>
+<p>The type of the executor.</p>
+</dd>
+</dl>
+<p id="step-configs-run-fp-config-executor-dispatcher">When <a class="reference internal" href="#step-configs-run-fp-config-executor-type"><em>type</em></a> is set to <code class="docutils literal notranslate"><span class="pre">dispatcher</span></code>:</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="step-configs-select-confs-config">
+<dt>select_confs_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">{'template_config':</span> <span class="pre">{'image':</span> <span class="pre">'registry.dp.tech/dptech/deepmd-kit:v3.0.0a1-2024Q1',</span> <span class="pre">'timeout':</span> <span class="pre">None,</span> <span class="pre">'retry_on_transient_error':</span> <span class="pre">None,</span> <span class="pre">'timeout_as_transient_error':</span> <span class="pre">False,</span> <span class="pre">'envs':</span> <span class="pre">None},</span> <span class="pre">'continue_on_failed':</span> <span class="pre">False,</span> <span class="pre">'continue_on_num_success':</span> <span class="pre">None,</span> <span class="pre">'continue_on_success_ratio':</span> <span class="pre">None,</span> <span class="pre">'parallelism':</span> <span class="pre">None,</span> <span class="pre">'executor':</span> <span class="pre">None}</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/select_confs_config</span></code></div>
+</div>
+<p>Configuration for the select confs</p>
+<dl id="step-configs-select-confs-config-template-config">
+<dt>template_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">{'image':</span> <span class="pre">'registry.dp.tech/dptech/deepmd-kit:v3.0.0a1-2024Q1'}</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/select_confs_config/template_config</span></code></div>
+</div>
+<p>The configs passed to the PythonOPTemplate.</p>
+<dl id="step-configs-select-confs-config-template-config-image">
+<dt>image:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">registry.dp.tech/dptech/deepmd-kit:v3.0.0a1-2024Q1</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/select_confs_config/template_config/image</span></code></div>
+</div>
+<p>The image to run the step.</p>
+</dd>
+</dl>
+<dl id="step-configs-select-confs-config-template-config-timeout">
+<dt>timeout:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/select_confs_config/template_config/timeout</span></code></div>
+</div>
+<p>The time limit of the OP. Unit is second.</p>
+</dd>
+</dl>
+<dl id="step-configs-select-confs-config-template-config-retry-on-transient-error">
+<dt>retry_on_transient_error:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/select_confs_config/template_config/retry_on_transient_error</span></code></div>
+</div>
+<p>The number of retry times if a TransientError is raised.</p>
+</dd>
+</dl>
+<dl id="step-configs-select-confs-config-template-config-timeout-as-transient-error">
+<dt>timeout_as_transient_error:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">False</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/select_confs_config/template_config/timeout_as_transient_error</span></code></div>
+</div>
+<p>Treat the timeout as TransientError.</p>
+</dd>
+</dl>
+<dl id="step-configs-select-confs-config-template-config-envs">
+<dt>envs:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/select_confs_config/template_config/envs</span></code></div>
+</div>
+<p>The environmental variables.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="step-configs-select-confs-config-template-slice-config">
+<dt>template_slice_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional</div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/select_confs_config/template_slice_config</span></code></div>
+</div>
+<p>The configs passed to the Slices.</p>
+<dl id="step-configs-select-confs-config-template-slice-config-group-size">
+<dt>group_size:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/select_confs_config/template_slice_config/group_size</span></code></div>
+</div>
+<p>The number of tasks running on a single node. It is efficient for a large number of short tasks.</p>
+</dd>
+</dl>
+<dl id="step-configs-select-confs-config-template-slice-config-pool-size">
+<dt>pool_size:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/select_confs_config/template_slice_config/pool_size</span></code></div>
+</div>
+<p>The number of tasks running at the same time on one node.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="step-configs-select-confs-config-continue-on-failed">
+<dt>continue_on_failed:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">False</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/select_confs_config/continue_on_failed</span></code></div>
+</div>
+<p>If continue the the step is failed (FatalError, TransientError, A certain number of retrial is reached…).</p>
+</dd>
+</dl>
+<dl id="step-configs-select-confs-config-continue-on-num-success">
+<dt>continue_on_num_success:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/select_confs_config/continue_on_num_success</span></code></div>
+</div>
+<p>Only in the sliced OP case. Continue the workflow if a certain number of the sliced jobs are successful.</p>
+</dd>
+</dl>
+<dl id="step-configs-select-confs-config-continue-on-success-ratio">
+<dt>continue_on_success_ratio:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/select_confs_config/continue_on_success_ratio</span></code></div>
+</div>
+<p>Only in the sliced OP case. Continue the workflow if a certain ratio of the sliced jobs are successful.</p>
+</dd>
+</dl>
+<dl id="step-configs-select-confs-config-parallelism">
+<dt>parallelism:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/select_confs_config/parallelism</span></code></div>
+</div>
+<p>The parallelism for the step</p>
+</dd>
+</dl>
+<dl id="step-configs-select-confs-config-executor">
+<dt>executor:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/select_confs_config/executor</span></code></div>
+</div>
+<p>The executor of the step.</p>
+<p>Depending on the value of <em>type</em>, different sub args are accepted.</p>
+<dl id="step-configs-select-confs-config-executor-type">
+<dt>type:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code> (flag key)</div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/select_confs_config/executor/type</span></code></div>
+<div class="line">possible choices: <a class="reference internal" href="#step-configs-select-confs-config-executor-dispatcher"><code class="docutils literal notranslate"><span class="pre">dispatcher</span></code></a></div>
+</div>
+<p>The type of the executor.</p>
+</dd>
+</dl>
+<p id="step-configs-select-confs-config-executor-dispatcher">When <a class="reference internal" href="#step-configs-select-confs-config-executor-type"><em>type</em></a> is set to <code class="docutils literal notranslate"><span class="pre">dispatcher</span></code>:</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="step-configs-collect-data-config">
+<dt>collect_data_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">{'template_config':</span> <span class="pre">{'image':</span> <span class="pre">'registry.dp.tech/dptech/deepmd-kit:v3.0.0a1-2024Q1',</span> <span class="pre">'timeout':</span> <span class="pre">None,</span> <span class="pre">'retry_on_transient_error':</span> <span class="pre">None,</span> <span class="pre">'timeout_as_transient_error':</span> <span class="pre">False,</span> <span class="pre">'envs':</span> <span class="pre">None},</span> <span class="pre">'continue_on_failed':</span> <span class="pre">False,</span> <span class="pre">'continue_on_num_success':</span> <span class="pre">None,</span> <span class="pre">'continue_on_success_ratio':</span> <span class="pre">None,</span> <span class="pre">'parallelism':</span> <span class="pre">None,</span> <span class="pre">'executor':</span> <span class="pre">None}</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/collect_data_config</span></code></div>
+</div>
+<p>Configuration for the collect data</p>
+<dl id="step-configs-collect-data-config-template-config">
+<dt>template_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">{'image':</span> <span class="pre">'registry.dp.tech/dptech/deepmd-kit:v3.0.0a1-2024Q1'}</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/collect_data_config/template_config</span></code></div>
+</div>
+<p>The configs passed to the PythonOPTemplate.</p>
+<dl id="step-configs-collect-data-config-template-config-image">
+<dt>image:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">registry.dp.tech/dptech/deepmd-kit:v3.0.0a1-2024Q1</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/collect_data_config/template_config/image</span></code></div>
+</div>
+<p>The image to run the step.</p>
+</dd>
+</dl>
+<dl id="step-configs-collect-data-config-template-config-timeout">
+<dt>timeout:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/collect_data_config/template_config/timeout</span></code></div>
+</div>
+<p>The time limit of the OP. Unit is second.</p>
+</dd>
+</dl>
+<dl id="step-configs-collect-data-config-template-config-retry-on-transient-error">
+<dt>retry_on_transient_error:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/collect_data_config/template_config/retry_on_transient_error</span></code></div>
+</div>
+<p>The number of retry times if a TransientError is raised.</p>
+</dd>
+</dl>
+<dl id="step-configs-collect-data-config-template-config-timeout-as-transient-error">
+<dt>timeout_as_transient_error:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">False</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/collect_data_config/template_config/timeout_as_transient_error</span></code></div>
+</div>
+<p>Treat the timeout as TransientError.</p>
+</dd>
+</dl>
+<dl id="step-configs-collect-data-config-template-config-envs">
+<dt>envs:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/collect_data_config/template_config/envs</span></code></div>
+</div>
+<p>The environmental variables.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="step-configs-collect-data-config-template-slice-config">
+<dt>template_slice_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional</div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/collect_data_config/template_slice_config</span></code></div>
+</div>
+<p>The configs passed to the Slices.</p>
+<dl id="step-configs-collect-data-config-template-slice-config-group-size">
+<dt>group_size:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/collect_data_config/template_slice_config/group_size</span></code></div>
+</div>
+<p>The number of tasks running on a single node. It is efficient for a large number of short tasks.</p>
+</dd>
+</dl>
+<dl id="step-configs-collect-data-config-template-slice-config-pool-size">
+<dt>pool_size:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/collect_data_config/template_slice_config/pool_size</span></code></div>
+</div>
+<p>The number of tasks running at the same time on one node.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="step-configs-collect-data-config-continue-on-failed">
+<dt>continue_on_failed:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">False</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/collect_data_config/continue_on_failed</span></code></div>
+</div>
+<p>If continue the the step is failed (FatalError, TransientError, A certain number of retrial is reached…).</p>
+</dd>
+</dl>
+<dl id="step-configs-collect-data-config-continue-on-num-success">
+<dt>continue_on_num_success:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/collect_data_config/continue_on_num_success</span></code></div>
+</div>
+<p>Only in the sliced OP case. Continue the workflow if a certain number of the sliced jobs are successful.</p>
+</dd>
+</dl>
+<dl id="step-configs-collect-data-config-continue-on-success-ratio">
+<dt>continue_on_success_ratio:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/collect_data_config/continue_on_success_ratio</span></code></div>
+</div>
+<p>Only in the sliced OP case. Continue the workflow if a certain ratio of the sliced jobs are successful.</p>
+</dd>
+</dl>
+<dl id="step-configs-collect-data-config-parallelism">
+<dt>parallelism:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/collect_data_config/parallelism</span></code></div>
+</div>
+<p>The parallelism for the step</p>
+</dd>
+</dl>
+<dl id="step-configs-collect-data-config-executor">
+<dt>executor:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/collect_data_config/executor</span></code></div>
+</div>
+<p>The executor of the step.</p>
+<p>Depending on the value of <em>type</em>, different sub args are accepted.</p>
+<dl id="step-configs-collect-data-config-executor-type">
+<dt>type:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code> (flag key)</div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/collect_data_config/executor/type</span></code></div>
+<div class="line">possible choices: <a class="reference internal" href="#step-configs-collect-data-config-executor-dispatcher"><code class="docutils literal notranslate"><span class="pre">dispatcher</span></code></a></div>
+</div>
+<p>The type of the executor.</p>
+</dd>
+</dl>
+<p id="step-configs-collect-data-config-executor-dispatcher">When <a class="reference internal" href="#step-configs-collect-data-config-executor-type"><em>type</em></a> is set to <code class="docutils literal notranslate"><span class="pre">dispatcher</span></code>:</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="step-configs-evaluate-config">
+<dt>evaluate_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">{'template_config':</span> <span class="pre">{'image':</span> <span class="pre">'registry.dp.tech/dptech/deepmd-kit:v3.0.0a1-2024Q1',</span> <span class="pre">'timeout':</span> <span class="pre">None,</span> <span class="pre">'retry_on_transient_error':</span> <span class="pre">None,</span> <span class="pre">'timeout_as_transient_error':</span> <span class="pre">False,</span> <span class="pre">'envs':</span> <span class="pre">None},</span> <span class="pre">'continue_on_failed':</span> <span class="pre">False,</span> <span class="pre">'continue_on_num_success':</span> <span class="pre">None,</span> <span class="pre">'continue_on_success_ratio':</span> <span class="pre">None,</span> <span class="pre">'parallelism':</span> <span class="pre">None,</span> <span class="pre">'executor':</span> <span class="pre">None}</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/evaluate_config</span></code></div>
+</div>
+<p>Configuration for model evaluation</p>
+<dl id="step-configs-evaluate-config-template-config">
+<dt>template_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">{'image':</span> <span class="pre">'registry.dp.tech/dptech/deepmd-kit:v3.0.0a1-2024Q1'}</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/evaluate_config/template_config</span></code></div>
+</div>
+<p>The configs passed to the PythonOPTemplate.</p>
+<dl id="step-configs-evaluate-config-template-config-image">
+<dt>image:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">registry.dp.tech/dptech/deepmd-kit:v3.0.0a1-2024Q1</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/evaluate_config/template_config/image</span></code></div>
+</div>
+<p>The image to run the step.</p>
+</dd>
+</dl>
+<dl id="step-configs-evaluate-config-template-config-timeout">
+<dt>timeout:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/evaluate_config/template_config/timeout</span></code></div>
+</div>
+<p>The time limit of the OP. Unit is second.</p>
+</dd>
+</dl>
+<dl id="step-configs-evaluate-config-template-config-retry-on-transient-error">
+<dt>retry_on_transient_error:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/evaluate_config/template_config/retry_on_transient_error</span></code></div>
+</div>
+<p>The number of retry times if a TransientError is raised.</p>
+</dd>
+</dl>
+<dl id="step-configs-evaluate-config-template-config-timeout-as-transient-error">
+<dt>timeout_as_transient_error:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">False</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/evaluate_config/template_config/timeout_as_transient_error</span></code></div>
+</div>
+<p>Treat the timeout as TransientError.</p>
+</dd>
+</dl>
+<dl id="step-configs-evaluate-config-template-config-envs">
+<dt>envs:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/evaluate_config/template_config/envs</span></code></div>
+</div>
+<p>The environmental variables.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="step-configs-evaluate-config-template-slice-config">
+<dt>template_slice_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional</div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/evaluate_config/template_slice_config</span></code></div>
+</div>
+<p>The configs passed to the Slices.</p>
+<dl id="step-configs-evaluate-config-template-slice-config-group-size">
+<dt>group_size:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/evaluate_config/template_slice_config/group_size</span></code></div>
+</div>
+<p>The number of tasks running on a single node. It is efficient for a large number of short tasks.</p>
+</dd>
+</dl>
+<dl id="step-configs-evaluate-config-template-slice-config-pool-size">
+<dt>pool_size:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/evaluate_config/template_slice_config/pool_size</span></code></div>
+</div>
+<p>The number of tasks running at the same time on one node.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="step-configs-evaluate-config-continue-on-failed">
+<dt>continue_on_failed:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">False</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/evaluate_config/continue_on_failed</span></code></div>
+</div>
+<p>If continue the the step is failed (FatalError, TransientError, A certain number of retrial is reached…).</p>
+</dd>
+</dl>
+<dl id="step-configs-evaluate-config-continue-on-num-success">
+<dt>continue_on_num_success:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/evaluate_config/continue_on_num_success</span></code></div>
+</div>
+<p>Only in the sliced OP case. Continue the workflow if a certain number of the sliced jobs are successful.</p>
+</dd>
+</dl>
+<dl id="step-configs-evaluate-config-continue-on-success-ratio">
+<dt>continue_on_success_ratio:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/evaluate_config/continue_on_success_ratio</span></code></div>
+</div>
+<p>Only in the sliced OP case. Continue the workflow if a certain ratio of the sliced jobs are successful.</p>
+</dd>
+</dl>
+<dl id="step-configs-evaluate-config-parallelism">
+<dt>parallelism:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/evaluate_config/parallelism</span></code></div>
+</div>
+<p>The parallelism for the step</p>
+</dd>
+</dl>
+<dl id="step-configs-evaluate-config-executor">
+<dt>executor:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/evaluate_config/executor</span></code></div>
+</div>
+<p>The executor of the step.</p>
+<p>Depending on the value of <em>type</em>, different sub args are accepted.</p>
+<dl id="step-configs-evaluate-config-executor-type">
+<dt>type:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code> (flag key)</div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">step_configs/evaluate_config/executor/type</span></code></div>
+<div class="line">possible choices: <a class="reference internal" href="#step-configs-evaluate-config-executor-dispatcher"><code class="docutils literal notranslate"><span class="pre">dispatcher</span></code></a></div>
+</div>
+<p>The type of the executor.</p>
+</dd>
+</dl>
+<p id="step-configs-evaluate-config-executor-dispatcher">When <a class="reference internal" href="#step-configs-evaluate-config-executor-type"><em>type</em></a> is set to <code class="docutils literal notranslate"><span class="pre">dispatcher</span></code>:</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="upload-python-packages">
+<dt>upload_python_packages:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">str</span></code> | <code class="docutils literal notranslate"><span class="pre">typing.List[str]</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code>, alias: <em>upload_python_package</em></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">upload_python_packages</span></code></div>
+</div>
+<p>Upload python package, for debug purpose</p>
+</dd>
+</dl>
+</section>
+<section id="task-definition">
+<h2>Task definition<a class="headerlink" href="#task-definition" title="Link to this heading"></a></h2>
+<dl id="type">
+<dt>type:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">type</span></code></div>
+</div>
+<p>Task type, <cite>finetune</cite> or <cite>dist</cite></p>
+</dd>
+</dl>
+<dl id="max-iter">
+<dt>max_iter:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">1</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">max_iter</span></code></div>
+</div>
+<p>Maximum number of iterations</p>
+</dd>
+</dl>
+<dl id="init-fp">
+<dt>init_fp:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">False</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">init_fp</span></code></div>
+</div>
+<p>Initialize fine-tuning</p>
+</dd>
+</dl>
+<dl id="init-train">
+<dt>init_train:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">False</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">init_train</span></code></div>
+</div>
+<p>Initialize training</p>
+</dd>
+</dl>
+</section>
+<section id="input-definition">
+<h2>Input definition<a class="headerlink" href="#input-definition" title="Link to this heading"></a></h2>
+<dl id="init-confs">
+<dt>init_confs:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">init_confs</span></code></div>
+</div>
+<p>The initial configurations for exploration</p>
+<dl id="init-confs-prefix">
+<dt>prefix:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">init_confs/prefix</span></code></div>
+</div>
+</dd>
+</dl>
+<dl id="init-confs-fmt">
+<dt>fmt:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">extxyz</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">init_confs/fmt</span></code></div>
+</div>
+<p>ASE compatible format of input structure files</p>
+</dd>
+</dl>
+<dl id="init-confs-confs-paths">
+<dt>confs_paths:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">str</span></code> | <code class="docutils literal notranslate"><span class="pre">typing.List[str]</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code>, alias: <em>files</em></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">init_confs/confs_paths</span></code></div>
+</div>
+</dd>
+</dl>
+<dl id="init-confs-confs-uri">
+<dt>confs_uri:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">str</span></code> | <code class="docutils literal notranslate"><span class="pre">typing.List[str]</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">init_confs/confs_uri</span></code></div>
+</div>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="init-fp-confs">
+<dt>init_fp_confs:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">{}</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">init_fp_confs</span></code></div>
+</div>
+<p>The configurations for initial first-principles calculations</p>
+<dl id="init-fp-confs-prefix">
+<dt>prefix:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">init_fp_confs/prefix</span></code></div>
+</div>
+</dd>
+</dl>
+<dl id="init-fp-confs-fmt">
+<dt>fmt:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">extxyz</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">init_fp_confs/fmt</span></code></div>
+</div>
+<p>ASE compatible format of input structure files</p>
+</dd>
+</dl>
+<dl id="init-fp-confs-confs-paths">
+<dt>confs_paths:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">str</span></code> | <code class="docutils literal notranslate"><span class="pre">typing.List[str]</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code>, alias: <em>files</em></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">init_fp_confs/confs_paths</span></code></div>
+</div>
+</dd>
+</dl>
+<dl id="init-fp-confs-confs-uri">
+<dt>confs_uri:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">str</span></code> | <code class="docutils literal notranslate"><span class="pre">typing.List[str]</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">init_fp_confs/confs_uri</span></code></div>
+</div>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="init-data-prefix">
+<dt>init_data_prefix:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">init_data_prefix</span></code></div>
+</div>
+<p>The prefix of initial data systems</p>
+</dd>
+</dl>
+<dl id="init-data-sys">
+<dt>init_data_sys:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">str</span></code> | <code class="docutils literal notranslate"><span class="pre">typing.List[str]</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">init_data_sys</span></code></div>
+</div>
+<p>The inital data systems</p>
+</dd>
+</dl>
+<dl id="init-data-uri">
+<dt>init_data_uri:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">init_data_uri</span></code></div>
+</div>
+<p>The URI of initial data</p>
+</dd>
+</dl>
+<dl id="base-model-path">
+<dt>base_model_path:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">str</span></code> | <code class="docutils literal notranslate"><span class="pre">typing.List[str]</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code>, aliases: <em>teacher_model_path</em>, <em>pretrain_model_path</em>, <em>teacher_models_paths</em></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">base_model_path</span></code></div>
+</div>
+<p>Path to the base model.In <cite>finetune</cite> task, this is the path to the pretrained model.In <cite>distillation</cite> task, this is the path to the teacher model.</p>
+</dd>
+</dl>
+<dl id="base-model-uri">
+<dt>base_model_uri:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code>, aliases: <em>teacher_model_uri</em>, <em>pretrain_model_uri</em></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">base_model_uri</span></code></div>
+</div>
+<p>URI of the base model.</p>
+</dd>
+</dl>
+</section>
+<section id="exploration">
+<h2>Exploration<a class="headerlink" href="#exploration" title="Link to this heading"></a></h2>
+<dl id="id1">
+<dt>exploration:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, alias: <em>explore</em></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">exploration</span></code></div>
+</div>
+<p>The configuration for exploration</p>
+<dl id="exploration-test-set-config">
+<dt>test_set_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">{'test_size':</span> <span class="pre">0.1}</span></code>, alias: <em>test_set</em></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">exploration/test_set_config</span></code></div>
+</div>
+<p>Set the portion of test set. Only available for <cite>dist</cite></p>
+</dd>
+</dl>
+<p>Depending on the value of <em>type</em>, different sub args are accepted.</p>
+<dl id="exploration-type">
+<dt>type:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code> (flag key)</div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">exploration/type</span></code></div>
+<div class="line">possible choices: <a class="reference internal" href="#exploration-ase"><code class="docutils literal notranslate"><span class="pre">ase</span></code></a></div>
+</div>
+<p>The type of the exploration</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#exploration-ase"><code class="docutils literal notranslate"><span class="pre">ase</span></code></a>: Exploration by ASE</p></li>
+</ul>
+</dd>
+</dl>
+<p id="exploration-ase">When <a class="reference internal" href="#exploration-type"><em>type</em></a> is set to <code class="docutils literal notranslate"><span class="pre">ase</span></code>:</p>
+<p>Exploration by ASE</p>
+<dl id="exploration-ase-config">
+<dt>config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">{}</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">exploration[ase]/config</span></code></div>
+</div>
+<p>Configuration of ase exploration</p>
+<dl id="exploration-ase-config-calculator">
+<dt>calculator:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, alias: <em>calc</em></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">exploration[ase]/config/calculator</span></code></div>
+</div>
+<p>The type of calculator to use, e.g., ‘mace’, ‘mattersim’.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="exploration-ase-stages">
+<dt>stages:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">typing.List[typing.List[dict]]</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">exploration[ase]/stages</span></code></div>
+</div>
+<p>Exploration stages.The definition of exploration stages of type <cite>List[List[ExplorationTaskGroup]</cite>. The outer list provides the enumeration of the exploration stages. Then each stage is defined by a list of exploration task groups. Each task group is described in <span class="xref std std-ref">the task group definition</span></p>
+</dd>
+</dl>
+</dd>
+</dl>
+<section id="explore-task-group-definition">
+<h3>Explore task group definition<a class="headerlink" href="#explore-task-group-definition" title="Link to this heading"></a></h3>
+<section id="ase-task-group">
+<h4>ASE task group<a class="headerlink" href="#ase-task-group" title="Link to this heading"></a></h4>
+<dl id="temps">
+<dt>temps:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">list</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">temps</span></code></div>
+</div>
+<p>List of temperatures for MD simulation.</p>
+</dd>
+</dl>
+<dl id="press">
+<dt>press:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">list</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">press</span></code></div>
+</div>
+<p>List of pressures for MD simulation (optional).</p>
+</dd>
+</dl>
+<dl id="ens">
+<dt>ens:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">npt</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">ens</span></code></div>
+</div>
+<p>Ensemble type (e.g., ‘npt’, ‘nvt’).</p>
+</dd>
+</dl>
+<dl id="dt">
+<dt>dt:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">2</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">dt</span></code></div>
+</div>
+<p>MD time step (fs or ps).</p>
+</dd>
+</dl>
+<dl id="nsteps">
+<dt>nsteps:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">1000</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">nsteps</span></code></div>
+</div>
+<p>Number of MD steps.</p>
+</dd>
+</dl>
+<dl id="trj-freq">
+<dt>trj_freq:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">100</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">trj_freq</span></code></div>
+</div>
+<p>Trajectory output frequency.</p>
+</dd>
+</dl>
+<dl id="tau-t">
+<dt>tau_t:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">100</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">tau_t</span></code></div>
+</div>
+<p>Thermostat time constant.</p>
+</dd>
+</dl>
+<dl id="tau-p">
+<dt>tau_p:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">500</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">tau_p</span></code></div>
+</div>
+<p>Barostat time constant.</p>
+</dd>
+</dl>
+<dl id="no-pbc">
+<dt>no_pbc:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">False</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">no_pbc</span></code></div>
+</div>
+<p>Disable periodic boundary conditions.</p>
+</dd>
+</dl>
+</section>
+</section>
+</section>
+<section id="frame-selection">
+<h2>Frame selection<a class="headerlink" href="#frame-selection" title="Link to this heading"></a></h2>
+<dl id="test-size">
+<dt>test_size:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">0.1</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">test_size</span></code></div>
+</div>
+<p>The number of data frames split from training data as test set.If <cite>test_size&lt;1</cite>, it is the portion of test set. If <cite>test_size&gt;=1</cite>,it is the number of frames in the test set.</p>
+</dd>
+</dl>
+<dl id="frame-filter">
+<dt>frame_filter:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">typing.List[dict]</span></code> | <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">[]</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">frame_filter</span></code></div>
+</div>
+<p>Depending on the value of <em>type</em>, different sub args are accepted.</p>
+<dl id="frame-filter-type">
+<dt>type:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code> (flag key)</div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">frame_filter/type</span></code></div>
+<div class="line">possible choices: <a class="reference internal" href="#frame-filter-distance"><code class="docutils literal notranslate"><span class="pre">distance</span></code></a>, <a class="reference internal" href="#frame-filter-box-skewness"><code class="docutils literal notranslate"><span class="pre">box_skewness</span></code></a>, <a class="reference internal" href="#frame-filter-box-length"><code class="docutils literal notranslate"><span class="pre">box_length</span></code></a></div>
+</div>
+<p>the type of the frame selector</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#frame-filter-distance"><code class="docutils literal notranslate"><span class="pre">distance</span></code></a>: The parameters of atom distance filter</p></li>
+<li><p><a class="reference internal" href="#frame-filter-box-skewness"><code class="docutils literal notranslate"><span class="pre">box_skewness</span></code></a>: The parameters of box skewness filter</p></li>
+<li><p><a class="reference internal" href="#frame-filter-box-length"><code class="docutils literal notranslate"><span class="pre">box_length</span></code></a>: The parameters of box length filter</p></li>
+</ul>
+</dd>
+</dl>
+<p id="frame-filter-distance">When <a class="reference internal" href="#frame-filter-type"><em>type</em></a> is set to <code class="docutils literal notranslate"><span class="pre">distance</span></code>:</p>
+<p>The parameters of atom distance filter</p>
+<dl id="frame-filter-distance-custom-safe-dist">
+<dt>custom_safe_dist:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">{}</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">frame_filter[distance]/custom_safe_dist</span></code></div>
+</div>
+<p>Custom safe distance (in unit of bohr) for each element</p>
+</dd>
+</dl>
+<dl id="frame-filter-distance-safe-dist-ratio">
+<dt>safe_dist_ratio:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">1.0</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">frame_filter[distance]/safe_dist_ratio</span></code></div>
+</div>
+<p>The ratio multiplied to the safe distance</p>
+</dd>
+</dl>
+<p id="frame-filter-box-skewness">When <a class="reference internal" href="#frame-filter-type"><em>type</em></a> is set to <code class="docutils literal notranslate"><span class="pre">box_skewness</span></code>:</p>
+<p>The parameters of box skewness filter</p>
+<dl id="frame-filter-box-skewness-theta">
+<dt>theta:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">60.0</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">frame_filter[box_skewness]/theta</span></code></div>
+</div>
+<p>The threshold for angles between the edges of the cell. If all angles are larger than this value the check is passed</p>
+</dd>
+</dl>
+<p id="frame-filter-box-length">When <a class="reference internal" href="#frame-filter-type"><em>type</em></a> is set to <code class="docutils literal notranslate"><span class="pre">box_length</span></code>:</p>
+<p>The parameters of box length filter</p>
+<dl id="frame-filter-box-length-length-ratio">
+<dt>length_ratio:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">5.0</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">frame_filter[box_length]/length_ratio</span></code></div>
+</div>
+<p>The threshold for the length ratio between the edges of the cell. If all length ratios are smaller than this value the check is passed</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="h-filter">
+<dt>h_filter:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">h_filter</span></code></div>
+</div>
+<p>Select configurations based on entropy contribution</p>
+<dl id="h-filter-k">
+<dt>k:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">32</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">h_filter/k</span></code></div>
+</div>
+<p>Number of nearest neighbors to consider</p>
+</dd>
+</dl>
+<dl id="h-filter-cutoff">
+<dt>cutoff:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">5.0</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">h_filter/cutoff</span></code></div>
+</div>
+<p>Cutoff distance (in unit of angstrom)</p>
+</dd>
+</dl>
+<dl id="h-filter-batch-size">
+<dt>batch_size:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">1000</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">h_filter/batch_size</span></code></div>
+</div>
+<p>Batch size for calculating the similarity matrix</p>
+</dd>
+</dl>
+<dl id="h-filter-h">
+<dt>h:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">0.015</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">h_filter/h</span></code></div>
+</div>
+<p>Bandwidth of the Gaussian kernel (in unit of angstrom).It controls the level of ‘similarity’ between two configurations</p>
+</dd>
+</dl>
+<dl id="h-filter-entropy-threshold">
+<dt>entropy_threshold:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">0.01</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">h_filter/entropy_threshold</span></code></div>
+</div>
+<p>Threshold of entropy increment for selecting a new configuration.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<section id="labeling">
+<h2>Labeling<a class="headerlink" href="#labeling" title="Link to this heading"></a></h2>
+<dl id="fp">
+<dt>fp:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional</div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">fp</span></code></div>
+</div>
+<p>The configuration for FP</p>
+<p>Depending on the value of <em>type</em>, different sub args are accepted.</p>
+<dl id="fp-type">
+<dt>type:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code> (flag key)</div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">fp/type</span></code></div>
+<div class="line">possible choices: <a class="reference internal" href="#fp-vasp"><code class="docutils literal notranslate"><span class="pre">vasp</span></code></a>, <a class="reference internal" href="#fp-ase"><code class="docutils literal notranslate"><span class="pre">ase</span></code></a>, <a class="reference internal" href="#fp-foo"><code class="docutils literal notranslate"><span class="pre">foo</span></code></a></div>
+</div>
+<p>Tpyes of first-principles calculators</p>
+</dd>
+</dl>
+<p id="fp-vasp">When <a class="reference internal" href="#fp-type"><em>type</em></a> is set to <code class="docutils literal notranslate"><span class="pre">vasp</span></code>:</p>
+<dl id="fp-vasp-inputs-config">
+<dt>inputs_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">fp[vasp]/inputs_config</span></code></div>
+</div>
+<p>Configuration for preparing vasp inputs</p>
+<dl id="fp-vasp-inputs-config-incar">
+<dt>incar:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">fp[vasp]/inputs_config/incar</span></code></div>
+</div>
+<p>The path to the template incar file</p>
+</dd>
+</dl>
+<dl id="fp-vasp-inputs-config-pp-files">
+<dt>pp_files:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">fp[vasp]/inputs_config/pp_files</span></code></div>
+</div>
+<p>The pseudopotential files set by a dict, e.g. {“Al” : “path/to/the/al/pp/file”, “Mg” : “path/to/the/mg/pp/file”}</p>
+</dd>
+</dl>
+<dl id="fp-vasp-inputs-config-kspacing">
+<dt>kspacing:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">float</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">fp[vasp]/inputs_config/kspacing</span></code></div>
+</div>
+<p>The spacing of k-point sampling. <cite>ksapcing</cite> will overwrite the incar template</p>
+</dd>
+</dl>
+<dl id="fp-vasp-inputs-config-kgamma">
+<dt>kgamma:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">True</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">fp[vasp]/inputs_config/kgamma</span></code></div>
+</div>
+<p>If the k-mesh includes the gamma point. <cite>kgamma</cite> will overwrite the incar template</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="fp-vasp-run-config">
+<dt>run_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">fp[vasp]/run_config</span></code></div>
+</div>
+<p>Configuration for running vasp tasks</p>
+<dl id="fp-vasp-run-config-command">
+<dt>command:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">vasp</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">fp[vasp]/run_config/command</span></code></div>
+</div>
+<p>The command of VASP</p>
+</dd>
+</dl>
+<dl id="fp-vasp-run-config-out">
+<dt>out:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">structures.extxyz</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">fp[vasp]/run_config/out</span></code></div>
+</div>
+<p>The output dir name of labeled data. In <cite>deepmd/npy</cite> format provided by <cite>dpdata</cite>.</p>
+</dd>
+</dl>
+<dl id="fp-vasp-run-config-log">
+<dt>log:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">fp.log</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">fp[vasp]/run_config/log</span></code></div>
+</div>
+<p>The log file name of VASP</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="fp-vasp-extra-output-files">
+<dt>extra_output_files:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">typing.List</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">[]</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">fp[vasp]/extra_output_files</span></code></div>
+</div>
+<p>Extra output file names, support wildcards</p>
+</dd>
+</dl>
+<p id="fp-ase">When <a class="reference internal" href="#fp-type"><em>type</em></a> is set to <code class="docutils literal notranslate"><span class="pre">ase</span></code>:</p>
+<dl id="fp-ase-inputs-config">
+<dt>inputs_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">fp[ase]/inputs_config</span></code></div>
+</div>
+<p>Configuration for preparing vasp inputs</p>
+</dd>
+</dl>
+<dl id="fp-ase-run-config">
+<dt>run_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">fp[ase]/run_config</span></code></div>
+</div>
+<p>Configuration for running vasp tasks</p>
+<dl id="fp-ase-run-config-model-style">
+<dt>model_style:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">dp</span></code>, aliases: <em>style</em>, <em>model</em></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">fp[ase]/run_config/model_style</span></code></div>
+</div>
+<p>Distillation model style, e.g., ‘mace’, ‘mattersim’.</p>
+</dd>
+</dl>
+<dl id="fp-ase-run-config-model-args">
+<dt>model_args:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">typing.Dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">{}</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">fp[ase]/run_config/model_args</span></code></div>
+</div>
+<p>Model arguments, e.g., {‘device’:’cuda’},  etc.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="fp-ase-extra-output-files">
+<dt>extra_output_files:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">typing.List</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">[]</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">fp[ase]/extra_output_files</span></code></div>
+</div>
+<p>Extra output file names, support wildcards</p>
+</dd>
+</dl>
+<p id="fp-foo">When <a class="reference internal" href="#fp-type"><em>type</em></a> is set to <code class="docutils literal notranslate"><span class="pre">foo</span></code>:</p>
+<dl id="fp-foo-inputs-config">
+<dt>inputs_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">fp[foo]/inputs_config</span></code></div>
+</div>
+<p>Configuration for preparing vasp inputs</p>
+</dd>
+</dl>
+<dl id="fp-foo-run-config">
+<dt>run_config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">fp[foo]/run_config</span></code></div>
+</div>
+<p>Configuration for running vasp tasks</p>
+<dl id="fp-foo-run-config-command">
+<dt>command:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">foo</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">fp[foo]/run_config/command</span></code></div>
+</div>
+<p>Command to run the foo task.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="fp-foo-extra-output-files">
+<dt>extra_output_files:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">typing.List</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">[]</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">fp[foo]/extra_output_files</span></code></div>
+</div>
+<p>Extra output file names, support wildcards</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<section id="model-training">
+<h2>Model training<a class="headerlink" href="#model-training" title="Link to this heading"></a></h2>
+<dl id="train">
+<dt>train:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train</span></code></div>
+</div>
+<p>The configuration for training</p>
+<p>Depending on the value of <em>type</em>, different sub args are accepted.</p>
+<dl id="train-type">
+<dt>type:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code> (flag key)</div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train/type</span></code></div>
+<div class="line">possible choices: <a class="reference internal" href="#train-dp"><code class="docutils literal notranslate"><span class="pre">dp</span></code></a>, <a class="reference internal" href="#train-mattersim"><code class="docutils literal notranslate"><span class="pre">mattersim</span></code></a></div>
+</div>
+<p>the type of the training model</p>
+</dd>
+</dl>
+<p id="train-dp">When <a class="reference internal" href="#train-type"><em>type</em></a> is set to <code class="docutils literal notranslate"><span class="pre">dp</span></code>:</p>
+<dl id="train-dp-config">
+<dt>config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">{'command':</span> <span class="pre">'dp',</span> <span class="pre">'impl':</span> <span class="pre">'tensorflow',</span> <span class="pre">'finetune_args':</span> <span class="pre">'',</span> <span class="pre">'multitask':</span> <span class="pre">False,</span> <span class="pre">'head':</span> <span class="pre">None,</span> <span class="pre">'train_args':</span> <span class="pre">'',</span> <span class="pre">'finetune_mode':</span> <span class="pre">False,</span> <span class="pre">'mixed_type':</span> <span class="pre">False}</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[dp]/config</span></code></div>
+</div>
+<p>Configuration of training</p>
+<dl id="train-dp-config-command">
+<dt>command:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">dp</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[dp]/config/command</span></code></div>
+</div>
+<p>The command for DP, ‘dp’ for default</p>
+</dd>
+</dl>
+<dl id="train-dp-config-impl">
+<dt>impl:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code>, alias: <em>backend</em></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[dp]/config/impl</span></code></div>
+</div>
+<p>The implementation/backend of DP. It can be ‘tensorflow’ or ‘pytorch’. ‘tensorflow’ for default.</p>
+</dd>
+</dl>
+<dl id="train-dp-config-finetune-args">
+<dt>finetune_args:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: (empty string)</div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[dp]/config/finetune_args</span></code></div>
+</div>
+<p>Extra arguments for finetuning</p>
+</dd>
+</dl>
+<dl id="train-dp-config-multitask">
+<dt>multitask:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">False</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[dp]/config/multitask</span></code></div>
+</div>
+<p>Do multitask training</p>
+</dd>
+</dl>
+<dl id="train-dp-config-head">
+<dt>head:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[dp]/config/head</span></code></div>
+</div>
+<p>Head to use in the multitask training</p>
+</dd>
+</dl>
+<dl id="train-dp-config-train-args">
+<dt>train_args:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: (empty string)</div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[dp]/config/train_args</span></code></div>
+</div>
+<p>Extra arguments for dp train</p>
+</dd>
+</dl>
+<dl id="train-dp-config-finetune-mode">
+<dt>finetune_mode:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">False</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[dp]/config/finetune_mode</span></code></div>
+</div>
+<p>Whether to run in finetune mode</p>
+</dd>
+</dl>
+<dl id="train-dp-config-mixed-type">
+<dt>mixed_type:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">False</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[dp]/config/mixed_type</span></code></div>
+</div>
+<p>Whether to use mixed type system for training</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="train-dp-template-script">
+<dt>template_script:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code> | <code class="docutils literal notranslate"><span class="pre">str</span></code> | <code class="docutils literal notranslate"><span class="pre">typing.List[str]</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">{}</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[dp]/template_script</span></code></div>
+</div>
+<p>File names of the template training script. It can be a <cite>List[str]</cite>, the length of which is the same as <cite>numb_models</cite>. Each template script in the list is used to train a model. Can be a <cite>str</cite>, the models share the same template training script.</p>
+</dd>
+</dl>
+<dl id="train-dp-optional-files">
+<dt>optional_files:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">list</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[dp]/optional_files</span></code></div>
+</div>
+<p>Optional files for training</p>
+</dd>
+</dl>
+<p id="train-mattersim">When <a class="reference internal" href="#train-type"><em>type</em></a> is set to <code class="docutils literal notranslate"><span class="pre">mattersim</span></code>:</p>
+<dl id="train-mattersim-config">
+<dt>config:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">{'run_name':</span> <span class="pre">'train',</span> <span class="pre">'save_path':</span> <span class="pre">'./',</span> <span class="pre">'save_checkpoint':</span> <span class="pre">True,</span> <span class="pre">'ckpt_interval':</span> <span class="pre">10,</span> <span class="pre">'device':</span> <span class="pre">'cuda',</span> <span class="pre">'cutoff':</span> <span class="pre">5.0,</span> <span class="pre">'threebody_cutoff':</span> <span class="pre">4.0,</span> <span class="pre">'epochs':</span> <span class="pre">10,</span> <span class="pre">'batch_size':</span> <span class="pre">8,</span> <span class="pre">'lr':</span> <span class="pre">0.0002,</span> <span class="pre">'step_size':</span> <span class="pre">10,</span> <span class="pre">'include_forces':</span> <span class="pre">True,</span> <span class="pre">'include_stresses':</span> <span class="pre">False,</span> <span class="pre">'force_loss_ratio':</span> <span class="pre">1.0,</span> <span class="pre">'stress_loss_ratio':</span> <span class="pre">0.1,</span> <span class="pre">'early_stop_patience':</span> <span class="pre">10,</span> <span class="pre">'seed':</span> <span class="pre">42,</span> <span class="pre">'re_normalize':</span> <span class="pre">False,</span> <span class="pre">'scale_key':</span> <span class="pre">'per_species_forces_rms',</span> <span class="pre">'shift_key':</span> <span class="pre">'per_species_energy_mean_linear_reg',</span> <span class="pre">'init_scale':</span> <span class="pre">None,</span> <span class="pre">'init_shift':</span> <span class="pre">None,</span> <span class="pre">'trainable_scale':</span> <span class="pre">False,</span> <span class="pre">'trainable_shift':</span> <span class="pre">False}</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[mattersim]/config</span></code></div>
+</div>
+<p>Configuration of training</p>
+<dl id="train-mattersim-config-run-name">
+<dt>run_name:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">train</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[mattersim]/config/run_name</span></code></div>
+</div>
+<p>Name of the run.</p>
+</dd>
+</dl>
+<dl id="train-mattersim-config-save-path">
+<dt>save_path:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">./</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[mattersim]/config/save_path</span></code></div>
+</div>
+<p>Path to save the model.</p>
+</dd>
+</dl>
+<dl id="train-mattersim-config-save-checkpoint">
+<dt>save_checkpoint:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">True</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[mattersim]/config/save_checkpoint</span></code></div>
+</div>
+<p>Save checkpoint during training.</p>
+</dd>
+</dl>
+<dl id="train-mattersim-config-ckpt-interval">
+<dt>ckpt_interval:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">10</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[mattersim]/config/ckpt_interval</span></code></div>
+</div>
+<p>Save checkpoint every ckpt_interval epochs.</p>
+</dd>
+</dl>
+<dl id="train-mattersim-config-device">
+<dt>device:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">cuda</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[mattersim]/config/device</span></code></div>
+</div>
+<p>Device to use for training (e.g., ‘cuda’ or ‘cpu’).</p>
+</dd>
+</dl>
+<dl id="train-mattersim-config-cutoff">
+<dt>cutoff:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">5.0</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[mattersim]/config/cutoff</span></code></div>
+</div>
+<p>Cutoff radius for two-body interactions.</p>
+</dd>
+</dl>
+<dl id="train-mattersim-config-threebody-cutoff">
+<dt>threebody_cutoff:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">4.0</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[mattersim]/config/threebody_cutoff</span></code></div>
+</div>
+<p>Cutoff radius for three-body interactions.</p>
+</dd>
+</dl>
+<dl id="train-mattersim-config-epochs">
+<dt>epochs:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">10</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[mattersim]/config/epochs</span></code></div>
+</div>
+<p>Number of training epochs.</p>
+</dd>
+</dl>
+<dl id="train-mattersim-config-batch-size">
+<dt>batch_size:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">8</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[mattersim]/config/batch_size</span></code></div>
+</div>
+<p>Batch size for training.</p>
+</dd>
+</dl>
+<dl id="train-mattersim-config-lr">
+<dt>lr:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">0.0002</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[mattersim]/config/lr</span></code></div>
+</div>
+<p>Learning rate.</p>
+</dd>
+</dl>
+<dl id="train-mattersim-config-step-size">
+<dt>step_size:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">10</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[mattersim]/config/step_size</span></code></div>
+</div>
+<p>Step epoch for learning rate scheduler.</p>
+</dd>
+</dl>
+<dl id="train-mattersim-config-include-forces">
+<dt>include_forces:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">True</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[mattersim]/config/include_forces</span></code></div>
+</div>
+<p>Include forces in training.</p>
+</dd>
+</dl>
+<dl id="train-mattersim-config-include-stresses">
+<dt>include_stresses:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">False</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[mattersim]/config/include_stresses</span></code></div>
+</div>
+<p>Include stresses in training.</p>
+</dd>
+</dl>
+<dl id="train-mattersim-config-force-loss-ratio">
+<dt>force_loss_ratio:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">1.0</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[mattersim]/config/force_loss_ratio</span></code></div>
+</div>
+<p>Weight for force loss.</p>
+</dd>
+</dl>
+<dl id="train-mattersim-config-stress-loss-ratio">
+<dt>stress_loss_ratio:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">0.1</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[mattersim]/config/stress_loss_ratio</span></code></div>
+</div>
+<p>Weight for stress loss.</p>
+</dd>
+</dl>
+<dl id="train-mattersim-config-early-stop-patience">
+<dt>early_stop_patience:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">10</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[mattersim]/config/early_stop_patience</span></code></div>
+</div>
+<p>Patience for early stopping.</p>
+</dd>
+</dl>
+<dl id="train-mattersim-config-seed">
+<dt>seed:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">42</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[mattersim]/config/seed</span></code></div>
+</div>
+<p>Random seed for reproducibility.</p>
+</dd>
+</dl>
+<dl id="train-mattersim-config-re-normalize">
+<dt>re_normalize:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">False</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[mattersim]/config/re_normalize</span></code></div>
+</div>
+<p>Re-normalize energy and forces.</p>
+</dd>
+</dl>
+<dl id="train-mattersim-config-scale-key">
+<dt>scale_key:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">per_species_forces_rms</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[mattersim]/config/scale_key</span></code></div>
+</div>
+<p>Key for scaling forces.</p>
+</dd>
+</dl>
+<dl id="train-mattersim-config-shift-key">
+<dt>shift_key:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">per_species_energy_mean_linear_reg</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[mattersim]/config/shift_key</span></code></div>
+</div>
+<p>Key for shifting energy.</p>
+</dd>
+</dl>
+<dl id="train-mattersim-config-init-scale">
+<dt>init_scale:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[mattersim]/config/init_scale</span></code></div>
+</div>
+<p>Initial scale value.</p>
+</dd>
+</dl>
+<dl id="train-mattersim-config-init-shift">
+<dt>init_shift:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[mattersim]/config/init_shift</span></code></div>
+</div>
+<p>Initial shift value.</p>
+</dd>
+</dl>
+<dl id="train-mattersim-config-trainable-scale">
+<dt>trainable_scale:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">False</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[mattersim]/config/trainable_scale</span></code></div>
+</div>
+<p>Allow scale to be trainable.</p>
+</dd>
+</dl>
+<dl id="train-mattersim-config-trainable-shift">
+<dt>trainable_shift:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">False</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[mattersim]/config/trainable_shift</span></code></div>
+</div>
+<p>Allow shift to be trainable.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl id="train-mattersim-template-script">
+<dt>template_script:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code> | <code class="docutils literal notranslate"><span class="pre">str</span></code> | <code class="docutils literal notranslate"><span class="pre">typing.List[str]</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">{}</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[mattersim]/template_script</span></code></div>
+</div>
+<p>File names of the template training script. It can be a <cite>List[str]</cite>, the length of which is the same as <cite>numb_models</cite>. Each template script in the list is used to train a model. Can be a <cite>str</cite>, the models share the same template training script.</p>
+</dd>
+</dl>
+<dl id="train-mattersim-optional-files">
+<dt>optional_files:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">NoneType</span></code> | <code class="docutils literal notranslate"><span class="pre">list</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">None</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">train[mattersim]/optional_files</span></code></div>
+</div>
+<p>Optional files for training</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<section id="evaluate">
+<h2>Evaluate<a class="headerlink" href="#evaluate" title="Link to this heading"></a></h2>
+<dl id="max-sel">
+<dt>max_sel:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">int</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">50</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">max_sel</span></code></div>
+</div>
+<p>Maximum number of selected configurations</p>
+</dd>
+</dl>
+<dl id="model">
+<dt>model:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">dp</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">model</span></code></div>
+</div>
+<p>The model type used in the evaluation. It should be consistent with the model type used in training.</p>
+</dd>
+</dl>
+<dl id="converge">
+<dt>converge:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">{}</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">converge</span></code></div>
+</div>
+<p>The method of convergence check.</p>
+<p>Depending on the value of <em>type</em>, different sub args are accepted.</p>
+<dl id="converge-type">
+<dt>type:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">str</span></code> (flag key)</div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">converge/type</span></code></div>
+<div class="line">possible choices: <a class="reference internal" href="#converge-force-rmse"><code class="docutils literal notranslate"><span class="pre">force_rmse</span></code></a>, <a class="reference internal" href="#converge-force-rmse-idv"><code class="docutils literal notranslate"><span class="pre">force_rmse_idv</span></code></a>, <a class="reference internal" href="#converge-energy-rmse"><code class="docutils literal notranslate"><span class="pre">energy_rmse</span></code></a></div>
+</div>
+<p>the type of the condidate selection and convergence check method.</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#converge-force-rmse"><code class="docutils literal notranslate"><span class="pre">force_rmse</span></code></a>: Converge by RMSE of atomic forces</p></li>
+<li><p><a class="reference internal" href="#converge-force-rmse-idv"><code class="docutils literal notranslate"><span class="pre">force_rmse_idv</span></code></a>: Converge by RMSE of atomic forces</p></li>
+<li><p><a class="reference internal" href="#converge-energy-rmse"><code class="docutils literal notranslate"><span class="pre">energy_rmse</span></code></a>: Converge by RMSE of energy per atom</p></li>
+</ul>
+</dd>
+</dl>
+<p id="converge-force-rmse">When <a class="reference internal" href="#converge-type"><em>type</em></a> is set to <code class="docutils literal notranslate"><span class="pre">force_rmse</span></code>:</p>
+<p>Converge by RMSE of atomic forces</p>
+<dl id="converge-force-rmse-rmse">
+<dt>RMSE:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">0.01</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">converge[force_rmse]/RMSE</span></code></div>
+</div>
+</dd>
+</dl>
+<p id="converge-force-rmse-idv">When <a class="reference internal" href="#converge-type"><em>type</em></a> is set to <code class="docutils literal notranslate"><span class="pre">force_rmse_idv</span></code>:</p>
+<p>Converge by RMSE of atomic forces</p>
+<dl id="converge-force-rmse-idv-rmse">
+<dt>RMSE:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">0.01</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">converge[force_rmse_idv]/RMSE</span></code></div>
+</div>
+</dd>
+</dl>
+<p id="converge-energy-rmse">When <a class="reference internal" href="#converge-type"><em>type</em></a> is set to <code class="docutils literal notranslate"><span class="pre">energy_rmse</span></code>:</p>
+<p>Converge by RMSE of energy per atom</p>
+<dl id="converge-energy-rmse-rmse">
+<dt>RMSE:</dt><dd><div class="line-block">
+<div class="line">type: <code class="docutils literal notranslate"><span class="pre">float</span></code>, optional, default: <code class="docutils literal notranslate"><span class="pre">0.01</span></code></div>
+<div class="line">argument path: <code class="docutils literal notranslate"><span class="pre">converge[energy_rmse]/RMSE</span></code></div>
+</div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="guide-on-script.html" class="btn btn-neutral float-left" title="Input script guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="examples.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Ruoyu Wang, Hongyu Wu.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: main
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="../../v0.6.5/usage/argument-for-script.html">v0.6.5</a></dd>
+      <dd><a href="../../v0.7.0/usage/argument-for-script.html">v0.7.0</a></dd>
+      <dd><a href="../../v0.8.0/usage/argument-for-script.html">v0.8.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="argument-for-script.html">main</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

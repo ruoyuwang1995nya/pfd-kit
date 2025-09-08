@@ -1,0 +1,317 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Command guide &mdash; pfd-kit 0.7.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=fe7df9b0"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Input script guide" href="guide-on-script.html" />
+    <link rel="prev" title="Quickstart" href="../basics/getting-started.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pfd-kit
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">The Basics</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../basics/overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../basics/getting-started.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Command guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#making-perturbed-structures">Making perturbed structures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#submitting-a-workflow">Submitting a Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#checking-status">Checking status</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#restarting-from-a-checkpoint">Restarting from a Checkpoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#downloading-results">Downloading Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pfd-kit-command-arguments">PFD-kit Command Arguments</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#subcommand-perturb">Subcommand: <code class="docutils literal notranslate"><span class="pre">perturb</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#subcommand-submit">Subcommand: <code class="docutils literal notranslate"><span class="pre">submit</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#subcommand-status">Subcommand: <code class="docutils literal notranslate"><span class="pre">status</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#subcommand-resubmit">Subcommand: <code class="docutils literal notranslate"><span class="pre">resubmit</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#subcommand-download">Subcommand: <code class="docutils literal notranslate"><span class="pre">download</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guide-on-script.html">Input script guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="argument-for-script.html">Arguments of the input script</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/modules.html">API documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pfd-kit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Command guide</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/usage/guide-on-cli.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="command-guide">
+<h1>Command guide<a class="headerlink" href="#command-guide" title="Link to this heading"></a></h1>
+<style>
+  p {
+    text-align: justify;
+  }
+</style><p>Various tasks can be performed through the command line interface of PFD-kit. Here is a guide to the available commands.</p>
+<section id="making-perturbed-structures">
+<h2>Making perturbed structures<a class="headerlink" href="#making-perturbed-structures" title="Link to this heading"></a></h2>
+<p>The initial structures for exploration can be generated by perturbing availiable frames. For example, ten perturbed structures for the diamond Si system can be prepared by the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pfd<span class="w"> </span>perturb<span class="w"> </span>-n<span class="w"> </span><span class="m">10</span><span class="w"> </span>dia_si.extxyz<span class="w"> </span>-c<span class="w"> </span><span class="m">0</span>.03
+</pre></div>
+</div>
+<p>The input file can be of any ase-compatible format. The perturbed frames are stored in <code class="docutils literal notranslate"><span class="pre">pert_dia_si.extxyz</span></code>.</p>
+</section>
+<section id="submitting-a-workflow">
+<h2>Submitting a Workflow<a class="headerlink" href="#submitting-a-workflow" title="Link to this heading"></a></h2>
+<p>To submit a workflow, navigate to the working directory and run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pfd<span class="w"> </span>submit<span class="w"> </span>input.json
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">input.json</span></code> contains workflow definitions. The workflow ID will be printed upon successful submission.</p>
+</section>
+<section id="checking-status">
+<h2>Checking status<a class="headerlink" href="#checking-status" title="Link to this heading"></a></h2>
+<p>To check the status of exploration, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pfd<span class="w"> </span>status<span class="w"> </span>input.json<span class="w"> </span>workflow_id
+</pre></div>
+</div>
+</section>
+<section id="restarting-from-a-checkpoint">
+<h2>Restarting from a Checkpoint<a class="headerlink" href="#restarting-from-a-checkpoint" title="Link to this heading"></a></h2>
+<p>To restart a workflow with modified input parameters, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pfd<span class="w"> </span>resubmit<span class="w"> </span>input.json<span class="w"> </span>old_workflow_id<span class="w"> </span>-u<span class="w"> </span><span class="m">0</span>-100
+</pre></div>
+</div>
+<p>This reuses the results of the first 100 steps of an old workflow. To list completed steps:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pfd<span class="w"> </span>resubmit<span class="w"> </span>input.json<span class="w"> </span>old_workflow_id<span class="w"> </span>-l
+</pre></div>
+</div>
+</section>
+<section id="downloading-results">
+<h2>Downloading Results<a class="headerlink" href="#downloading-results" title="Link to this heading"></a></h2>
+<p>To download the output model file, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pfd<span class="w"> </span>download<span class="w"> </span>input.json<span class="w"> </span>workflow_id
+</pre></div>
+</div>
+<p>For advanced usage, download a specific step’s output:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pfd<span class="w"> </span>download<span class="w"> </span>input.json<span class="w"> </span>workflow_id<span class="w"> </span>-i<span class="w"> </span><span class="m">0</span><span class="w"> </span>-d<span class="w"> </span>prep-run-train/input/models
+</pre></div>
+</div>
+<p>List available download definitions:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pfd<span class="w"> </span>download<span class="w"> </span>input.json<span class="w"> </span>workflow_id<span class="w"> </span>-l
+</pre></div>
+</div>
+</section>
+<section id="pfd-kit-command-arguments">
+<h2>PFD-kit Command Arguments<a class="headerlink" href="#pfd-kit-command-arguments" title="Link to this heading"></a></h2>
+<blockquote>
+<div><p>Note: Use <code class="docutils literal notranslate"><span class="pre">-h</span></code> or <code class="docutils literal notranslate"><span class="pre">--help</span></code> to list all possible arguments for PFD-kit subcommands.</p>
+</div></blockquote>
+<section id="subcommand-perturb">
+<h3>Subcommand: <code class="docutils literal notranslate"><span class="pre">perturb</span></code><a class="headerlink" href="#subcommand-perturb" title="Link to this heading"></a></h3>
+<p>Usage:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pfd<span class="w"> </span>perturb<span class="w"> </span><span class="o">[</span>-h<span class="o">]</span><span class="w"> </span><span class="o">[</span>-n<span class="w"> </span>PERT_NUM<span class="o">]</span><span class="w"> </span><span class="o">[</span>-c<span class="w"> </span>CELL_PERT_FRACTION<span class="o">]</span><span class="w"> </span><span class="o">[</span>-d<span class="w"> </span>ATOM_PERT_DISTANCE<span class="o">]</span><span class="w"> </span><span class="o">[</span>-s<span class="w"> </span>ATOM_PERT_STYLE<span class="o">]</span><span class="w"> </span><span class="o">[</span>-a<span class="w"> </span>ATOM_PERT_PROB<span class="o">]</span><span class="w"> </span><span class="o">[</span>-r<span class="w"> </span>SUPERCELL<span class="w"> </span><span class="o">[</span>SUPERCELL<span class="w"> </span>...<span class="o">]]</span><span class="w"> </span>ATOMS<span class="w"> </span><span class="o">[</span>ATOMS<span class="w"> </span>...<span class="o">]</span>
+</pre></div>
+</div>
+<p>Arguments:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ATOMS</span></code>: the structure files in ase-compatible format, support multiple files.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-n</span> <span class="pre">PERT_NUM,</span> <span class="pre">--pert-num</span> <span class="pre">PERT_NUM</span></code>: the number of perturbed structures to be generated for each input structure. (default: 1)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-c</span> <span class="pre">CELL_PERT_FRACTION,</span> <span class="pre">--cell-pert-fraction</span> <span class="pre">CELL_PERT_FRACTION</span></code>: the fraction of cell perturbation. (default: 0.05)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-d</span> <span class="pre">ATOM_PERT_DISTANCE,</span> <span class="pre">--atom-pert-distance</span> <span class="pre">ATOM_PERT_DISTANCE</span></code>: the distance to perturb the atom. (default: 0.2)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">ATOM_PERT_STYLE,</span> <span class="pre">--atom-pert-style</span> <span class="pre">ATOM_PERT_STYLE</span></code>: the style of perturbation. (default: normal)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-a</span> <span class="pre">ATOM_PERT_PROB,</span> <span class="pre">--atom-pert-prob</span> <span class="pre">ATOM_PERT_PROB</span></code>: the probability of perturbing each atom. (default: 1.0)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-r</span> <span class="pre">SUPERCELL</span> <span class="pre">[SUPERCELL</span> <span class="pre">...],</span> <span class="pre">--supercell</span> <span class="pre">SUPERCELL</span> <span class="pre">[SUPERCELL</span> <span class="pre">...]</span></code>: the supercell replication, support int or 3 ints. (default: None)</p></li>
+</ul>
+</section>
+<section id="subcommand-submit">
+<h3>Subcommand: <code class="docutils literal notranslate"><span class="pre">submit</span></code><a class="headerlink" href="#subcommand-submit" title="Link to this heading"></a></h3>
+<p>Usage:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pfd<span class="w"> </span>submit<span class="w"> </span><span class="o">[</span>-h<span class="o">]</span><span class="w"> </span><span class="o">[</span>-m<span class="o">]</span><span class="w"> </span>CONFIG
+</pre></div>
+</div>
+<p>Arguments:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">CONFIG</span></code>: Path to the configuration script in <code class="docutils literal notranslate"><span class="pre">json</span></code> format.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-m,</span> <span class="pre">--monitoring</span></code>: Monitor workflow progress and auto-download the output model upon successful completion.</p></li>
+</ul>
+</section>
+<section id="subcommand-status">
+<h3>Subcommand: <code class="docutils literal notranslate"><span class="pre">status</span></code><a class="headerlink" href="#subcommand-status" title="Link to this heading"></a></h3>
+<p>Usage:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pfd<span class="w"> </span>status<span class="w"> </span><span class="o">[</span>-h<span class="o">]</span><span class="w"> </span>CONFIG<span class="w"> </span>ID
+</pre></div>
+</div>
+<p>Arguments:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">CONFIG</span></code>: Path to the configuration script in <code class="docutils literal notranslate"><span class="pre">json</span></code> format.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ID</span></code>: Workflow ID of an existing PFD workflow.</p></li>
+</ul>
+</section>
+<section id="subcommand-resubmit">
+<h3>Subcommand: <code class="docutils literal notranslate"><span class="pre">resubmit</span></code><a class="headerlink" href="#subcommand-resubmit" title="Link to this heading"></a></h3>
+<p>Usage:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pfd<span class="w"> </span>resubmit<span class="w"> </span><span class="o">[</span>-h<span class="o">]</span><span class="w"> </span><span class="o">[</span>-m<span class="o">]</span><span class="w"> </span>CONFIG<span class="w"> </span>ID
+</pre></div>
+</div>
+<p>Arguments:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">CONFIG</span></code>: Path to the configuration script in <code class="docutils literal notranslate"><span class="pre">json</span></code> format.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ID</span></code>: Workflow ID of an existing PFD workflow.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-l,</span> <span class="pre">--list</span></code>: List completed steps of an existing workflow.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-u,</span> <span class="pre">--reuse</span> <span class="pre">REUSE</span></code>: Reuse completed steps from an existing workflow.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-f,</span> <span class="pre">--fold</span></code>: Reuse dflow <code class="docutils literal notranslate"><span class="pre">Steps</span></code> in the workflow as a whole. For instance, failed LAMMPS tasks would be skipped in the resubmitted workflow if the <code class="docutils literal notranslate"><span class="pre">prep-run-explore</span></code> <code class="docutils literal notranslate"><span class="pre">Steps</span></code> it belongs to is asserted as successful.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-m,</span> <span class="pre">--monitoring</span></code>: Monitor workflow progress and auto-download the output model upon successful completion.</p></li>
+</ul>
+</section>
+<section id="subcommand-download">
+<h3>Subcommand: <code class="docutils literal notranslate"><span class="pre">download</span></code><a class="headerlink" href="#subcommand-download" title="Link to this heading"></a></h3>
+<p>Usage:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pfd<span class="w"> </span>download<span class="w"> </span><span class="o">[</span>-h<span class="o">]</span><span class="w"> </span><span class="o">[</span>-l<span class="o">]</span><span class="w"> </span><span class="o">[</span>-k<span class="w"> </span>KEYS<span class="o">]</span><span class="w"> </span><span class="o">[</span>-i<span class="w"> </span>ITERATIONS<span class="o">]</span><span class="w"> </span><span class="o">[</span>-d<span class="w"> </span>STEP_DEFINITIONS<span class="o">]</span><span class="w"> </span><span class="o">[</span>-p<span class="w"> </span>PREFIX<span class="o">]</span><span class="w"> </span><span class="o">[</span>-n<span class="o">]</span><span class="w"> </span>CONFIG<span class="w"> </span>ID
+</pre></div>
+</div>
+<p>Arguments:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">CONFIG</span></code>: Path to the configuration script in <code class="docutils literal notranslate"><span class="pre">json</span></code> format.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ID</span></code>: Workflow ID of an existing PFD workflow.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-k,</span> <span class="pre">--keys</span> <span class="pre">KEYS</span></code>: Download artifacts by step key(s).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-d,</span> <span class="pre">--step-definitions</span> <span class="pre">STEP_DEFINITIONS</span></code>: Download artifacts by <em>step definitions</em>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-l,</span> <span class="pre">--list-supported</span></code>: List all supported step definitions.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-i,</span> <span class="pre">--iterations</span> <span class="pre">ITERATIONS</span></code>: Specify steps from which iterations are to be downloaded. Used in conjuntion with <code class="docutils literal notranslate"><span class="pre">-d</span> <span class="pre">STEP_DEFINITIONS</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-p,</span> <span class="pre">--prefix</span> <span class="pre">PREFIX</span></code>: Prefix for the download path.</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../basics/getting-started.html" class="btn btn-neutral float-left" title="Quickstart" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="guide-on-script.html" class="btn btn-neutral float-right" title="Input script guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Ruoyu Wang, Hongyu Wu.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: main
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="../../v0.0.12/usage/guide-on-cli.html">v0.0.12</a></dd>
+      <dd><a href="../../v0.0.13/usage/guide-on-cli.html">v0.0.13</a></dd>
+      <dd><a href="../../v0.0.14/usage/guide-on-cli.html">v0.0.14</a></dd>
+      <dd><a href="../../v0.1.0/usage/guide-on-cli.html">v0.1.0</a></dd>
+      <dd><a href="../../v0.1.1/usage/guide-on-cli.html">v0.1.1</a></dd>
+      <dd><a href="../../v0.1.2/usage/guide-on-cli.html">v0.1.2</a></dd>
+      <dd><a href="../../v0.1.3/usage/guide-on-cli.html">v0.1.3</a></dd>
+      <dd><a href="../../v0.1.4/usage/guide-on-cli.html">v0.1.4</a></dd>
+      <dd><a href="../../v0.2.0/usage/guide-on-cli.html">v0.2.0</a></dd>
+      <dd><a href="../../v0.3.0/usage/guide-on-cli.html">v0.3.0</a></dd>
+      <dd><a href="../../v0.3.1/usage/guide-on-cli.html">v0.3.1</a></dd>
+      <dd><a href="../../v0.3.2/usage/guide-on-cli.html">v0.3.2</a></dd>
+      <dd><a href="../../v0.3.3/usage/guide-on-cli.html">v0.3.3</a></dd>
+      <dd><a href="../../v0.3.4/usage/guide-on-cli.html">v0.3.4</a></dd>
+      <dd><a href="../../v0.3.5/usage/guide-on-cli.html">v0.3.5</a></dd>
+      <dd><a href="../../v0.4.0/usage/guide-on-cli.html">v0.4.0</a></dd>
+      <dd><a href="../../v0.4.1/usage/guide-on-cli.html">v0.4.1</a></dd>
+      <dd><a href="../../v0.4.2/usage/guide-on-cli.html">v0.4.2</a></dd>
+      <dd><a href="../../v0.4.3/usage/guide-on-cli.html">v0.4.3</a></dd>
+      <dd><a href="../../v0.5.0/usage/guide-on-cli.html">v0.5.0</a></dd>
+      <dd><a href="../../v0.5.1/usage/guide-on-cli.html">v0.5.1</a></dd>
+      <dd><a href="../../v0.5.2/usage/guide-on-cli.html">v0.5.2</a></dd>
+      <dd><a href="../../v0.5.3/usage/guide-on-cli.html">v0.5.3</a></dd>
+      <dd><a href="../../v0.6.0/usage/guide-on-cli.html">v0.6.0</a></dd>
+      <dd><a href="../../v0.6.1/usage/guide-on-cli.html">v0.6.1</a></dd>
+      <dd><a href="../../v0.6.2/usage/guide-on-cli.html">v0.6.2</a></dd>
+      <dd><a href="../../v0.6.3/usage/guide-on-cli.html">v0.6.3</a></dd>
+      <dd><a href="../../v0.6.4/usage/guide-on-cli.html">v0.6.4</a></dd>
+      <dd><a href="../../v0.6.5/usage/guide-on-cli.html">v0.6.5</a></dd>
+      <dd><a href="../../v0.7.0/usage/guide-on-cli.html">v0.7.0</a></dd>
+      <dd><a href="../../v0.8.0/usage/guide-on-cli.html">v0.8.0</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="guide-on-cli.html">main</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
