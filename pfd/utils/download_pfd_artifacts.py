@@ -52,30 +52,28 @@ class DownloadDefinition:
 
 
 op_download_setting = {
-    "pert-gen": DownloadDefinition().add_output("confs"),
-    "prep-run-train": DownloadDefinition()
+    "train": DownloadDefinition()
     .add_input("init_models")
     .add_input("init_data")
     .add_input("iter_data")
-    .add_output("scripts")
-    .add_output("models")
-    .add_output("logs")
-    .add_output("lcurves"),
+    .add_output("script")
+    .add_output("model")
+    .add_output("log")
+    .add_output("lcurve"),
     "prep-run-explore": DownloadDefinition()
     .add_output("logs")
-    .add_output("trajs")
-    .add_output("model_devis"),
+    .add_output("trajs"),
     "prep-run-fp": DownloadDefinition()
     .add_input("confs")
     .add_output("logs")
     .add_output("labeled_data"),
     "collect-data": DownloadDefinition()
-    .add_input("systems")
-    .add_output("systems")
-    .add_output("multi_systems")
-    .add_output("test_systems"),
-    "test-model": DownloadDefinition()
-    .add_input("systems")
+    .add_input("structures")
+    .add_output("iter_structures")
+    .add_output("structures")
+    .add_output("test_structures"),
+    "evaluate": DownloadDefinition()
+    .add_input("structures")
     .add_input("model")
     .add_output("test_report")
     .add_output("test_res_dir"),
@@ -103,13 +101,13 @@ def print_op_download_setting(op_download_setting=op_download_setting):
     return "\n".join(ret)
 
 
-def download_dpgen2_artifacts(
+def download_pfd_artifacts(
     wf: Workflow,
     key: str,
     prefix: Optional[str] = None,
     chk_pnt: bool = False,
 ):
-    """
+    """[Modified from DPGEN2]Download by key.
     download the artifacts of a step.
     the key should be of format 'iter-xxxxxx--subkey-of-step-xxxxxx'
     the input and output artifacts will be downloaded to
@@ -141,6 +139,7 @@ def download_dpgen2_artifacts(
     )
     dld_output = not (
         len(output_def) == 0
+        # skip if chk_pnt is True and the 'done' file exists (already downloaded)
         or (chk_pnt and (mypath / subkey / "outputs" / "done").is_file())
     )
 
@@ -164,7 +163,7 @@ def download_dpgen2_artifacts(
     return
 
 
-def download_dpgen2_artifacts_by_def(
+def download_pfd_artifacts_by_def(
     wf: Workflow,
     iterations: Optional[List[int]] = None,
     step_defs: Optional[List[str]] = None,

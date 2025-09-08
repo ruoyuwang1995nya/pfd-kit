@@ -29,7 +29,7 @@ PFD-kit streamlines the above process, automatically generate from pre-trained m
 ## Workflows 
 Fig.3 shows the workflow design of pfd-kit, which includes the fine-tuning and distillation components.
 <div>
-    <img src="../_static/pfd-kit-workflow.png" alt="Fig3" style="zoom: 35%;">
+    <img src="../_static/pfd-kit-workflow.png" alt="Fig3" style="zoom: 100%;">
     <p style='font-size:1.0rem; font-weight:none;text-align: center'>Figure 3. Schematics of pfd-kit workflow.</p>
 </div>
 

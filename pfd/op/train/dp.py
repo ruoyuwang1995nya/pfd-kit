@@ -53,7 +53,7 @@ class DPTrain(Train):
         optional_files: Optional[List[Path]]=None,
         #**kwargs
         ):
-        
+        train_dict = self._process_script(train_dict)
         if (not init_data or len(init_data) == 0) and not iter_data:
             raise FatalError(
                 "At least one data source must be provided: "
@@ -100,7 +100,7 @@ class DPTrain(Train):
         else:
             valid_data = None
             
-            
+        
         if "systems" in train_dict["training"]:
             major_version = "1"
         else:
