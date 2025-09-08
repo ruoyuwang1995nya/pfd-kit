@@ -52,7 +52,7 @@ html_static_path = ["_static", "images"]
 # html_css_files = ['custom.css']
 
 smv_tag_whitelist = r'^v*'  # Include tags starting with "v"
-smv_branch_whitelist = r'^(main|release*)$'  # Include "main" and "release" branches
+smv_branch_whitelist = r'^(main)$'  # Include "main" and "release" branches
 
 # Register the custom directives
 def setup(app):

@@ -6,7 +6,7 @@
 
 For complete tutorials and user guide, please refer to our [Online Documentation](https://ruoyuwang1995nya.github.io/pfd-kit/main)
 
-> PFD-kit is bulit upon is powered the [dflow](https://github.com/dptech-corp/dflow.git) package and includes components of [DPGEN2](https://github.com/deepmodeling/dpgen2) workflow. PFD-kit currently supports the **Deep Potential** models, but MACE and MatterSim models are planned to be implemented in near future.
+> PFD-kit is bulit upon is powered the [dflow](https://github.com/dptech-corp/dflow.git) package and includes components of [DPGEN2](https://github.com/deepmodeling/dpgen2) workflow. PFD-kit currently supports the **Deep Potential** and **MatterSim** (only fine-tuning) models, but other model flavors (e.g. **MACE**) are also planned to be implemented soon.
 
 ## Table of Contents
 - [PDF-kit: Workflow for finetune and fast distillation]
