@@ -38,5 +38,5 @@ jobs:
       - name: Run semantic-release
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}  # GitHub token for pushing tags
-        run: semantic-release version
+        run: semantic-release
 
