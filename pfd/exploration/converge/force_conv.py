@@ -30,9 +30,9 @@ class ForceConvRMSE(CheckConv):
         # select
         logging.info(
             "#### The weighted average of force RMSE is %.6f eV/Angstrom"
-                % conv_report.energy_rmse
+                % conv_report.force_rmse
         )
-        if conv_report.energy_rmse < conv_rmse:
+        if conv_report.force_rmse < conv_rmse:
             logging.info(
                 "#### Iteration converged! The converge criteria is %.6f eV/Angstrom"
                 % conv_rmse
