@@ -29,7 +29,7 @@ dependencies = [
     "periodictable",
     "ase",
     "tabulate",
-    "quests",
+    "quests @ git+https://github.com/dskoda/quests.git",
     "dpdispatcher"
 ]
 

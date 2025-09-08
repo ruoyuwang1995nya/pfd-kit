@@ -437,6 +437,7 @@ def _loop(
         "block_id": stage_scheduler.outputs.parameters["next_iter_id"],
         "conf_selector": loop.inputs.parameters["conf_selector"],
         "template_script": loop.inputs.parameters["template_script"],
+        "select_confs_config": loop.inputs.parameters["select_confs_config"],
         #"train_config": loop.inputs.parameters["train_config"],
         "explore_config": loop.inputs.parameters["explore_config"],
         "fp_config": loop.inputs.parameters["fp_config"],

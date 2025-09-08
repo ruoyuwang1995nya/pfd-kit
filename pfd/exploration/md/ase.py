@@ -1,3 +1,4 @@
+from bz2 import compress
 import json
 from math import log
 import time
@@ -28,7 +29,8 @@ class MDParameters:
     traj_freq: int = 100  # frames
     log_freq: int = 100  # steps
     tau_t: float = 100.0  # damping factor * timestep
-    tau_p: Optional[float] = None  # damping factor for pressure (NPT)
+    tau_p: float = 1000  # damping factor for pressure (NPT)
+    compressibility: float = 4.5e-5  # 1/bar (NPT)
     ensemble: str = "nvt"  # "nvt", "npt", or "both"
     custom_config: Dict[str, Any] = field(default_factory=dict)   # Custom configuration
     output_prefix: str = "md"
@@ -125,8 +127,10 @@ class MDRunner(Atoms):
             self,
             timestep,
             temperature_K=params.temp,
-            pressure=params.press,
+            pressure_au=params.press * units.bar,
             taut=params.tau_t * units.fs,
+            taup=params.tau_p * units.fs,
+            compressibility_au=params.compressibility/units.bar,
             logfile=log_file,
             loginterval=params.log_freq,
             **params.custom_config

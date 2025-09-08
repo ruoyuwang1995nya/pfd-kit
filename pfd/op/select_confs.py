@@ -1,14 +1,8 @@
-import json
-import os
 from pathlib import (
     Path,
 )
-import re
-from token import AT
 from typing import (
     List,
-    Set,
-    Tuple,
     Dict,
     Optional
 )
@@ -28,13 +22,12 @@ from pfd.exploration.selector import (
     ConfSelector,
 )
 
-
 import logging
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[logging.FileHandler("select_conf.log"), logging.StreamHandler()],
+    handlers=[logging.StreamHandler()],
 )
 logger = logging.getLogger(__name__)
 
@@ -128,6 +121,7 @@ class SelectConfs(OP):
         )-> List[Atoms]:
         """Filter structures to maximize entropy/diversity."""
         from quests.descriptor import get_descriptors
+        from tqdm import tqdm
         def create_entropy_function():
             """Factory function to create the appropriate entropy function."""
             try:
@@ -163,8 +157,7 @@ class SelectConfs(OP):
             other_indices = np.setdiff1d(np.arange(len(confs)), ref_indices)
             confs = [confs[i] for i in other_indices]
         current_descriptors = get_descriptors(reference,k=k,cutoff=cutoff)
-        
-        for atoms in confs:
+        for atoms in tqdm(confs):
             cand_desc = get_descriptors([atoms],k=k,cutoff=cutoff)
             current_entropy = get_entropy(
                 current_descriptors, 

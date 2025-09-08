@@ -14,24 +14,25 @@ from .common import (
 )
 
 from pfd.utils.download_pfd_artifacts import (
-    download_dpgen2_artifacts,
-    download_dpgen2_artifacts_by_def,
+    download_pfd_artifacts,
+    download_pfd_artifacts_by_def,
 )
 
-
-END_OUTPUT = {
-    "finetune": {"steps": "finetune", "artifact": "fine_tuned_model"},
-    "dist": {"steps": "distillation", "artifact": "dist_model"},
-}
 
 
 def download_end_result(
     workflow_id, wf_config: Dict = {}, prefix: Optional[str] = None
 ):
-    try:
-        task_type = wf_config["task"]["type"]
-    except KeyError:
-        raise RuntimeError("Illegal input file!")
+    """[Modified from DPGEN2]Download the final data and dataset of a workflow.
+
+    Args:
+        workflow_id (_type_): The ID of the workflow to download from.
+        wf_config (Dict, optional): The configuration of the workflow. Defaults to {}.
+        prefix (Optional[str], optional): The prefix for the download path. Defaults to None.
+
+    Raises:
+        RuntimeError: If the workflow fails.
+    """
     wf_config = normalize_args(wf_config)
     global_config_workflow(wf_config)
     wf = Workflow(id=workflow_id)
@@ -40,7 +41,7 @@ def download_end_result(
     if wf_status == "Failed":
         raise RuntimeError(f"Workflow failed (ID: {wf.id}, UID: {wf.uid})")
     try:
-        wf_post = step_info.get_step(name=END_OUTPUT[task_type]["steps"])[0]
+        wf_post = step_info.get_step(name="workflow")[0]
     except IndexError:
         logging.warning("The workflow may not have finished!")
         return
@@ -54,7 +55,7 @@ def download_end_result(
 
         # download output model
         download_artifact(
-            artifact=wf_post.outputs.artifacts[END_OUTPUT[task_type]["artifact"]],
+            artifact=wf_post.outputs.artifacts["model"],
             path=path / "model",
         )
         download_artifact(
@@ -73,7 +74,7 @@ def download_by_def(
     wf_config = normalize_args(wf_config)
     global_config_workflow(wf_config)
     wf = Workflow(id=workflow_id)
-    download_dpgen2_artifacts_by_def(wf, iterations, step_defs, prefix, chk_pnt)
+    download_pfd_artifacts_by_def(wf, iterations, step_defs, prefix, chk_pnt)
 
 
 def download(
@@ -90,5 +91,5 @@ def download(
         wf_keys = wf.query_keys_of_steps()
     assert wf_keys is not None
     for kk in wf_keys:
-        download_dpgen2_artifacts(wf, kk, prefix=prefix, chk_pnt=chk_pnt)
+        download_pfd_artifacts(wf, kk, prefix=prefix, chk_pnt=chk_pnt)
         logging.info(f"step {kk} downloaded")

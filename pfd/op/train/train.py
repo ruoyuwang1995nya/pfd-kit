@@ -68,7 +68,7 @@ class Train(OP,ABC):
             #"block_id": Parameter(type=str, default=""),
             "train_config": Parameter(Dict,default={}),
             #"run_optional_parameter": Parameter(Dict, default={}),
-            "template_script": BigParameter(Union[dict, List[dict]]),
+            "template_script": BigParameter(Union[dict, List[dict]],default={}),
             "init_model": Artifact(Path, optional=True),
             "init_data": Artifact(List[Path], optional=True),
             "iter_data": Artifact(Path, optional=True),
@@ -83,8 +83,8 @@ class Train(OP,ABC):
             {
                 "script": Artifact(Path),
                 "model": Artifact(Path),
-                "lcurve": Artifact(Path),
-                "log": Artifact(Path),
+                "lcurve": Artifact(Path,optional=True),
+                "log": Artifact(Path,optional=True),
             }
         )
 
@@ -123,7 +123,7 @@ class Train(OP,ABC):
 
         work_dir = Path(train_task_pattern%0)
         work_dir.mkdir(exist_ok=True, parents=True)
-        train_dict = self._process_script(template)
+        #train_dict = self._process_script(template)
         
         # write input script
         #fname = work_dir / train_script_name
@@ -135,7 +135,7 @@ class Train(OP,ABC):
             # prepare training directory
             self.run_train(
                 config=config,
-                train_dict=train_dict,
+                train_dict=template,
                 init_model=init_model,
                 init_data=init_data,
                 iter_data=iter_data,
@@ -154,14 +154,6 @@ class Train(OP,ABC):
             }
         )
         return op
-
-
-    @abstractmethod
-    def _process_script(
-        self,
-        input_dict,
-    )-> Any:
-        pass
 
     @abstractmethod
     def run_train(

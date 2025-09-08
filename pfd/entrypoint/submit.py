@@ -304,8 +304,11 @@ class FlowGen:
         else:
             train_config["finetune_mode"] = False
         # read custom training template
-        with open(config["train"]["template_script"], "r") as fp:
-            template_script = json.load(fp)
+        if isinstance(config["train"]["template_script"], str):
+            with open(config["train"]["template_script"], "r") as fp:
+                template_script = json.load(fp)
+        elif isinstance(config["train"]["template_script"], dict):
+            template_script = config["train"]["template_script"]
 
         #### explore config
         explore_style = config["exploration"]["type"]
