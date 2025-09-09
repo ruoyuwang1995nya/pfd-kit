@@ -30,7 +30,6 @@ class ModelTestOP(OP):
                 "test_report": Artifact(Path),
                 "test_res_dir": Artifact(Path),
                 "converged": Parameter(bool, default=False),
-                "selected_systems": Artifact(Path),
                 "report": Parameter(ConvReport),  # Report on convergence
             }
         )
@@ -66,7 +65,6 @@ class ModelTestOP(OP):
         conv = CheckConv.get_checker(conv_type)()
         conv_rep = ConvReport()
         converged, _ = conv.check_conv(res, conv_config, conv_rep)
-        write("selected_confs.extxyz", res.system, format="extxyz")
         with open("report.json", "w") as fp:
             json.dump(eval_rep, fp, indent=4)
         return OPIO(
@@ -74,7 +72,6 @@ class ModelTestOP(OP):
                 "test_report": Path("report.json"),
                 "test_res_dir": res_dir,
                 "converged": converged,
-                "selected_systems": Path("selected_confs.extxyz"),
                 "report": conv_rep,
             }
         )
