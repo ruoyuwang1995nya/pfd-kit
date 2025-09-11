@@ -80,15 +80,4 @@ class ConfSelectorFrames(ConfSelector):
             self.conf_filters,
             optional_outputs,
         )
-        #out_path = Path("confs")
-        #out_path.mkdir(exist_ok=True)
-        #if self.max_numb_sel:
-        #    if self.max_numb_sel < len(atoms_list):
-        #        logging.info(
-        #            "Select %s of %s frames" % (self.max_numb_sel, len(atoms_list))
-        #        )
-        #        _, atoms_list = train_test_split(atoms_list=atoms_list, test_size=self.max_numb_sel)
-        #write(out_path / 'selected.extxyz', atoms_list)
-        #logging.info("Select %s of frames" % len(atoms_list))
-        #return out_path / 'selected.extxyz'
         return atoms_list
