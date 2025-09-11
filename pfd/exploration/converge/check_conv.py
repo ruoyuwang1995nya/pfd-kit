@@ -73,7 +73,5 @@ class ConvReport:
     criteria: Union[int, float] = 0.0
     force_rmse: Optional[float] = None
     energy_rmse: Optional[float] = None
-    frame: int = 0
-    unconverged_frame: Optional[int] = None
     selected_frame: int = 0
     converged: bool = False

@@ -27,6 +27,7 @@ class ForceConvRMSE(CheckConv):
         conv_report.criteria = conv_rmse
         conv_report.force_rmse = reports.rmse_f
         conv_report.energy_rmse = reports.rmse_e_atom
+        conv_report.selected_frame = reports.numb_frame
         # select
         logging.info(
             "#### The weighted average of force RMSE is %.6f eV/Angstrom"

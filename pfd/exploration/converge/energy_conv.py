@@ -23,7 +23,7 @@ class EnerConvRMSE(CheckConv):
         conv_report.criteria = conv_rmse
         conv_report.force_rmse = reports.rmse_f
         conv_report.energy_rmse = reports.rmse_e_atom
-        # select
+        conv_report.selected_frame = reports.numb_frame
         
         
         logging.info(
