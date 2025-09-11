@@ -8,7 +8,7 @@ The new version of PFD-kit introduces enhanced functionality with integration of
 # Quick Start
 ## Installation
 ```bash
-git clone --branch pymatgen-ase https://github.com/ruoyuwang1995nya/pfd-kit.git && cd pfd-kit && pip install . 
+git clone https://github.com/ruoyuwang1995nya/pfd-kit.git && cd pfd-kit && pip install . 
 ```
 
 A simple example of finetuning a Deep Potential for cubic Si is demonstrated.  
@@ -31,21 +31,21 @@ pfd submit input.json
 ### Local deployment
 The workflow would run locally, i.e., all dependencies must be installed in local environment.
 ```bash
-export DFLOW_MODE='debug' && pfd submit ft_local.json
+export DFLOW_MODE='debug'&&pfd submit ft_local.json
 ```
 
 ### Local deployment with Bohrium remote executor
 The workflow would run locally, but resource-consuming steps such as first-principle calculations can be submitted to remote servers at Bohrium platform.
 
 ```bash
-export DFLOW_MODE='debug' && export DFLOW_DEBUG_COPY_METHOD = 'copy' && pfd submit ft_local_bohr_executor.json
+export DFLOW_MODE='debug'&&export DFLOW_DEBUG_COPY_METHOD='copy'&&pfd submit ft_local_bohr_executor.json
 ```
 
 ### Local deployment with Slurm executor
 The workflow would run locally, but resource-consuming steps such as first-principle calculations can be submitted to remote Slurm clusters.
 
 ```bash
-export DFLOW_MODE='debug' && export DFLOW_DEBUG_COPY_METHOD = 'copy' && pfd submit ft_local_slurm_executor.json
+export DFLOW_MODE='debug'&&export DFLOW_DEBUG_COPY_METHOD='copy'&& pfd submit ft_local_slurm_executor.json
 ```
 
 ### Cloud-based deployment (Bohrium)
