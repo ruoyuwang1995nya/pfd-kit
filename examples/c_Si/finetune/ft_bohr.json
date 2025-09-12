@@ -1,0 +1,229 @@
+{
+    "name":"si-ft-bohr",
+    "_comment": "Running on Bohrium platform",
+    "bohrium_config": {
+        "username": "your_account",
+        "password": "your_password",
+        "project_id": 123456
+    },
+    "default_step_config": {
+        "template_config": {
+            "image":"registry.dp.tech/dptech/ubuntu:ubuntu24.04-py3.12"
+        },
+	"executor": {
+                "type": "dispatcher",
+                "image_pull_policy": "IfNotPresent",
+                "machine_dict": {
+                    "batch_type": "Bohrium",
+                    "context_type": "Bohrium",
+                    "remote_profile": {
+                        "input_data": {
+                            "job_type": "container",
+                            "platform": "ali",
+                            "scass_type": "c2_m4_cpu"
+                        }}}}
+    },
+    "step_configs": {
+        "run_fp_config": {
+            "template_config": {
+                "image": "path_to_vasp_image"
+            },
+            "executor": {
+                "type": "dispatcher",
+                "image_pull_policy": "IfNotPresent",
+                "machine_dict": {
+                    "batch_type": "Bohrium",
+                    "context_type": "Bohrium",
+                    "remote_profile": {
+                        "input_data": {
+                            "job_type": "container",
+                            "platform": "ali",
+                            "scass_type": "c16_m64_cpu"
+                        }}},
+                "resources_dict":{
+                    "source_list":["/opt/intel/oneapi/setvars.sh"],
+                    "module_list": [
+                    ]
+                }
+                    },
+            "template_slice_config": {
+                "group_size": 1,
+                "pool_size": 1
+            }
+        },
+        "run_explore_config": {
+           "template_config": {
+                "image": "registry.dp.tech/dptech/deepmd-kit:3.1.0-cuda12.1"
+            },
+            "executor": {
+                "type": "dispatcher",
+                "image_pull_policy": "IfNotPresent",
+                "machine_dict": {
+                    "batch_type": "Bohrium",
+                    "context_type": "Bohrium",
+                    "remote_profile": {
+                        "input_data": {
+                            "job_type": "container",
+                            "platform": "ali",
+                            "scass_type": "c12_m92_1 * NVIDIA V100"
+                        }}},
+                "resources_dict":{
+                    "custom_flags": []
+                }
+                    },
+            "template_slice_config": {
+                "group_size": 1,
+                "pool_size": 1
+            }
+        },
+        "run_train_config": {
+            "template_config": {
+                "image": "registry.dp.tech/dptech/deepmd-kit:3.1.0-cuda12.1"
+            },
+            "executor": {
+                "type": "dispatcher",
+                "image_pull_policy": "IfNotPresent",
+                "machine_dict": {
+                    "batch_type": "Bohrium",
+                    "context_type": "Bohrium",
+                    "remote_profile": {
+                        "input_data": {
+                            "job_type": "container",
+                            "platform": "ali",
+                            "scass_type": "c12_m92_1 * NVIDIA V100"
+                        }}},
+                "resources_dict":{
+                    "custom_flags": []
+                }
+                    }
+        },
+        "select_confs_config":{
+            "template_config": {
+                "image": "registry.dp.tech/dptech/dp/native/prod-26745/pfd:0.0.2"
+            },
+            "executor": {
+                "type": "dispatcher",
+                "image_pull_policy": "IfNotPresent",
+                "machine_dict": {
+                    "batch_type": "Bohrium",
+                    "context_type": "Bohrium",
+                    "remote_profile": {
+                        "input_data": {
+                            "job_type": "container",
+                            "platform": "ali",
+                            "scass_type": "c12_m92_1 * NVIDIA V100"
+                        }}},
+                "resources_dict":{
+                    "custom_flags": [
+                        ]
+                }
+            }
+        },
+        "run_evaluate_config": {
+            "template_config": {
+                "image": "registry.dp.tech/dptech/deepmd-kit:3.1.0-cuda12.1"
+            },
+            "executor": {
+                "type": "dispatcher",
+                "image_pull_policy": "IfNotPresent",
+                "machine_dict": {
+                    "batch_type": "Bohrium",
+                    "context_type": "Bohrium",
+                    "remote_profile": {
+                        "input_data": {
+                            "job_type": "container",
+                            "platform": "ali",
+                            "scass_type": "c12_m92_1 * NVIDIA V100"
+                        }}},
+                "resources_dict":{
+                    "custom_flags": []
+                }
+                    }
+        }
+    },
+    "task":{
+        "type":"finetune",
+        "max_iter":5,
+        "init_ft": false,
+        "init_train": false
+    },
+    
+    "inputs": {
+        "base_model_uri":null,
+        "base_model_path":"DPA2_medium_28_10M_rc0.pt",
+        "init_confs":{
+            "prefix": "./",
+            "confs_paths": ["./pert_si32.extxyz"]
+        },
+        "init_fp_confs":{
+            "prefix": "./",
+            "confs_paths": []        }
+    },
+    "select_confs":{
+        "max_sel":60,
+        "frame_filter": [
+            {"type": "distance"}
+        ],
+        "h_filter": {
+            "chunk_size":5,
+            "_comment":"_entropy based filter"
+        }
+    },
+    "evaluate": {
+        "test_size": 0.4,
+        "model":"dp",
+        "head":"Domains_SemiCond",
+        "_comment":"The percentage for test",
+        "converge":{
+            "type": "force_rmse",
+            "RMSE": 0.06
+        }
+    },
+    "exploration": {
+        "type": "ase",
+        "config": {
+            "calculator":"dp",
+            "head":"Domains_SemiCond"
+        },
+        "stages": [
+            [
+                {
+                "conf_idx": [0],
+                "n_sample":3,
+                "ens": "npt",
+                "dt": 2,
+                "nsteps": 2000,
+                "temps": [1000],
+                "press":[1,1000, 10000],
+                "trj_freq": 10
+                }
+            ]
+        ]
+        
+    },
+    "fp": {
+        "type": "vasp",
+        "run_config": {
+            "command": "mpirun -n 16 vasp_std"
+        },
+        "inputs_config": {
+            "incar": "INCAR.fp",
+            "pp_files": {
+                "Si": "POTCAR"
+            },
+            "kspacing":0.2
+        },
+        "_comment": "fp parameters for calculation"
+    },
+    "init_fp":{},
+    "train": {
+        "type": "dp",
+        "config": {
+            "impl": "pytorch",
+            "head": "Domains_SemiCond"
+        },
+        "template_script": "dpa_train_script.json",
+        "_comment":"Training script for fine-tuning DPA-2 model"
+
+    }
+}

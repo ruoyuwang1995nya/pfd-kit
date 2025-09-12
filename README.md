@@ -4,7 +4,7 @@
 
 [PFD-kit](https://github.com/ruoyuwang1995nya/dp-distill) is a cloud-base workflow automating the generation of deep-learning based force fields from *pre-trained* atomic models (**P**) through fine-tuning (**F**) and distillation (**D**) for large scale atomic simulation of practical materials. Compared to training force fields from scratch, model generation using PFD workflow requires much less training data by exploiting the transferable knowledge already in the pre-trained model, saving significant time and computational resources by an order of magnitude. This makes the PFD workflow ideal for high-throughput calculations and addresses challenges in training force fields for complex material systems (*e.g.*, high-entropy alloys, surfaces/interfaces) that are previously intractable. With its easy-to-use interface and cloud-base feature, PFD-kit can be a powerful tool for researchers in computational materials science. </div>
 
-For complete tutorials and user guide, please refer to our [Online Documentation](https://ruoyuwang1995nya.github.io/pfd-kit/main)
+For complete tutorials and user guide, please refer to our [Online Documentation](https://pfd-kit.readthedocs.io/en/latest/)
 
 > PFD-kit is bulit upon is powered the [dflow](https://github.com/dptech-corp/dflow.git) package and includes components of [DPGEN2](https://github.com/deepmodeling/dpgen2) workflow. PFD-kit currently supports the **Deep Potential** and **MatterSim** (only fine-tuning) models, but other model flavors (e.g. **MACE**) are also planned to be implemented soon.
 

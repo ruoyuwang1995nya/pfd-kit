@@ -1,4 +1,3 @@
-from recommonmark.parser import CommonMarkParser
 from importlib.metadata import version as get_version
 import os
 import sys
@@ -17,21 +16,15 @@ release = version
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    "sphinx_multiversion",
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
-    "recommonmark",
+    "myst_parser"
 ]
 
-templates_path = ["_templates"]
+# templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
-# Source file parsers
-source_suffix = {
-    ".rst": "restructuredtext",
-    ".md": "markdown",
-}
 
 autodoc_default_options = {
     "members": True,
@@ -50,9 +43,6 @@ html_theme_options = {
 }
 html_static_path = ["_static", "images"]
 # html_css_files = ['custom.css']
-
-smv_tag_whitelist = r'^v*'  # Include tags starting with "v"
-smv_branch_whitelist = r'^(main)$'  # Include "main" and "release" branches
 
 # Register the custom directives
 def setup(app):

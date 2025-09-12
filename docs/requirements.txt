@@ -1,0 +1,4 @@
+sphinx==8.2.3
+sphinx_rtd_theme
+sphinx-notfound-page
+myst-parser

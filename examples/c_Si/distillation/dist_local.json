@@ -1,0 +1,86 @@
+{
+    "name":"si-dist-local",
+    "_comment": "running locally",
+    "default_step_config": {
+        "template_config": {},
+        "executor": null
+    },
+    "task":{
+        "type":"dist",
+        "max_iter":5,
+        "init_ft": false,
+        "init_train": false
+    },
+    
+    "inputs": {
+        "base_model_uri":null,
+        "base_model_path":"model.ckpt.pt",
+        "init_confs":{
+            "prefix": "./",
+            "confs_paths": ["pert_si.extxyz"]
+        },
+        "init_fp_confs":{
+            "prefix": "./",
+            "confs_paths": []        }
+    },
+    "select_confs":{
+        "max_sel":1500,
+        "frame_filter": [
+            {"type": "distance"}
+        ],
+        "h_filter": {
+            "chunk_size":100,
+            "_comment":"_entropy based filter"
+        }
+    },
+    "evaluate": {
+        "test_size": 0.2,
+        "model":"dp",
+        "head":"Domains_SemiCond",
+        "_comment":"The percentage for test",
+        "converge":{
+            "type": "force_rmse",
+            "RMSE": 0.05
+        }
+    },
+    "exploration": {
+        "type": "ase",
+        "config": {
+            "calculator":"dp"
+        },
+        "stages": [
+            [
+                {
+                "conf_idx": [0],
+                "n_sample":3,
+                "ens": "npt",
+                "dt": 2,
+                "nsteps": 3000,
+                "temps": [1000],
+                "press":[1,1000, 10000],
+                "trj_freq": 20
+                }
+            ]
+        ]
+        
+    },
+    "fp": {
+        "type": "ase",
+        "run_config": {
+            "model_style": "dp",
+            "model_args": {
+            }},
+        "inputs_config": {
+            "batch_size":500
+            },
+        "_comment": "fp parameters for calculation"
+    },
+    "train": {
+        "_comment":"Training script for downstream DeePMD model",
+        "type": "dp",
+        "config": {
+            "impl": "pytorch"
+        },
+        "template_script": "dp_train_script.json"
+    }
+}

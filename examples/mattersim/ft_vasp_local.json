@@ -1,0 +1,112 @@
+{
+    "default_step_config": {
+        "template_config": {},
+        "executor": null
+    },
+    "step_configs": {
+        "run_fp_config": {
+            "template_config": {},
+            "executor": null,
+            "template_slice_config": {}
+        },
+        "run_explore_config": {
+            "template_config": {},
+            "template_slice_config": {},
+            "executor": null
+        },
+        "run_train_config": {
+            "template_config": {
+            },
+            "executor": null
+        },
+        "select_confs_config":{
+            "template_config": {
+            },
+            "executor": null
+        }
+    },
+    "task": {
+        "type": "finetune",
+        "max_iter": 1,
+        "init_fp": false,
+        "init_train": false
+    },
+    "inputs": {
+        "base_model_path": "mattersim-v1.0.0-1M.pth",
+        "base_model_uri":null,
+        "init_confs":{
+            "prefix": "./",
+            "confs_paths": ["si.extxyz"]
+        },
+        "init_fp_confs":{
+            "prefix": "./",
+            "confs_paths": []
+        },
+        "init_data_uri":null,
+        "init_data_sys":null
+    }, 
+    "select_confs":{
+        "max_sel":50,
+        "frame_filter": [
+            {"type": "distance"}
+        ],
+        "h_filter": {
+            "chunk_size":5,
+            "_comment":"_entropy based filter"
+        }
+
+    },
+    "evaluate": {
+        "test_size": 0.2,
+        "model":"mattersim",
+        "_comment":"The percentage for test",
+        "converge":{
+            "type": "energy_rmse",
+            "RMSE": 0.01
+        }
+    },
+
+    "exploration": {
+        "type": "ase",
+        "config": {
+            "calculator":"mattersim",
+            "device":"cuda"
+        },
+        "stages": [
+            [
+                {
+                "conf_idx": [0],
+                "n_sample":1,
+                "ens": "npt",
+                "dt": 2,
+                "nsteps": 1000,
+                "temps": [1000],
+                "press":[1],
+                "trj_freq": 10
+                }
+            ]
+        ]
+        
+    },
+    "init_fp":{
+    },
+    "fp": {
+        "type": "vasp",
+        "run_config": {
+            "command": "mpirun -n 16 vasp_std"
+        },
+        "inputs_config": {
+            "incar": "INCAR.fp",
+            "pp_files": {"Si": "POTCAR.Si"},
+            "kspacing":0.2
+            }
+        },
+    "train": {
+        "_comment": "Training settings for MatterSim model",
+        "type": "mattersim",
+        "config": {
+            "epochs": 20,
+            "batch_size": 8
+        }
+    }
+}
