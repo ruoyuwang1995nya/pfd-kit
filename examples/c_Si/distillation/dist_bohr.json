@@ -1,0 +1,221 @@
+{
+    "name":"si-dist-bohr",
+    "_comment": "Running on Bohrium platform",
+    "bohrium_config": {
+        "username": "your_account",
+        "password": "your_password",
+        "project_id": 123456
+    },
+    "default_step_config": {
+        "template_config": {
+            "image":"registry.dp.tech/dptech/ubuntu:ubuntu24.04-py3.12"
+        },
+	"executor": {
+                "type": "dispatcher",
+                "image_pull_policy": "IfNotPresent",
+                "machine_dict": {
+                    "batch_type": "Bohrium",
+                    "context_type": "Bohrium",
+                    "remote_profile": {
+                        "input_data": {
+                            "job_type": "container",
+                            "platform": "ali",
+                            "scass_type": "c2_m4_cpu"
+                        }}}}
+    },
+    "step_configs": {
+        "run_fp_config": {
+            "template_config": {
+                "image": "registry.dp.tech/dptech/deepmd-kit:3.1.0-cuda12.1"
+            },
+            "executor": {
+                "type": "dispatcher",
+                "image_pull_policy": "IfNotPresent",
+                "machine_dict": {
+                    "batch_type": "Bohrium",
+                    "context_type": "Bohrium",
+                    "remote_profile": {
+                        "input_data": {
+                            "job_type": "container",
+                            "platform": "ali",
+                            "scass_type": "c12_m92_1 * NVIDIA V100"
+                        }}},
+                "resources_dict":{
+                    "custom_flags": []
+                }
+                    },
+            "template_slice_config": {
+                "group_size": 500,
+                "pool_size": 1
+            }
+        },
+        "run_explore_config": {
+           "template_config": {
+                "image": "registry.dp.tech/dptech/deepmd-kit:3.1.0-cuda12.1"
+            },
+            "executor": {
+                "type": "dispatcher",
+                "image_pull_policy": "IfNotPresent",
+                "machine_dict": {
+                    "batch_type": "Bohrium",
+                    "context_type": "Bohrium",
+                    "remote_profile": {
+                        "input_data": {
+                            "job_type": "container",
+                            "platform": "ali",
+                            "scass_type": "c12_m92_1 * NVIDIA V100"
+                        }}},
+                "resources_dict":{
+                    "custom_flags": []
+                }
+                    },
+            "template_slice_config": {
+                "group_size": 4,
+                "pool_size": 2
+            }
+        },
+        "run_train_config": {
+            "template_config": {
+                "image": "registry.dp.tech/dptech/deepmd-kit:3.1.0-cuda12.1"
+            },
+            "executor": {
+                "type": "dispatcher",
+                "image_pull_policy": "IfNotPresent",
+                "machine_dict": {
+                    "batch_type": "Bohrium",
+                    "context_type": "Bohrium",
+                    "remote_profile": {
+                        "input_data": {
+                            "job_type": "container",
+                            "platform": "ali",
+                            "scass_type": "c12_m92_1 * NVIDIA V100"
+                        }}},
+                "resources_dict":{
+                    "custom_flags": []
+                }
+                    }
+        },
+        "select_confs_config":{
+            "template_config": {
+                "image": "registry.dp.tech/dptech/dp/native/prod-26745/pfd:0.0.2"
+            },
+            "executor": {
+                "type": "dispatcher",
+                "image_pull_policy": "IfNotPresent",
+                "machine_dict": {
+                    "batch_type": "Bohrium",
+                    "context_type": "Bohrium",
+                    "remote_profile": {
+                        "input_data": {
+                            "job_type": "container",
+                            "platform": "ali",
+                            "scass_type": "c12_m92_1 * NVIDIA V100"
+                        }}},
+                "resources_dict":{
+                    "custom_flags": [
+                        ]
+                }
+            }
+        },
+        "run_evaluate_config": {
+            "template_config": {
+                "image": "registry.dp.tech/dptech/deepmd-kit:3.1.0-cuda12.1"
+            },
+            "executor": {
+                "type": "dispatcher",
+                "image_pull_policy": "IfNotPresent",
+                "machine_dict": {
+                    "batch_type": "Bohrium",
+                    "context_type": "Bohrium",
+                    "remote_profile": {
+                        "input_data": {
+                            "job_type": "container",
+                            "platform": "ali",
+                            "scass_type": "c12_m92_1 * NVIDIA V100"
+                        }}},
+                "resources_dict":{
+                    "custom_flags": []
+                }
+                    }
+        }
+    },
+    "task":{
+        "type":"dist",
+        "max_iter":5,
+        "init_ft": false,
+        "init_train": false
+    },
+    
+    "inputs": {
+        "base_model_uri":null,
+        "base_model_path":"model.ckpt.pt",
+        "init_confs":{
+            "prefix": "./",
+            "confs_paths": ["pert_si.extxyz"]
+        },
+        "init_fp_confs":{
+            "prefix": "./",
+            "confs_paths": []        }
+    },
+    "select_confs":{
+        "max_sel":1500,
+        "frame_filter": [
+            {"type": "distance"}
+        ],
+        "h_filter": {
+            "chunk_size":100,
+            "_comment":"_entropy based filter"
+        }
+    },
+    "evaluate": {
+        "test_size": 0.2,
+        "model":"dp",
+        "head":"Domains_SemiCond",
+        "_comment":"The percentage for test",
+        "converge":{
+            "type": "force_rmse",
+            "RMSE": 0.05
+        }
+    },
+    "exploration": {
+        "type": "ase",
+        "config": {
+            "calculator":"dp"
+        },
+        "stages": [
+            [
+                {
+                "conf_idx": [0],
+                "n_sample":3,
+                "ens": "npt",
+                "dt": 2,
+                "nsteps": 3000,
+                "temps": [1000],
+                "press":[1,1000, 10000],
+                "trj_freq": 20
+                }
+            ]
+        ]
+        
+    },
+    "fp": {
+        "type": "ase",
+        "run_config": {
+            "model_style": "dp",
+            "model_args": {
+            }},
+        "inputs_config": {
+            "batch_size":500
+            },
+        "_comment": "fp parameters for calculation"
+    },
+    "init_fp":{},
+    "train": {
+        "comment":"Training script for downstream DeePMD model",
+        "type": "dp",
+        "config": {
+            "impl": "pytorch"
+        },
+        "template_script": "./dist_train.json"
+    }
+}
