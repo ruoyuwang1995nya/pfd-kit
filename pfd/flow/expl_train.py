@@ -184,7 +184,11 @@ def _expl_tr_blk(
             "conf_selector": steps.inputs.parameters["conf_selector"],
             "optional_parameters": steps.inputs.parameters["select_confs_config"],
         },
-        artifacts={"confs": prep_run_explore.outputs.artifacts["trajs"]},
+        artifacts={
+            "confs": prep_run_explore.outputs.artifacts["trajs"],
+            "iter_confs": steps.inputs.artifacts["iter_data"],
+            "init_confs": steps.inputs.artifacts["init_data"],
+            },
         key="--".join(["%s" % steps.inputs.parameters["block_id"], "select-confs"]),
         executor=select_confs_executor,
         **select_confs_config,
