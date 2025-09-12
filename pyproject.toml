@@ -61,7 +61,6 @@ prerelease_token = "rc"
 prerelease = false
 
 [tool.semantic_release.changelog]
-changelog_file = ""
 exclude_commit_patterns = []
 mode = "update"
 insertion_flag = "<!-- version list -->"
