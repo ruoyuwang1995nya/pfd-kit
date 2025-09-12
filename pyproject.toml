@@ -64,7 +64,6 @@ prerelease = false
 exclude_commit_patterns = []
 mode = "update"
 insertion_flag = "<!-- version list -->"
-template_dir = "templates"
 
 [tool.semantic_release.changelog.default_templates]
 changelog_file = "CHANGELOG.md"
@@ -101,7 +100,7 @@ type = "github"
 ignore_token_for_push = false
 insecure = false
 
-[semantic_release.remote.token]
+[tool.semantic_release.remote.token]
 env = "GH_TOKEN"
 
 [project.optional-dependencies]
