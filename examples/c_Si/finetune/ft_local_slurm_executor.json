@@ -1,0 +1,117 @@
+{
+    "name":"si-ft-local-slurm",
+    "_comment": "Running on locally but submit DFT jobs to slurm cluster",
+    "step_configs": {
+        "run_fp_config": {
+            "template_config": {
+            },
+            "executor": {
+                "type": "dispatcher",
+                "host": "your host",
+                "username": "your username",
+                "password": "your password",
+                "port": 22,
+                "private_key_file": null,
+                "remote_root": "/remote_root",
+                "queue_name":"queue",    
+                "machine_dict": {
+                    "remote_profile": {
+                        "timeout": 600
+                        }},
+                "resources_dict":{
+                    "source_list":["/opt/intel/oneapi/setvars.sh"],
+                    "module_list": [],
+                    "custom_flags": []
+                }
+                    },
+            "template_slice_config": {
+                "group_size": 1,
+                "pool_size": 1
+            }
+        }
+    },
+    "task":{
+        "type":"finetune",
+        "max_iter":5,
+        "init_ft": false,
+        "init_train": false
+    },
+    
+    "inputs": {
+        "base_model_uri":null,
+        "base_model_path":"DPA2_medium_28_10M_rc0.pt",
+        "init_confs":{
+            "prefix": "./",
+            "confs_paths": ["./pert_si.extxyz"]
+        },
+        "init_fp_confs":{
+            "prefix": "./",
+            "confs_paths": []        }
+    },
+    "select_confs":{
+        "max_sel":60,
+        "frame_filter": [
+            {"type": "distance"}
+        ],
+        "h_filter": {
+            "chunk_size":5,
+            "_comment":"_entropy based filter"
+        }
+    },
+    "evaluate": {
+        "test_size": 0.4,
+        "model":"dp",
+        "head":"Domains_SemiCond",
+        "_comment":"The percentage for test",
+        "converge":{
+            "type": "force_rmse",
+            "RMSE": 0.06
+        }
+    },
+    "exploration": {
+        "type": "ase",
+        "config": {
+            "calculator":"dp",
+            "head":"Domains_SemiCond"
+        },
+        "stages": [
+            [
+                {
+                "conf_idx": [0],
+                "n_sample":3,
+                "ens": "npt",
+                "dt": 2,
+                "nsteps": 2000,
+                "temps": [1000],
+                "press":[1,1000, 10000],
+                "trj_freq": 10
+                }
+            ]
+        ]
+        
+    },
+    "fp": {
+        "type": "vasp",
+        "run_config": {
+            "command": "mpirun -n 16 vasp_std"
+        },
+        "inputs_config": {
+            "incar": "INCAR.fp",
+            "pp_files": {
+                "Si": "POTCAR"
+            },
+            "kspacing":0.2
+        },
+        "_comment": "fp parameters for calculation"
+    },
+    "init_fp":{},
+    "train": {
+        "type": "dp",
+        "config": {
+            "impl": "pytorch",
+            "head": "Domains_SemiCond"
+        },
+        "template_script": "dpa_train_script.json",
+        "_comment":"Training script for fine-tuning DPA-2 model"
+    }
+}
