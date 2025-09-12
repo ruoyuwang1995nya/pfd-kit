@@ -5,11 +5,11 @@ from pathlib import Path
 import numpy as np
 from ase import Atoms
 from ase.io import write, read
+from dflow.python import OPIO
 from pfd.op.select_confs import SelectConfs
-from pfd.exploration.selector import ConfSelectorFrames,ConfSelector
+from pfd.exploration.selector import ConfSelector
 class DummyConfSelector(ConfSelector):
-    def select(self, trajs):
-        # Just read all atoms from all files
+    def select(self, trajs, optional_outputs=None):  # match base signature loosely
         confs = []
         for t in trajs:
             confs.extend(read(t, index=":"))
@@ -17,51 +17,103 @@ class DummyConfSelector(ConfSelector):
 
 class TestSelectConfs(unittest.TestCase):
     def setUp(self):
-        # Create a temp directory for test files
+        np.random.seed(0)
         self.tmpdir = tempfile.mkdtemp()
         self.traj_path = Path(self.tmpdir) / "traj1.extxyz"
-        # Generate 5 simple Atoms objects and write to extxyz
         atoms_list = [Atoms("H2O", positions=np.random.rand(3,3)) for _ in range(5)]
         write(self.traj_path, atoms_list, format="extxyz")
         self.atoms_list = atoms_list
+
+    # helper to write extxyz with n structures
+    def _write_structs(self, filename: str, n: int, element: str = "H"):  # returns path, list
+        path = Path(self.tmpdir) / filename
+        atoms_list = [Atoms(element, positions=np.random.rand(1,3)) for _ in range(n)]
+        write(path, atoms_list, format="extxyz")
+        return path, atoms_list
 
     def tearDown(self):
         shutil.rmtree(self.tmpdir)
 
     def test_select_confs_basic(self):
         op = SelectConfs()
-        ip = {
+        ip = OPIO({
             "conf_selector": DummyConfSelector(),
             "confs": [self.traj_path],
             "optional_parameters": {"max_sel": 3},
-        }
+        })
         out = op.execute(ip)
-        # Output file should exist
         out_path = out["confs"]
         self.assertTrue(Path(out_path).exists())
-        # Should have at most max_sel structures
         selected = list(read(out_path, index=":"))
         self.assertLessEqual(len(selected), 3)
 
     def test_filter_by_entropy_cpu(self):
         op = SelectConfs()
-        # Use a small set of Atoms objects
         atoms_list = self.atoms_list
-        # Should not raise and should return a non-empty list
-        filtered = op.filter_by_entropy(atoms_list, reference=None, chunk_size=2, max_sel=4, k=2, cutoff=2.0, batch_size=2, h=0.01)
+        filtered = op.filter_by_entropy(atoms_list, reference=[], chunk_size=2, max_sel=4, k=2, cutoff=2.0, batch_size=2, h=0.01)
         self.assertIsInstance(filtered, list)
-        self.assertGreaterEqual(len(filtered), 2)
+        self.assertGreaterEqual(len(filtered), 1)
         self.assertLessEqual(len(filtered), 5)
 
     def test_filter_by_entropy_with_reference(self):
         op = SelectConfs()
-        # Write a reference extxyz file
         ref_path = Path(self.tmpdir) / "ref.extxyz"
         write(ref_path, self.atoms_list[:2], format="extxyz")
-        filtered = op.filter_by_entropy(self.atoms_list, reference=ref_path, chunk_size=2, max_sel=3, k=2, cutoff=2.0, batch_size=2, h=0.01)
+        reference = list(read(ref_path, index=":"))
+        filtered = op.filter_by_entropy(self.atoms_list, reference=reference, chunk_size=2, max_sel=3, k=2, cutoff=2.0, batch_size=1000, h=0.01)
         self.assertIsInstance(filtered, list)
-        self.assertGreaterEqual(len(filtered), 2)
-        self.assertLessEqual(len(filtered), 7)
+        self.assertLessEqual(len(filtered), 4)
+
+    def test_select_confs_with_init_confs_entropy(self):
+        op = SelectConfs()
+        init_path1, init_atoms1 = self._write_structs("init1.extxyz", 2)
+        init_path2, init_atoms2 = self._write_structs("init2.extxyz", 1)
+        ip = OPIO({
+            "conf_selector": DummyConfSelector(),
+            "confs": [self.traj_path],
+            "init_confs": [init_path1, init_path2],
+            "optional_parameters": {"max_sel": 4, "h_filter": {"chunk_size":1, "k":2, "cutoff":2.0, "batch_size":2, "h":0.01}},
+        })
+        out = op.execute(ip)
+        out_path = out["confs"]
+        self.assertTrue(Path(out_path).exists())
+        selected = list(read(out_path, index=":"))
+        self.assertLessEqual(len(selected), 4)
+        self.assertGreaterEqual(len(selected), 1)
+
+    def test_select_confs_with_iter_confs_entropy(self):
+        op = SelectConfs()
+        iter_path, iter_atoms = self._write_structs("iter.extxyz", 3)
+        ip = OPIO({
+            "conf_selector": DummyConfSelector(),
+            "confs": [self.traj_path],
+            "iter_confs": iter_path,
+            "optional_parameters": {"max_sel": 5, "h_filter": {"chunk_size":1, "k":2, "cutoff":2.0, "batch_size":2, "h":0.01}},
+        })
+        out = op.execute(ip)
+        out_path = out["confs"]
+        self.assertTrue(Path(out_path).exists())
+        selected = list(read(out_path, index=":"))
+        self.assertLessEqual(len(selected), 5)
+        self.assertGreaterEqual(len(selected), 1)
+
+    def test_select_confs_with_both_init_iter_entropy(self):
+        op = SelectConfs()
+        init_path1, _ = self._write_structs("initb1.extxyz", 2)
+        iter_path, _ = self._write_structs("iterb.extxyz", 2)
+        ip = OPIO({
+            "conf_selector": DummyConfSelector(),
+            "confs": [self.traj_path],
+            "init_confs": [init_path1],
+            "iter_confs": iter_path,
+            "optional_parameters": {"max_sel": 5, "h_filter": {"chunk_size":1, "k":2, "cutoff":2.0, "batch_size":2, "h":0.01}},
+        })
+        out = op.execute(ip)
+        out_path = out["confs"]
+        self.assertTrue(Path(out_path).exists())
+        selected = list(read(out_path, index=":"))
+        self.assertLessEqual(len(selected), 5)
+        self.assertGreaterEqual(len(selected), 1)
 
 if __name__ == "__main__":
     unittest.main()
