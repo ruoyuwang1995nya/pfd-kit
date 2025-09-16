@@ -27,7 +27,7 @@ dependencies = [
     "packaging",
     "cp2kdata",
     "periodictable",
-    "ase",
+    "ase>=3.26.0",
     "tabulate",
     "quests @ git+https://github.com/dskoda/quests.git",
     "dpdispatcher"
