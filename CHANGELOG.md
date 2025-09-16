@@ -2,6 +2,44 @@
 
 <!-- version list -->
 
+## v0.9.3 (2025-09-16)
+
+### Bug Fixes
+
+- Add support for atomic magmom in VASP
+  ([`c65f0d3`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/c65f0d32127ec07eb22214a26419d54b7feb015d))
+
+- Add tests for ase md components
+  ([`42cbbd7`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/42cbbd73728acfa6357c163d03eddc50ea81dfcf))
+
+- Add vasp support
+  ([`c65f0d3`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/c65f0d32127ec07eb22214a26419d54b7feb015d))
+
+- Redundant import
+  ([`fafb172`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/fafb172c289bbf507f37fb3e7ca96630f38b485b))
+
+- Update changelog
+  ([`b0ceef7`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/b0ceef7f38db7dc3ea02c8b7b013023dc8abd070))
+
+- Update docs
+  ([`c65f0d3`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/c65f0d32127ec07eb22214a26419d54b7feb015d))
+
+- Update docs for new version
+  ([`003d002`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/003d0025f7736af710f52df2cc14d9400aee5969))
+
+- Update examples
+  ([`33f17c9`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/33f17c91c45d51374fe643a2d08bcba21c9207e2))
+
+- Update README and dependencies
+  ([`f6f2223`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/f6f2223546bf6b4045ac2f8c1f999bc60affa059))
+
+- Update readthedocs config
+  ([`0c9c20e`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/0c9c20e12705b86cdc7705506da1eb3b1b5f3559))
+
+- Update release setting
+  ([`cb0da95`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/cb0da950716b1feeff09aebf1b7b5d6d2a95f67c))
+
+
 ## Unreleased
 
 ### Bug Fixes
