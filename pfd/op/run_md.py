@@ -138,7 +138,7 @@ class RunASE(OP):
             md_runner = MDRunner.from_file(
                 filename=ase_conf_name
             )
-            md_runner.calc = calc
+            md_runner.set_calculator(calc)
             try:
                 md_runner.run_md_from_json(
                     json_file=ase_input_name,

@@ -49,28 +49,47 @@ class MDParameters:
             return cls.from_json(f.read())
         
 
-class MDRunner(Atoms):
+class MDRunner:
     """
-    ASE Atoms subclass that can run MD simulations from JSON parameters.
+    MD simulation runner that wraps an ASE Atoms object.
     
     Examples
     --------
     >>> # Create from structure file
-    >>> md_atoms = MDRunner.from_file("structure.cif")
-    >>> md_atoms.set_calculator(calculator)
+    >>> md_runner = MDRunner.from_file("structure.cif")
+    >>> md_runner.atoms.set_calculator(calculator)
     >>> 
     >>> # Run MD with parameters from JSON
-    >>> md_atoms.run_md_from_json("md_params.json")
+    >>> md_runner.run_md_from_json("md_params.json")
     >>> 
     >>> # Or run with direct parameters
     >>> params = MDParameters(temperature=500.0, nsteps_nvt=50000)
-    >>> md_atoms.run_md(params)
+    >>> md_runner.run_md(params)
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, atoms: Atoms):
+        """Initialize MDRunner with an Atoms object."""
+        self.atoms = atoms
         self.md_history = []
         self.logger = self._setup_logger()
+    
+    def __len__(self) -> int:
+        """Return number of atoms."""
+        return len(self.atoms)
+    
+    def set_calculator(self, calc) -> None:
+        """Set calculator for the atoms."""
+        self.atoms.set_calculator(calc)
+    
+    @property
+    def calc(self):
+        """Get the calculator."""
+        return self.atoms.calc
+    
+    @calc.setter
+    def calc(self, calc):
+        """Set the calculator."""
+        self.atoms.calc = calc
 
     def _setup_logger(self) -> logging.Logger:
         """Setup logging for MD simulation."""
@@ -93,19 +112,24 @@ class MDRunner(Atoms):
     @classmethod
     def from_file(cls, filename: Union[str, Path]) -> 'MDRunner':
         """Create MDRunner from structure file."""
-        atoms = read(filename, index=0)
-        return cls(
-            symbols=atoms.get_chemical_symbols(),
-            positions=atoms.get_positions(),
-            cell=atoms.get_cell(),
-            pbc=atoms.get_pbc()
-        )
+        atoms_data = read(filename, index=0)
+        # Ensure we have a single Atoms object, not a list
+        if isinstance(atoms_data, list):
+            atoms = atoms_data[0]
+        else:
+            atoms = atoms_data
+        return cls(atoms)
+    
+    @classmethod
+    def from_atoms(cls, atoms: Atoms) -> 'MDRunner':
+        """Create MDRunner from existing Atoms object."""
+        return cls(atoms)
     
     def initialize_velocities(self, temperature: float, seed: Optional[int] = None) -> None:
         """Initialize Maxwell-Boltzmann velocity distribution."""
         if seed is not None:
             np.random.seed(seed)
-        MaxwellBoltzmannDistribution(self, temperature_K=temperature)
+        MaxwellBoltzmannDistribution(self.atoms, temperature_K=temperature)
         self.logger.info(f"Initialized velocities at {temperature} K")
     
     def run_npt(self, 
@@ -124,7 +148,7 @@ class MDRunner(Atoms):
         
         # Setup NPT dynamics
         dyn = NPTBerendsen(
-            self,
+            self.atoms,
             timestep,
             temperature_K=params.temp,
             pressure_au=params.press * units.bar,
@@ -135,11 +159,9 @@ class MDRunner(Atoms):
             loginterval=params.log_freq,
             **params.custom_config
         )
-            
-        traj = Trajectory(traj_file, 'w', atoms=dyn.atoms)
+        traj = Trajectory(traj_file, 'w', atoms=self.atoms)
         dyn.attach(traj.write, interval=params.traj_freq)
-
-        # Run NPT
+            # Run NPT
         self.logger.info("#### Starting MD...")
         start_time = time.time()
         dyn.run(params.nsteps)
@@ -172,7 +194,7 @@ class MDRunner(Atoms):
         
         # Setup NVT dynamics
         dyn = NoseHooverChainNVT(
-            self,
+            self.atoms,
             timestep,
             temperature_K=params.temp,
             tdamp=tdamp,
@@ -180,16 +202,15 @@ class MDRunner(Atoms):
             loginterval=params.log_freq,
             **params.custom_config
         )
-        
-        traj = Trajectory(traj_file, 'w', atoms=dyn.atoms)
+        traj = Trajectory(traj_file, 'w', atoms=self.atoms)
         dyn.attach(traj.write, interval=params.traj_freq)
+
         # Run NVT
         self.logger.info("#### Starting NVT simulation...")
         start_time = time.time()
         dyn.run(params.nsteps)
         elapsed = time.time() - start_time
         self.logger.info(f"#### NVT simulation completed in {elapsed:.2f} s")
-        
         # Store history
         self.md_history.append({
             'type': 'NVT',
@@ -200,10 +221,10 @@ class MDRunner(Atoms):
     
     def run_md(self, params: MDParameters) -> None:
         """Run MD simulation based on ensemble parameter."""
-        if not hasattr(self, 'calc') or self.calc is None:
+        if not hasattr(self.atoms, 'calc') or self.atoms.calc is None:
             raise ValueError("Calculator must be set before running MD")
             
-        self.logger.info(f"Starting MD simulation with {len(self)} atoms")
+        self.logger.info(f"Starting MD simulation with {len(self.atoms)} atoms")
         self.logger.info(f"Ensemble: {params.ensemble.upper()}")
         self.logger.info(f"Temperature: {params.temp} K")
         
