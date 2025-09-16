@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
 from typing import Dict, Any, Optional, Type, Union, Callable
-import numpy as np
-from ase import Atoms
 from ase.calculators.calculator import Calculator, all_changes
 from pathlib import Path
 
