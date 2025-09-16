@@ -1,6 +1,4 @@
-from bz2 import compress
 import json
-from math import log
 import time
 import logging
 from pathlib import Path
