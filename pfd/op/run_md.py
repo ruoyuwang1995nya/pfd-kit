@@ -41,7 +41,6 @@ from pfd.constants import (
 from pfd.exploration import md
 from pfd.exploration.md import (
     MDRunner,
-    MDParameters,
     CalculatorWrapper,
 )
 
@@ -140,9 +139,12 @@ class RunASE(OP):
                 filename=ase_conf_name
             )
             md_runner.calc = calc
-            md_runner.run_md_from_json(
-                json_file=ase_input_name,
-            )
+            try:
+                md_runner.run_md_from_json(
+                    json_file=ase_input_name,
+                )
+            except Exception as e:
+                raise TransientError(f"ASE MD/relax failed: {e}")
         ret_dict = {
             "log": work_dir / ase_log_name,
             "traj": work_dir / ase_traj_name
