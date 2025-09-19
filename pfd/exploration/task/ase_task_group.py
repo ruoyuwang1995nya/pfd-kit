@@ -217,3 +217,49 @@ class AseTaskGroup(ConfSamplingTaskGroup):
             conf_list=atom_ls_strs, n_sample=n_sample, random_sample=True
         )
         return task_grp
+    
+    @classmethod
+    def make_task_grp_from_conf(
+        cls,
+        task_grp_config: Dict,
+        init_confs: List[str],
+        *args,
+        **kwargs
+    ) -> "AseTaskGroup":
+        """
+        Create ASE task group from configuration files and task group config.
+        
+        Parameters
+        ----------
+        init_confs : List[str]
+            List of paths to initial configuration files
+        task_grp_config : Dict
+            Task group configuration containing conf_idx, n_sample, and other params
+            
+        Returns
+        -------
+        AseTaskGroup
+            Configured ASE task group
+        """
+        from io import StringIO
+        from ase.io import read, write
+        
+        confs_idx = task_grp_config.pop("conf_idx")
+        n_sample = task_grp_config.pop("n_sample")
+        
+        # get structure in string format
+        atoms_ls_str = []
+        for ii in confs_idx:
+            atoms_ls = read(init_confs[ii], index=":")
+            if not isinstance(atoms_ls, list):
+                atoms_ls = [atoms_ls]
+            for atoms in atoms_ls:
+                buf = StringIO()
+                write(buf, atoms, format="extxyz")
+                atoms_ls_str.append(buf.getvalue())
+        
+        return cls.make_task_grp(
+            atoms_ls_str,
+            task_grp_config,
+            n_sample=n_sample
+        )

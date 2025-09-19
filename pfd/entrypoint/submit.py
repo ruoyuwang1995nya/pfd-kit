@@ -1,5 +1,4 @@
 from copy import deepcopy
-from io import StringIO
 import os
 import copy
 from turtle import up
@@ -11,7 +10,6 @@ import dflow
 import pfd
 import re
 import ase
-from ase.io import read, write
 import warnings
 import time
 from dflow import ArgoStep, Step, Steps, Workflow, upload_artifact, download_artifact
@@ -58,13 +56,19 @@ from pfd.utils import (
     print_keys_in_nice_format,
 )
 
-from pfd.superop import PrepRunExpl
+from pfd.superop import PrepRunExpl, PrepRunCaly
 from pfd.op import (
     PrepASE,
-    RunASE
+    RunASE,
+    PrepCalyInput,
+    PrepCalyASEOptim,
+    RunCalyASEOptim,
+    CollRunCaly,
+    CalyEvoStep,
+    CalyEvoStepMerge,
 )
 from pfd.exploration.task import (
-    AseTaskGroup
+    AseTaskGroup, CalyTaskGroup
 )
 
 
@@ -74,6 +78,12 @@ explore_styles = {
         "prep": PrepASE,
         "run": RunASE,
         "task_grp": AseTaskGroup,
+    },
+    "calypso":{
+        "preprun": PrepRunCaly,
+        "prep": PrepCalyInput,
+        "run": CalyEvoStep,
+        "task_grp": CalyTaskGroup,
     }
 }
 
@@ -102,8 +112,6 @@ def get_conf_filters_conv(config):
             conf_filter_conv = ConfFilterConv.get_filter(c.pop("type"))(**c)
             conf_filters_conv.add(conf_filter_conv)
     return conf_filters_conv
-
-
 
 def make_pfd_op(
     fp_style: str = "vasp",
@@ -156,6 +164,33 @@ def make_pfd_op(
             run_config=run_explore_config,
             upload_python_packages=upload_python_packages,
         )
+    elif explore_style in ["calypso","calypso:merge"]:
+        if explore_style == "calypso":
+            caly_evo_step_op = CalyEvoStep(
+                name="caly-eval-step",
+                collect_run_caly=CollRunCaly,
+                prep_ase_optim=PrepCalyASEOptim,
+                run_ase_optim=RunCalyASEOptim,
+                prep_config=prep_explore_config,
+                run_config=run_explore_config,
+            )
+        else:
+            caly_evo_step_op = CalyEvoStepMerge(
+            name="caly-eval-step",
+            collect_run_caly=CollRunCaly,
+            prep_ase_optim=PrepCalyASEOptim,
+            run_ase_optim=RunCalyASEOptim,
+            prep_config=prep_explore_config,
+            run_config=run_explore_config,
+    )
+        prep_run_explore_op = PrepRunCaly(
+            "prep-run-caly-step",
+            PrepCalyInput,
+            caly_evo_step_op,
+            prep_config=prep_explore_config,
+            run_config=run_explore_config,
+            upload_python_packages=upload_python_packages,
+        )
     else:
         raise ValueError(f"Explore style {explore_style} has not been implemented!")
 
@@ -195,7 +230,6 @@ def make_pfd_op(
         init_fp=init_fp,
     )
     return pfd_op
-
 
 def get_systems_from_data(data, data_prefix=None):
     data = [data] if isinstance(data, str) else data
@@ -352,23 +386,13 @@ class FlowGen:
         for stg in expl_stages:
             expl_stage=ExplorationStage()
             for task_grp in stg:
-                # maybe we need a function to wrap the normalization
-                confs_idx = task_grp.pop("conf_idx")
-                n_sample = task_grp.pop("n_sample")
-                # get structure in string format
-                for ii in confs_idx:
-                    atoms_ls = read(init_confs[ii], index=":")
-                    atoms_ls_str = []
-                    for atoms in atoms_ls:
-                        buf = StringIO()
-                        write(buf, atoms, format="extxyz")
-                    atoms_ls_str.append(buf.getvalue())
-
-                    expl_stage.add_task_group(task_grp_style.make_task_grp(
-                        atoms_ls_str,
+                # Use the unified method for creating task groups
+                expl_stage.add_task_group(
+                    task_grp_style.make_task_grp_from_conf(
                         task_grp,
-                        n_sample=n_sample
-                    ))
+                        init_confs,
+                    )
+                )
             _expl_stages.append(expl_stage)
 
         #### scheduler for workflow management

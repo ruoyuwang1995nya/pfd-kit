@@ -1,4 +1,4 @@
-# Input script guide
+# Input Script Guide
 
 <style>
   p {
@@ -7,156 +7,162 @@
 </style>
 
 ## Basics
-### Host and nodes
-#### Workflow host
-PFD-kit is built upon the `dflow` package, which is in turn based on the Python API of `ARGO` workflow. The `dflow` package is purposely built for cloud-based workflow integrated with `Kubernetes` services. Yet a local "debug" mode is also provided and is likely to be more convenient in many cases. If running localing, no cloud services is need.
+### Host and Nodes
+#### Workflow Host
+PFD-kit is built on the `dflow` package, which uses the Python API of `ARGO` workflows. While designed for cloud-based workflows with `Kubernetes`, a local "debug" mode is available for convenience. No cloud services are required for local execution.
 
-If you are going to submit the workflow to a remote server, the following config needs to be specified:
+To submit workflows to a remote server, specify the following configuration:
 
 ```json
-"dflow_config" : {
-	"host" : "http://address.of.the.host:port"
-    },
-"dflow_s3_config" : {
-	"endpoint" : "address.of.the.s3.sever:port"
-    },
+"dflow_config": {
+    "host": "http://address.of.the.host:port"
+},
+"dflow_s3_config": {
+    "endpoint": "address.of.the.s3.server:port"
+},
 ```
-If you are using the `Kubernetes` service provided by `Bohrium` platform, you can directly access it with:
+For the `Bohrium` platform, use:
 
 ```json
 "bohrium_config": {
-        "username": "urname",
-        "password": "123456",
-        "project_id": 123456,
-        "_comment": "all"
-    },
+    "username": "your_username",
+    "password": "your_password",
+    "project_id": 123456,
+    "_comment": "all"
+},
 ```
-The workflow would be then hosted on `https://workflows.deepmodeling.com` and the workflow progress can be accessed via `https://workflows.deepmodeling.com/workflows`.
+The workflow will be hosted on `https://workflows.deepmodeling.com`, and progress can be tracked at `https://workflows.deepmodeling.com/workflows`.
 
-#### Node setting
-The `step_configs` section specify the computation resources for each computation tasks, such as DFT calculation, model training, MD exploration, *etc.* If you choose to run locally, there is no need to config it and everything would be executed on your local machine.
+#### Node Settings
+The `step_configs` section defines computational resources for tasks like DFT calculations, model training, and MD exploration. For local execution, no configuration is needed, as all tasks run on the local machine.
 
-A more common approach would be to submit the intensive compuatation tasks, like the DFT calculations, to remote HPC nodes. For example, you can submit the calculation jobs to HPC managed by `Slurm` systems.
+For remote HPC nodes (e.g., `Slurm` systems), configure as follows:
+
 ```json
 "step_configs": {
     "run_fp_config": {
-    "template_config": {},
-    "executor": {
-        "type": "dispatcher",
-        "host": "your host",
-        "username": "your username",
-        "password": "your password",
-        "port": 22,
-        "private_key_file": null,
-        "remote_root": "/remote_root",
-        "queue_name":"queue",    
-        "machine_dict": {
-                    "remote_profile": {
-                        "timeout": 600
-                        }},
-        "resources_dict":{
-            "source_list":["path_to_source_file"],
-            "module_list": ["remote_module"],
-            "custom_flags": ["custom_commands"]
-                }},
-        "template_slice_config": {
-                "group_size": 1,
-                "pool_size": 1
+        "template_config": {},
+        "executor": {
+            "type": "dispatcher",
+            "host": "your_host",
+            "username": "your_username",
+            "password": "your_password",
+            "port": 22,
+            "private_key_file": null,
+            "remote_root": "/remote_root",
+            "queue_name": "queue",
+            "machine_dict": {
+                "remote_profile": {
+                    "timeout": 600
+                }
+            },
+            "resources_dict": {
+                "source_list": ["path_to_source_file"],
+                "module_list": ["remote_module"],
+                "custom_flags": ["custom_commands"]
             }
+        },
+        "template_slice_config": {
+            "group_size": 1,
+            "pool_size": 1
         }
+    }
 }
 ```
-If you choose to run on `Kubernetes` services (using `Bohrium` for example), you should specify the config for each tasks. In the following example, the path to container image (which includes all the envs and softwares for your computation tasks) and machine type needs to be specified.
+For `Kubernetes` services (e.g., `Bohrium`), specify the container image and machine type:
+
 ```json
 "step_configs": {
-        "run_fp_config": {
-            "template_config": {
-                "image": "registry.dp.tech/dptech/vasp:5.4.4",
-            },
-            "continue_on_success_ratio": 0.9,
-            "executor": {
-                "type": "dispatcher",
-                "image_pull_policy": "IfNotPresent",
-                "machine_dict": {
-                    "batch_type": "Bohrium",
-                    "context_type": "Bohrium",
-                    "remote_profile": {
-                        "input_data": {
-                            "job_type": "container",
-                            "platform": "ali",
-                            "scass_type": "c32_m64_cpu"}}}}}
-                            }
-```
-  
-
-## Fine-tune
-Then the parameters defining workflow tasks in the example `si_ft.json` file. Firstly, the task type (in this case "finetune") must be specified. Here we skip the initial data generation and training as the `Domains_SemiCond` branch already has sufficient accuracy to explore the configurational space by MD simulations. 
-```json
-"task":{
-        "type":"finetune",
-        "max_iter":5,
-        "init_ft": false,
-        "init_train": false
-    }
-```
-The `inputs` section includes essential input parameters and model files. The exploration systems, with proper perturbation, needs to be prepared in advanced. 
-
-```json
-"inputs":{
-    "base_model_path": "DPA2_medium_28_10M_beta4.pt",
-    "init_confs":{
-            "prefix": "./",
-            "confs_paths": ["./pert_si32.extxyz"]
+    "run_fp_config": {
+        "template_config": {
+            "image": "vasp_image_paths"
         },
-    "init_fp_confs":{
-            "prefix": "./",
-            "confs_paths": []}
+        "continue_on_success_ratio": 0.9,
+        "executor": {
+            "type": "dispatcher",
+            "image_pull_policy": "IfNotPresent",
+            "machine_dict": {
+                "batch_type": "Bohrium",
+                "context_type": "Bohrium",
+                "remote_profile": {
+                    "input_data": {
+                        "job_type": "container",
+                        "platform": "ali",
+                        "scass_type": "c32_m64_cpu"
+                    }
+                }
+            }
+        }
+    }
 }
 ```
 
-The `exploration` section specifiy the exploration for new structural configurations. In this examples, the new configurations are generated by running molecular dynamics (MD) simulations at 1000 K under different perssure settings for a Si frame randomly selected frame `pert_si32.extxyz`. Each trajectory runs for 2000 steps with a 2 fs timestep. In total, 603 frames would be extracted for subsequent down-selection. 
+## Fine-Tuning
+The example `si_ft.json` file defines workflow tasks. Specify the task type (e.g., "finetune") and skip initial data generation and training if the `Domains_SemiCond` branch already provides sufficient accuracy:
+
+```json
+"task": {
+    "type": "finetune",
+    "max_iter": 5,
+    "init_ft": false,
+    "init_train": false
+}
+```
+The `inputs` section includes essential parameters and model files. Prepare exploration systems with proper perturbation in advance:
+
+```json
+"inputs": {
+    "base_model_path": "DPA2_medium_28_10M_beta4.pt",
+    "init_confs": {
+        "prefix": "./",
+        "confs_paths": ["./pert_si32.extxyz"]
+    },
+    "init_fp_confs": {
+        "prefix": "./",
+        "confs_paths": []
+    }
+}
+```
+The `exploration` section defines structural configuration exploration. In this example, MD simulations at 1000 K under varying pressures generate new configurations:
 
 ```json
 "exploration": {
-        "type": "ase",
-        "config": {
-            "calculator":"dp",
-            "head":"Domains_SemiCond"
-        },
-        "stages": [
-            [
-                {
+    "type": "ase",
+    "config": {
+        "calculator": "dp",
+        "head": "Domains_SemiCond"
+    },
+    "stages": [
+        [
+            {
                 "conf_idx": [0],
-                "n_sample":1,
+                "n_sample": 1,
                 "ens": "npt",
                 "dt": 2,
                 "nsteps": 2000,
                 "temps": [1000],
-                "press":[1,1000, 10000],
+                "press": [1, 1000, 10000],
                 "trj_freq": 10
-                }
-            ]
+            }
         ]
-        
-    },
+    ]
+}
 ```
-
-The `select_confs` node remove unphysical configurations from the extracted frames and compress the data size by entropy of atomic enviroments, ensuring maximum efficiency for DFT calculations. 
+The `select_confs` node filters unphysical configurations and compresses data using entropy-based measures:
 
 ```json
-"select_confs":{
-    "max_sel":60,
+"select_confs": {
+    "max_sel": 60,
     "frame_filter": [
         {"type": "distance"}
     ],
     "h_filter": {
-        "chunk_size":5,
-        "_comment":"_entropy based filter"
-        }
-    },
+        "chunk_size": 5,
+        "_comment": "entropy-based filter"
+    }
+}
 ```
-
-The `fp` section defines DFT calculation settings. The path to the VASP input file as well as the pseudopotential file for each element are specified. The VASP command at `fp/run_config/command` should be configured according to your environments.
+The `fp` section defines DFT calculation settings, including VASP input and pseudopotential files:
 
 ```json
 "fp": {
@@ -164,67 +170,69 @@ The `fp` section defines DFT calculation settings. The path to the VASP input fi
     "task_max": 50,
     "run_config": {
         "command": "mpirun -n 32 vasp_std"
-        },
+    },
     "inputs_config": {
         "incar": "INCAR.fp",
         "pp_files": {
-                "Si": "POTCAR"
-            },
-        "kspacing":0.2
-        }
-    },
+            "Si": "POTCAR"
+        },
+        "kspacing": 0.2
+    }
+}
 ```
+The `train` section specifies the pretrained model and training configuration:
 
-The `train` section defines the type of pretrained model and the specific training configuration. To train a Deep Potential model, a seperate training script needs to be provided. 
 ```json
 "train": {
     "type": "dp",
     "config": {
         "impl": "pytorch",
-        "head":"Domains_SemiCond",
-        },
-    "template_script": "train.json",
-    }
+        "head": "Domains_SemiCond"
+    },
+    "template_script": "train.json"
+}
 ```
-The final part is the `evaluate` section, where the model is tested against a test dataset randomly extracted from the last iteration. The iteration run iteratively until convergence achieved or reach the maximum iteration cycles. The convergence criteria is when the root mean squre error (RMSE) of atomic force prediction falls below 0.06 eV/Angstrom.  
+The `evaluate` section tests the model against a test dataset. Iterations continue until convergence or the maximum cycle limit is reached. Convergence is achieved when the force RMSE falls below 0.06 eV/Å:
 
 ```json
 "evaluate": {
     "test_size": 0.3,
-    "model":"dp",
-    "head":"Domains_SemiCond",
-    "_comment":"The percentage for test",
-    "converge":{
+    "model": "dp",
+    "head": "Domains_SemiCond",
+    "_comment": "The percentage for test",
+    "converge": {
         "type": "force_rmse",
         "RMSE": 0.06
-        }
-    },
+    }
+}
 ```
 
 ## Distillation
-The input script for tdistillation is a very similar to that of fine-tune, except for a few important differences. The `task/type` is changed to `dist`, and new frames are set to be labeled by the fine-tuned model using `ase.Calculator` in the `fp` section. 
+The distillation script is similar to fine-tuning, with key differences. Change the `task/type` to `dist` and label new frames using the fine-tuned model:
+
 ```json
-"task":{
-    "type":"dist",
-    "max_iter":5
-    },
-"inputs":{
-    "base_model_path":"path_to_teacher_model",
+"task": {
+    "type": "dist",
+    "max_iter": 5
+},
+"inputs": {
+    "base_model_path": "path_to_teacher_model",
     ...
-    },
-"train":{
+},
+"train": {
     "type": "dp",
-        "config": {
-            "impl": "pytorch"
-        },
-        "template_script": "./dist_train.json"
+    "config": {
+        "impl": "pytorch"
+    },
+    "template_script": "./dist_train.json"
 },
 "fp": {
-        "type": "ase",
-        "run_config": {
-            "model_style": "dp",
+    "type": "ase",
+    "run_config": {
+        "model_style": "dp",
         "inputs_config": {
-            "batch_size":500
-            },
-    }}
+            "batch_size": 500
+        }
+    }
+}
 ```
