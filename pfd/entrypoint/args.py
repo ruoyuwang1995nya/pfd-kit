@@ -1,4 +1,3 @@
-from pydoc import doc
 import textwrap
 from typing import (
     List,
@@ -140,12 +139,40 @@ def ase_args():
         Argument("stages", List[List[dict]], optional=False, doc=doc_stages)
     ]
 
+def caly_args():
+    doc_stages = ("Exploration stages." 
+        "The definition of exploration stages of type `List[List[ExplorationTaskGroup]`. "
+        "The outer list provides the enumeration of the exploration stages. "
+        "Then each stage is defined by a list of exploration task groups. "
+        "Each task group is described in :ref:`the task group definition<task_group_sec>` ")
+    doc_config = "Configuration of ase exploration"
+    doc_run_calypso_command = "command of running calypso."
+    return [
+        Argument(
+            "config",
+            dict,
+            RunASE.ase_args()+[
+            Argument( "run_calypso_command",
+                    str,
+                    optional=True,
+                    default="calypso.x",
+                    doc=doc_run_calypso_command,
+        ),
+                ],
+            doc=doc_config,
+        ),
+        Argument("stages", List[List[dict]], optional=False, doc=doc_stages)
+    ]
+
 def variant_explore():
     doc = "The type of the exploration"
     doc_ase = "Exploration by ASE"
+    doc_calypso = "Exploration by Calypso"
     return Variant("type",
                    [
                     Argument("ase", dict, ase_args(), doc=doc_ase),
+                    Argument("calypso", dict, caly_args(), doc=doc_calypso),
+                    Argument("calypso:merge", dict, caly_args(), doc=doc_calypso),
         ],
         doc=doc,
     )

@@ -23,6 +23,8 @@ if TYPE_CHECKING:
 
 
 @TrajRender.register("ase")
+@TrajRender.register("calypso")
+@TrajRender.register("calypso:merge")
 class TrajRenderASE(TrajRender):
     def __init__(
         self,
