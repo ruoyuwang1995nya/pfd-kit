@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v0.10.0 (2025-09-19)
+
+### Bug Fixes
+
+- Support multiple directories for select confs
+  ([`6168d73`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/6168d7350a380cf94ee54a76b8eb3a6ef150524b))
+
+### Features
+
+- Add calypso support
+  ([`1d1a625`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/1d1a625e720e2675cb1be7955d79721eb45a97b3))
+
+
 ## v0.9.3 (2025-09-16)
 
 ### Bug Fixes
