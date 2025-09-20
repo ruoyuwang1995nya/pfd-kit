@@ -16,7 +16,7 @@ class StageScheduler(OP,ABC):
     def get_input_sign(cls):
         return OPIOSign(
             {
-                "scheduler": Parameter(Scheduler),
+                "scheduler": BigParameter(Scheduler),
                 "init_model": Artifact(Path, optional=True),
                 "expl_model": Artifact(Path, optional=True),  # model for exploration
                 "current_model": Artifact(Path, optional=True),
@@ -32,7 +32,7 @@ class StageScheduler(OP,ABC):
     def get_output_sign(cls):
         return OPIOSign(
             {
-                "scheduler": Parameter(Scheduler),
+                "scheduler": BigParameter(Scheduler),
                 "task_grp": BigParameter(BaseExplorationTaskGroup, default=None),
                 "iter_numb": Parameter(int),
                 "iter_id": Parameter(str),
@@ -42,7 +42,6 @@ class StageScheduler(OP,ABC):
                 "expl_model": Artifact(Path, optional=True),
                 "current_model": Artifact(Path, optional=True),
                 "iter_data": Artifact(Path, optional=True),  # data collected after exploration
-                #"init_data": Artifact(List[Path], optional=True),  # data collected after exploration
                 "report": Parameter(ConvReport, value=None),
                 "train_config": Parameter(Dict),
             }
@@ -64,8 +63,6 @@ class StageScheduler(OP,ABC):
         expl_model = ip.get("expl_model")
         report = ip.get("report")
         optional_parameters = ip["optional_parameters"]
-        init_data = ip.get("init_data")
-        iter_data = ip.get("iter_data")
 
         ret = {}
         # add report if exists
