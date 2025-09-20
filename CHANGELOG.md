@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.10.1 (2025-09-20)
+
+### Bug Fixes
+
+- Issues with scheduler OP
+  ([`c8541e7`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/c8541e7f8bb5c4743ba6f8cd20a9e9e08bb30658))
+
+
 ## v0.10.0 (2025-09-19)
 
 ### Bug Fixes
