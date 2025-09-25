@@ -87,7 +87,6 @@ class TestAseTaskGroup(unittest.TestCase):
                     task_grp_config,
                     self.init_confs,
                 )
-                print(task_grps)
                 expl_stage.add_task_group(task_grps)
 
         self.assertEqual(len(expl_stage.explor_groups), 2)
