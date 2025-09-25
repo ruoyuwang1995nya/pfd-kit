@@ -34,7 +34,7 @@ class ExplorationStage:
             The added exploration task group
 
         """
-        if isinstance(grp, ExplorationStage):
+        if isinstance(grp, ExplorationTaskGroup):
             self.explor_groups.append(grp)
         else:
             self.explor_groups.extend(grp)
