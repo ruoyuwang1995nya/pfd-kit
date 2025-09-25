@@ -1,4 +1,3 @@
-
 from dargs import Argument
 
 from .task import (
@@ -18,6 +17,7 @@ from typing import List, Optional, Dict
 import itertools
 
 from pfd.exploration.md import MDParameters
+
 
 class AseTaskGroup(ConfSamplingTaskGroup):
     """
@@ -53,10 +53,10 @@ class AseTaskGroup(ConfSamplingTaskGroup):
 
     def set_md(
         self,
-        temps: List[float], # temperature
+        temps: List[float],  # temperature
         press: Optional[List[float]] = None,
         ens: str = "npt",
-        dt: float = 2, # time step
+        dt: float = 2,  # time step
         nsteps: int = 1000,
         trj_freq: int = 100,
         tau_t: float = 100,
@@ -105,13 +105,10 @@ class AseTaskGroup(ConfSamplingTaskGroup):
         for cc, tt, pp in itertools.product(confs, self.temps, self.press):  # type: ignore
             self.add_task(self._make_ase_task(cc, tt, pp))
         return self
-    
-    
+
     def _make_ase_task(
-        self, 
-        conf: str, 
-        temp: float, 
-        press: Optional[float]) -> ExplorationTask:
+        self, conf: str, temp: float, press: Optional[float]
+    ) -> ExplorationTask:
         """
         Create an ASE task with the given configuration, temperature, and pressure.
 
@@ -129,7 +126,7 @@ class AseTaskGroup(ConfSamplingTaskGroup):
         ExplorationTask
             An instance of ExplorationTask configured for ASE.
         """
-        task= ExplorationTask()
+        task = ExplorationTask()
         task.add_file(ase_conf_name, conf)
         ase_input = MDParameters(
             temp=temp,
@@ -144,8 +141,7 @@ class AseTaskGroup(ConfSamplingTaskGroup):
         )
         task.add_file(ase_input_name, ase_input.to_json())
         return task
-        
-    
+
     @classmethod
     def normalize_config(cls, data: Dict = {}, strict: bool = False) -> Dict:
         r"""Normalized the argument.
@@ -168,8 +164,7 @@ class AseTaskGroup(ConfSamplingTaskGroup):
         data = base.normalize_value(data, trim_pattern="_*")
         base.check_value(data, strict=strict)
         return data
-    
-    
+
     @classmethod
     def args(cls):
         r"""The argument definition of the `run_task` method.
@@ -201,41 +196,34 @@ class AseTaskGroup(ConfSamplingTaskGroup):
             Argument("tau_p", float, optional=True, default=500, doc=doc_tau_p),
             Argument("no_pbc", bool, optional=True, default=False, doc=doc_no_pbc),
         ]
-    
-    @classmethod   
+
+    @classmethod
     def make_task_grp(
         cls,
         atom_ls_strs: List[str],
         config: Dict,
-        n_sample: int=1,
-        
+        n_sample: int = 1,
     ):
         # task["model_name_pattern"] = pytorch_model_name_pattern
         task_grp = AseTaskGroup()
         task_grp.set_md(**AseTaskGroup.normalize_config(config, strict=False))
-        task_grp.set_conf(
-            conf_list=atom_ls_strs, n_sample=n_sample, random_sample=True
-        )
+        task_grp.set_conf(conf_list=atom_ls_strs, n_sample=n_sample, random_sample=True)
         return task_grp
-    
+
     @classmethod
     def make_task_grp_from_conf(
-        cls,
-        task_grp_config: Dict,
-        init_confs: List[str],
-        *args,
-        **kwargs
-    ) -> "AseTaskGroup":
+        cls, task_grp_config: Dict, init_confs: List[str], *args, **kwargs
+    ) -> "List[AseTaskGroup]":
         """
         Create ASE task group from configuration files and task group config.
-        
+
         Parameters
         ----------
         init_confs : List[str]
             List of paths to initial configuration files
         task_grp_config : Dict
             Task group configuration containing conf_idx, n_sample, and other params
-            
+
         Returns
         -------
         AseTaskGroup
@@ -243,13 +231,13 @@ class AseTaskGroup(ConfSamplingTaskGroup):
         """
         from io import StringIO
         from ase.io import read, write
-        
+
         confs_idx = task_grp_config.pop("conf_idx")
         n_sample = task_grp_config.pop("n_sample")
-        
         # get structure in string format
-        atoms_ls_str = []
+        task_grp_ls = []
         for ii in confs_idx:
+            atoms_ls_str = []
             atoms_ls = read(init_confs[ii], index=":")
             if not isinstance(atoms_ls, list):
                 atoms_ls = [atoms_ls]
@@ -257,9 +245,7 @@ class AseTaskGroup(ConfSamplingTaskGroup):
                 buf = StringIO()
                 write(buf, atoms, format="extxyz")
                 atoms_ls_str.append(buf.getvalue())
-        
-        return cls.make_task_grp(
-            atoms_ls_str,
-            task_grp_config,
-            n_sample=n_sample
-        )
+            task_grp_ls.append(
+                cls.make_task_grp(atoms_ls_str, task_grp_config, n_sample=n_sample)
+            )
+        return task_grp_ls
