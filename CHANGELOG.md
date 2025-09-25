@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.10.2 (2025-09-25)
+
+### Bug Fixes
+
+- Issues with ase task group number
+  ([`811c770`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/811c77059e8976ae031b7dfe8e212ce434f02882))
+
+
 ## v0.10.1 (2025-09-20)
 
 ### Bug Fixes
