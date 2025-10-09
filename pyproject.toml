@@ -20,7 +20,7 @@ requires-python = ">=3.10"
 dependencies = [
     "numpy",
     "dpdata",
-    "pydflow>=1.6.57",
+    "pydflow==1.8.95",
     "dargs>=0.4.10",
     "scipy",
     "lbg",
