@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.10.3 (2025-10-09)
+
+### Bug Fixes
+
+- Issues with ase inference
+  ([`16d1894`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/16d18946c51de889fb1e9261c37f7718ee2a9496))
+
+
 ## v0.10.2 (2025-09-25)
 
 ### Bug Fixes
