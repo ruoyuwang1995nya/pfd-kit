@@ -162,7 +162,7 @@ class PrepVasp(PrepFp):
         vasp_inputs : VaspInputs
             The VaspInputs object handels all other input files of the task.
         """
-        sort_atoms_by_atomic_number(conf_frame)
+        conf_frame= sort_atoms_by_atomic_number(conf_frame)
         atom_names = get_element_types_from_sorted_atoms(conf_frame)
         write(vasp_conf_name, conf_frame, format="vasp")
         incar = vasp_inputs.incar_template
