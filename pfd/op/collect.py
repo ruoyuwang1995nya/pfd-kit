@@ -92,6 +92,9 @@ class CollectData(OP):
 
         structures = []
         for path in iter_structures:
+            if path is None:
+                logging.warning("Received None path in structures, skipping.")
+                continue
             try:
                 structures.extend(read(path,index=":"))
             except UnknownFileTypeError as e:
