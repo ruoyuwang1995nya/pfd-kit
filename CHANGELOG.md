@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.10.4 (2025-10-22)
+
+### Bug Fixes
+
+- Issues with sorted atoms
+  ([`0859542`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/0859542fe318dcb8eff470709bd2c1e130b46ee3))
+
+
 ## v0.10.3 (2025-10-09)
 
 ### Bug Fixes
