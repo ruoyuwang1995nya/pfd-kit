@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.10.5 (2025-10-23)
+
+### Bug Fixes
+
+- Handle None paths in collect.py
+  ([`8a64953`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/8a649535a6efaf7133c7f32ef3690a76b89fe381))
+
+
 ## v0.10.4 (2025-10-22)
 
 ### Bug Fixes
