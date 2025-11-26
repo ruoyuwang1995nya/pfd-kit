@@ -1,3 +1,4 @@
+from typing import Union, List
 from .task_group import (
     BaseExplorationTaskGroup,
     ExplorationTaskGroup,
@@ -22,7 +23,7 @@ class ExplorationStage:
 
     def add_task_group(
         self,
-        grp: ExplorationTaskGroup,
+        grp: Union[ExplorationTaskGroup, List[ExplorationTaskGroup]],
     ):
         """
         Add an exploration group
@@ -33,7 +34,10 @@ class ExplorationStage:
             The added exploration task group
 
         """
-        self.explor_groups.append(grp)
+        if isinstance(grp, ExplorationTaskGroup):
+            self.explor_groups.append(grp)
+        else:
+            self.explor_groups.extend(grp)
         return self
 
     def make_task(

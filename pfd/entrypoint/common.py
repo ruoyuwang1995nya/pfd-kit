@@ -91,4 +91,4 @@ def perturb_cli(
             atom_pert_prob=atom_pert_prob,
             supercell=supercell
         )
-        write("pert_"+Path(atoms_path).stem+'.extxyz',pert_atom_ls)
+        write("pert_"+Path(atoms_path).stem+'.extxyz',pert_atom_ls,format='extxyz')

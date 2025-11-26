@@ -16,3 +16,7 @@ from .ase_task_group import (
     AseTaskGroup,
 )
 
+from .calypso_task_group import (
+    CalyTaskGroup,
+)
+

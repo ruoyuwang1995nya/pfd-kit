@@ -94,8 +94,14 @@ class RunFpASE(RunFp):
         for atoms in confs:
             try:
                 atoms.calc = calc
-                atoms.get_potential_energy()
-                atoms.get_forces()
+                energy= atoms.get_potential_energy()
+                atoms.info['energy'] = energy
+                forces=atoms.get_forces()
+                atoms.set_array('forces', forces)
+                # in voight order
+                stress = atoms.get_stress()
+                atoms.info['stress'] = stress
+                atoms.calc.results.clear()
             except Exception as e:
                 raise TransientError(f"Calculator error: {e}")
         

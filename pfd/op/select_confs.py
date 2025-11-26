@@ -81,7 +81,8 @@ class SelectConfs(OP):
         """
         optional_parameters = ip["optional_parameters"]
         conf_selector = ip["conf_selector"]
-        trajs = ip["confs"]
+        trajs = self._expand_directories(ip["confs"])
+        logger.info(f"Expanded {len(ip['confs'])} input paths to {len(trajs)} trajectory files.")
         ref_confs = []
         if init_confs:= ip.get("init_confs"):
             for t in init_confs:
@@ -161,6 +162,37 @@ class SelectConfs(OP):
                 h=h,
                 **kwargs
                 )
+        
+    def _expand_directories(self, paths: List[Path]) -> List[Path]:
+        """Expand directories to include all trajectory files within them.
+        
+        Parameters
+        ----------
+        paths : List[Path]
+            List of file or directory paths
+            
+        Returns
+        -------
+        List[Path]
+            Expanded list of file paths, with directories recursively searched for trajectory files
+        """
+        expanded_paths = []
+        # Common trajectory file extensions
+        traj_extensions = {'.traj', '.extxyz', '.xyz', '.dump', '.lammpstrj', '.nc', '.h5'}
+        
+        for path in paths:
+            if path.is_file():
+                expanded_paths.append(path)
+            elif path.is_dir():
+                # Recursively find all trajectory files in the directory
+                for file_path in path.rglob('*'):
+                    if file_path.is_file() and file_path.suffix.lower() in traj_extensions:
+                        expanded_paths.append(file_path)
+                        logger.info(f"Found trajectory file: {file_path}")
+            else:
+                logger.warning(f"Path does not exist: {path}")
+        
+        return expanded_paths
         
 
 def _h_filter_cpu(

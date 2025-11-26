@@ -162,10 +162,16 @@ class PrepVasp(PrepFp):
         vasp_inputs : VaspInputs
             The VaspInputs object handels all other input files of the task.
         """
-        sort_atoms_by_atomic_number(conf_frame)
+        conf_frame= sort_atoms_by_atomic_number(conf_frame)
         atom_names = get_element_types_from_sorted_atoms(conf_frame)
         write(vasp_conf_name, conf_frame, format="vasp")
         incar = vasp_inputs.incar_template
+        init_magmoms = conf_frame.get_initial_magnetic_moments()
+        # check whether init_magmoms is np.zeros
+        if np.any(init_magmoms):
+            incar_dict = loads_incar(incar)
+            incar_dict["MAGMOM"] = " ".join([str(x) for x in init_magmoms])
+            incar = dumps_incar(incar_dict)
         Path(vasp_input_name).write_text(incar)
         Path(vasp_pot_name).write_text(vasp_inputs.make_potcar(atom_names))
         Path(vasp_kp_name).write_text(vasp_inputs.make_kpoints(conf_frame.cell.array))  # type: ignore

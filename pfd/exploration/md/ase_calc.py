@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
 from typing import Dict, Any, Optional, Type, Union, Callable
-import numpy as np
-from ase import Atoms
 from ase.calculators.calculator import Calculator, all_changes
 from pathlib import Path
 
@@ -70,3 +68,27 @@ class MACECalculatorWrapper(CalculatorWrapper):
             return MACECalculator(model_paths=model_path, **kwargs)
         except ImportError as e:
             raise ImportError("MACE not available. Install with: pip install mace") from e
+
+
+@CalculatorWrapper.register('emt')
+class EMTCalculatorWrapper(CalculatorWrapper):
+    """EMT calculator wrapper for testing."""
+    def create(self, model_path: Optional[Union[str, Path]] = None, **kwargs) -> Calculator:
+        """Create EMT calculator (no model path needed)."""
+        try:
+            from ase.calculators.emt import EMT
+            return EMT(**kwargs)
+        except ImportError as e:
+            raise ImportError("EMT calculator not available") from e
+
+
+@CalculatorWrapper.register('lj')
+class LennardJonesCalculatorWrapper(CalculatorWrapper):
+    """Lennard-Jones calculator wrapper for testing."""
+    def create(self, model_path: Optional[Union[str, Path]] = None, **kwargs) -> Calculator:
+        """Create Lennard-Jones calculator (no model path needed)."""
+        try:
+            from ase.calculators.lj import LennardJones
+            return LennardJones(**kwargs)
+        except ImportError as e:
+            raise ImportError("LennardJones calculator not available") from e
