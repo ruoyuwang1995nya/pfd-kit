@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.10.6 (2025-12-03)
+
+### Bug Fixes
+
+- Using default vasp KSPACING
+  ([`9a87127`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/9a87127871e4ed405b91f2424cab087679aa24c7))
+
+
 ## v0.10.5 (2025-10-23)
 
 ### Bug Fixes
