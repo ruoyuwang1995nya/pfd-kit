@@ -12,10 +12,7 @@ from typing import (
 
 import numpy as np
 from dargs import (
-    Argument,
-    ArgumentEncoder,
-    Variant,
-    dargs,
+    Argument
 )
 
 
@@ -83,9 +80,12 @@ class VaspInputs:
 
     def make_kpoints(
         self,
-        box: np.ndarray,
     ) -> str:
-        return make_kspacing_kpoints(box, self.kspacing, self.kgamma)
+        ret = ""
+        ret += f"KSPACING = {self.kspacing}\n"
+        if self.kgamma is False:
+            ret += "KGAMMA = .FALSE.\n"
+        return ret
 
     @staticmethod
     def args():

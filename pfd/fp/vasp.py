@@ -64,7 +64,7 @@ from .vasp_input import (
 vasp_conf_name = "POSCAR"
 vasp_input_name = "INCAR"
 vasp_pot_name = "POTCAR"
-vasp_kp_name = "KPOINTS"
+#vasp_kp_name = "KPOINTS"
 
 
 def clean_lines(string_list, remove_empty_lines=True):
@@ -168,13 +168,15 @@ class PrepVasp(PrepFp):
         incar = vasp_inputs.incar_template
         init_magmoms = conf_frame.get_initial_magnetic_moments()
         # check whether init_magmoms is np.zeros
+        incar_dict = loads_incar(incar)
+        #if vasp_inputs.kgamma
+        incar_dict["KGAMMA"] = ".TRUE." if vasp_inputs.kgamma else ".FALSE."
+        incar_dict["KSPACING"] = vasp_inputs.kspacing
         if np.any(init_magmoms):
-            incar_dict = loads_incar(incar)
             incar_dict["MAGMOM"] = " ".join([str(x) for x in init_magmoms])
-            incar = dumps_incar(incar_dict)
+        incar = dumps_incar(incar_dict)
         Path(vasp_input_name).write_text(incar)
         Path(vasp_pot_name).write_text(vasp_inputs.make_potcar(atom_names))
-        Path(vasp_kp_name).write_text(vasp_inputs.make_kpoints(conf_frame.cell.array))  # type: ignore
 
 class RunVasp(RunFp):
     def input_files(self) -> List[str]:
@@ -186,7 +188,7 @@ class RunVasp(RunFp):
             A list of madatory input files names.
 
         """
-        return [vasp_conf_name, vasp_input_name, vasp_pot_name, vasp_kp_name]
+        return [vasp_conf_name, vasp_input_name, vasp_pot_name]
 
     def optional_input_files(self) -> List[str]:
         r"""The optional input files to run a vasp task.
