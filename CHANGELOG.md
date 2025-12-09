@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.2.1 (2025-12-09)
+
+### Bug Fixes
+
+- Using default vasp KSPACING
+  ([`9a87127`](https://github.com/qchempku2017/pfd-kit/commit/9a87127871e4ed405b91f2424cab087679aa24c7))
+
+
 ## v0.10.6 (2025-12-03)
 
 ### Bug Fixes
