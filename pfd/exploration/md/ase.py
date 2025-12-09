@@ -250,7 +250,6 @@ class MDRunner:
         total_elapsed = time.time() - total_start
         self.logger.info(f"#### Total MD simulation completed in {total_elapsed:.2f} s")
 
-
     def run_opt_LBFGS(self, 
         params: MDParameters,
         log_file: str = ase_log_name,

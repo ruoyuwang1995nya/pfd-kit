@@ -78,15 +78,17 @@ LCHARG = .FALSE.
 
     def test_make_kpoints(self):
         """Test KPOINTS generation."""
-        # Simple cubic cell
-        box = np.array([[5.0, 0.0, 0.0],
-                       [0.0, 5.0, 0.0],
-                       [0.0, 0.0, 5.0]])
-        kpoints = self.vasp_inputs.make_kpoints(box)
+        kpoints = self.vasp_inputs.make_kpoints()
         
-        # Check that it's gamma-centered
-        self.assertIn("Gamma", kpoints)
-        self.assertIn("Automatic mesh", kpoints)
+        # With new behavior, make_kpoints emits INCAR-style flags
+        self.assertIn("KSPACING = 0.3", kpoints)
+        # When kgamma=True (default), no KGAMMA flag is written
+        self.assertNotIn("KGAMMA", kpoints)
+
+        # If kgamma is False, ensure the KGAMMA flag is emitted
+        self.vasp_inputs.kgamma = False
+        kpoints_nogamma = self.vasp_inputs.make_kpoints()
+        self.assertIn("KGAMMA = .FALSE.", kpoints_nogamma)
 
     def test_prep_vasp_simple_atoms(self):
         """Test PrepVasp with simple atoms without magnetic moments."""
@@ -112,7 +114,7 @@ LCHARG = .FALSE.
             self.assertTrue((task_dir / "POSCAR").exists())
             self.assertTrue((task_dir / "INCAR").exists())
             self.assertTrue((task_dir / "POTCAR").exists())
-            self.assertTrue((task_dir / "KPOINTS").exists())
+            self.assertFalse((task_dir / "KPOINTS").exists())
             
             # Check POSCAR content
             poscar_content = (task_dir / "POSCAR").read_text()
@@ -152,7 +154,7 @@ LCHARG = .FALSE.
             self.assertTrue((task_dir / "POSCAR").exists())
             self.assertTrue((task_dir / "INCAR").exists())
             self.assertTrue((task_dir / "POTCAR").exists())
-            self.assertTrue((task_dir / "KPOINTS").exists())
+            self.assertFalse((task_dir / "KPOINTS").exists())
             
             # Check INCAR content (should have MAGMOM)
             incar_content = (task_dir / "INCAR").read_text()
