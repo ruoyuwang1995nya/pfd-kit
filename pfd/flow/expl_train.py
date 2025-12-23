@@ -2,7 +2,6 @@ import os
 from copy import (
     deepcopy,
 )
-from turtle import st
 from typing import (
     Any,
     Dict,
@@ -30,8 +29,6 @@ from dflow.python import (
     OP,
     PythonOPTemplate,
 )
-from typeguard import value
-from pfd import train
 from pfd.utils.step_config import init_executor
 
 class ExplTrainBlock(Steps):

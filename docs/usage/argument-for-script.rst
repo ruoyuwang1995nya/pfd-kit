@@ -40,6 +40,12 @@ ASE task group
     :module: pfd.exploration.task
     :func: AseTaskGroup.args
 
+CALYPSO task group
+****************
+.. dargs:: 
+    :module: pfd.exploration.task
+    :func: CalyTaskGroup.args    
+    
 Frame selection
 ---------------
 
