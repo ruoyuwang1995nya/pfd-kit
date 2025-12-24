@@ -277,6 +277,7 @@ def _h_filter_gpu(
     from quests.descriptor import get_descriptors
     from quests.gpu.entropy import delta_entropy,entropy
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    logger.info(f"Using device: {device} for GPU entropy calculation")
     num_ref=len(dset_confs)
     if len(dset_confs) == 0:
         if chunk_size >= len(iter_confs):
@@ -286,12 +287,14 @@ def _h_filter_gpu(
         iter_confs = iter_confs[chunk_size:]
         num_ref=0
         max_sel-= chunk_size
-
     max_iter = min(max_sel//chunk_size+(max_sel%chunk_size>0), 
                    len(iter_confs)//chunk_size+(len(iter_confs)%chunk_size>0))
     
-    iter_desc = get_descriptors(iter_confs, k=k, cutoff=cutoff,dtype=dtype)
+    iter_desc = get_descriptors(iter_confs, k=k, cutoff=cutoff,dtype=dtype,concat=False)
+    logger.info(f"Reading descriptors for iter_confs: {len(iter_desc)}")
+    
     dset_desc = get_descriptors(dset_confs, k=k, cutoff=cutoff,dtype=dtype)
+    logger.info(f"Reading descriptors for dset_confs: {len(dset_desc)}")
 
     num_atoms_per_structure_iter = [atoms.get_number_of_atoms() for atoms in iter_confs]
     atom_indices_iter = []
@@ -300,7 +303,6 @@ def _h_filter_gpu(
         end = start + n
         atom_indices_iter.append((start, end))
         start = end
-
     indices = []
     for ii in range(max_iter):
         re_indices = [i for i in range(len(iter_confs)) if i not in indices]

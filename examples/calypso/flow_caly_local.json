@@ -1,0 +1,113 @@
+{
+    "default_step_config": {
+        "template_config": {},
+        "executor": null
+    },
+    "step_configs": {
+        "run_fp_config": {
+            "template_config": {},
+            "executor": null,
+            "template_slice_config": {}
+        },
+        "run_explore_config": {
+            "template_config": {},
+            "template_slice_config": {
+                "group_size": 5
+            },
+            "executor": null
+        },
+        "run_train_config": {
+            "template_config": {
+            },
+            "executor": null
+        },
+        "select_confs_config":{
+            "template_config": {
+            },
+            "executor": null
+        }
+    },
+    "task": {
+        "type": "finetune",
+        "max_iter": 1,
+        "init_fp": false,
+        "init_train": false
+    },
+    "inputs": {
+        "base_model_path": "../mattersim/mattersim-v1.0.0-1M.pth",
+        "base_model_uri":null,
+        "init_confs":{
+            "prefix": "./",
+            "confs_paths": []
+        },
+        "init_fp_confs":{
+            "prefix": "./",
+            "confs_paths": []
+        },
+        "init_data_uri":null,
+        "init_data_sys":null
+    }, 
+    "select_confs":{
+        "max_sel":50,
+        "frame_filter": [
+        ],
+        "h_filter": {
+            "_comment":"_entropy based filter"
+        }
+
+    },
+    "evaluate": {
+        "test_size": 0.2,
+        "model":"mattersim",
+        "device":"cuda",
+        "_comment":"The percentage for test",
+        "converge":{
+            "type": "force_rmse",
+            "RMSE": 0.2
+        }
+    },
+
+    "exploration": {
+        "type": "calypso",
+        "config": {
+
+            "calculator":"mattersim",
+            "device":"cuda"
+        },
+        "stages": [
+            [
+                {
+                "numb_of_species":1,
+                "name_of_atoms":["Si"],
+                "atomic_number":[14],
+                "numb_of_atoms":[4],
+                "distance_of_ions":[[2.0]],
+                "max_step":1,
+                "vsc":false,
+                "pop_size":10,
+                "pressure":0,
+                "opt_step":1000
+                }
+            ]
+        ],
+    "_comment":"Each element in stages is a list of calypso jobs run in parallel"
+    },
+    "fp": {
+        "type": "ase",
+        "run_config": {
+            "model_style": "mattersim",
+            "model_args": {
+                "device":"cuda"
+            }},
+        "inputs_config": {
+            }
+        },
+    "train": {
+        "_comment": "Training script for downstream DeePMD model",
+        "type": "mattersim",
+        "config": {
+            "epochs": 5,
+            "batch_size": 5
+        }
+    }
+}
