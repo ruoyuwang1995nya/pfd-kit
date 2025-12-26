@@ -36,6 +36,7 @@ class RunASE(OP):
     Supports:
         1, MDRunner (ordinary MD simulation with ASE), default if not specified;
         2, ReplicaRunner (Replica exchange MD simulation with ASE).
+    Customizable via `ip["config"]["runner"]`.
 
     A working directory named `task_name` is created. All input files
     are copied or symbol linked to directory `task_name`. The LAMMPS

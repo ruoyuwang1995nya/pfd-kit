@@ -1,14 +1,21 @@
 """Utility functions and OPs to enumerate slab structures."""
 from typing import Optional, List, Dict
-
-from pymatgen.core.surface import Slab, SlabGenerator
-from pymatgen.core import Element, Structure
-from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
-import numpy as np
 import math
 import warnings
 import logging
 from logging import Logger
+
+from pymatgen.core.surface import Slab, SlabGenerator
+from pymatgen.core import Element, Structure, Species
+from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
+import numpy as np
+from numpy.random import Generator
+
+
+from pfd.utils.structure_utils import (
+    remove_isolated_atoms,
+    get_site_charge,
+)
 
 
 def tasker2_with_odd_num_sites_fallback(
@@ -67,6 +74,7 @@ def get_slabs(
         symmetrize_slab: bool=False,
         tasker2_modify_polar: bool=True,
         drop_polar: bool=True,
+        logger: Optional[Logger]=None,
 ) -> List[Slab]:
     """Generate slabs without vacancies from a primitive structure.
 
@@ -95,6 +103,9 @@ def get_slabs(
     Returns:
         list[Slab]: List of generated slabs.
     """
+    if logger is None:
+        logger = logging.getLogger(__name__)
+
     sa = SpacegroupAnalyzer(prim, symprec=symprec, angle_tolerance=angle_tol)
     conv = sa.get_conventional_standard_structure()
     generator = SlabGenerator(
@@ -111,7 +122,7 @@ def get_slabs(
     if tasker2_modify_polar:
         for slab in slabs:
             if slab.is_polar():
-                print("Tasker modification to polar surface.")
+                logger.info("Tasker modification to polar surface.")
                 final_slabs.extend(tasker2_with_odd_num_sites_fallback(slab))
             else:
                 final_slabs.append(slab)
@@ -228,7 +239,7 @@ def get_surface_mapping_pbc(
 
 
 def get_slab_equivalence_groups(
-        species: List[str],
+        species: List[Species|Element],
         surface_sites_and_indices: Dict[str, List],
         frac_tol: float=1e-6,
         mode: str="mirror"
@@ -293,45 +304,47 @@ def symmetrically_remove_top_sites(
     return slab_cp
 
 
-def remove_isolated_atoms(
-        struct: Structure,
-        radius: float=3.0
-) -> Structure:
-    """Remove isolated atoms from a structure.
+def remove_random_surface_sites(
+        slab: Slab,
+        surface_sites_and_indices: Dict[str, List],
+        remove_ratio: float,
+        symmetry_frac_tol: float=1e-6,
+        rng: Optional[Generator]=None,
+        n_sample_max: int=5,
+        remove_atom_types: Optional[List[str]]=None,  # Any type can be removed if None.
+        detect_isolated_atom_range: float=3.0,
+        remove_isolated_atom: bool=True
+) -> tuple[List[str], List[Slab], bool]:
+    """Remove random surface sites from a slab structure.
+
+    If the two surfaces of the slab are related by mirror or inverse symmetry,
+    the removal will be done symmetrically to prevent extra dipole formation.
 
     Args:
-        struct (Structure): Input structure.
-        radius (float, optional): Radius to consider neighbors. Defaults to 3.0.
+        slab (Slab): The input slab structure.
+        surface_sites_and_indices (dict[str, list]): Dictionary with keys "top" and "bottom",
+            each containing a list of tuples (site, index) for surface sites.
+        remove_ratio (float): Fraction of surface sites to remove from each surface.
+        symmetry_frac_tol (float, optional): Fractional coordinate tolerance for symmetry mapping.
+            Defaults to 1e-6.
+        rng (Optional[Generator], optional): Random numpy number generator.
+            If None, a default one is created. Defaults to None.
+        n_sample_max (int, optional): Maximum number of randomly vacancy-doped samples to generate.
+            Defaults to 5.
+        remove_atom_types (Optional[list[str]], optional): List of atom types (as strings) that can
+            be removed. If None, all atom types can be removed. Defaults to None.
+        detect_isolated_atom_range (float, optional): Distance range to detect isolated atoms after
+            removal. Defaults to 3.0.
+        remove_isolated_atom (bool, optional): Whether to remove isolated atoms after site removal.
+            Defaults to True.
     Returns:
-        Structure: New structure with isolated atoms removed.
+        tuple[list[str], list[Slab], bool]:
+            - List of names for the generated slabs with vacancies.
+            - List of generated slab structures with vacancies.
+            - Boolean indicating whether no symmetry mapping was found (True if no mapping).
     """
-    isolated_inds = []
-    for i in range(len(struct)):
-        if len(struct.get_neighbors(struct[i], radius)) == 0:
-            isolated_inds.append(i)
-    struct_cp = struct.copy()
-    struct_cp.remove_sites(isolated_inds)
-    return struct_cp
-
-# TODO: write docs and tests for the following functions.
-def get_site_charge(site):
-    if isinstance(site.specie, Element):
-        return 0
-    else:
-        return site.specie.oxi_state
-
-
-def get_z_range_indices(structure, zmin, zmax):
-    frac_coords = structure.frac_coords
-    frac_coords = frac_coords - np.floor(frac_coords)
-    return np.where((frac_coords[:, 2] >= zmin) & (frac_coords[:, 2] < zmax))[0].tolist()
-
-
-def remove_random_surface_sites(
-        slab, surface_sites_and_indices, remove_ratio, symmetry_frac_tol=1e-5, rng=np.random.default_rng(None),
-        n_sample_max=5, remove_atom_types=None,  # Any type can be removed.
-        detect_isolated_atom_range=3.0, remove_isolated_atom=True
-):
+    if rng is None:
+        rng = np.random.default_rng()
     # Mirror first. If no mirror, then inverse.
     mapping = get_slab_equivalence_groups(
         slab.species, surface_sites_and_indices, frac_tol=symmetry_frac_tol, mode="mirror"
@@ -347,12 +360,17 @@ def remove_random_surface_sites(
 
     vac_slabs = []
     vac_names = []
-    top_site_inds = [si[1] for si in surface_sites_and_indices["top"] if str(slab[si[1]].specie) in remove_atom_types]
+    top_site_inds = [
+        si[1] for si in surface_sites_and_indices["top"]
+        if str(slab[si[1]].specie) in remove_atom_types
+    ]
 
     if mapping is None:
         # No symmetry applied.
-        bot_site_inds = [si[1] for si in surface_sites_and_indices["bottom"] if
-                         str(slab[si[1]].specie) in remove_atom_types]
+        bot_site_inds = [
+            si[1] for si in surface_sites_and_indices["bottom"] if
+            str(slab[si[1]].specie) in remove_atom_types
+        ]
 
         all_site_inds = top_site_inds + bot_site_inds
         n_surf_sites = len(all_site_inds)
@@ -367,7 +385,9 @@ def remove_random_surface_sites(
                 slab_cp = remove_isolated_atoms(slab_cp, radius=detect_isolated_atom_range)
             real_remove_ratio = float(len(slab) - len(slab_cp)) / n_surf_sites
             vac_slabs.append(slab_cp)
-            vac_names.append(f"remove_{remove_ratio:.4f}_sample_{samp_id}_actual_{real_remove_ratio:.4f}")
+            vac_names.append(
+                f"remove_{remove_ratio:.4f}_sample_{samp_id}_actual_{real_remove_ratio:.4f}"
+            )
     else:
         # Apply symmetry on top and bottom.
         n_surf_sites = len(top_site_inds)
@@ -381,21 +401,88 @@ def remove_random_surface_sites(
                 slab_cp = remove_isolated_atoms(slab_cp, radius=detect_isolated_atom_range)
             real_remove_ratio = float(len(slab) - len(slab_cp)) / (2 * n_surf_sites)
             vac_slabs.append(slab_cp)
-            vac_names.append(f"remove_{remove_ratio:.4f}_sample_{samp_id}_actual_{real_remove_ratio:.4f}")
+            vac_names.append(
+                f"remove_{remove_ratio:.4f}_sample_{samp_id}_actual_{real_remove_ratio:.4f}"
+            )
 
     return vac_names, vac_slabs, (mapping is None)
 
 
 def generate_slabs_with_random_vacancies(
-        prim, miller_index, symprec=0.1, angle_tol=8, min_slab_ab=12.0, min_slab=12.0, min_vac=20.0,
-        max_normal_search=20,
-        symmetrize_slab=False, tasker2_modify_polar=True, drop_polar=True,
-        remove_atom_types=None,
-        min_vacancy_ratio=0.0, max_vacancy_ratio=0.3, num_vacancy_ratios=1, n_sample_per_ratio=5,
-        surface_mapping_fractol=1e-5,
-        seed=None, detect_isolated_atom_range=3.0, remove_isolated_atom=True,
-        max_return_slabs=500,  # If more than this, randomly sample this number. Prevents overly bulky computations.
+        prim: Structure,
+        miller_index: tuple[int, int, int],
+        symprec: float=0.1,
+        angle_tol: float=8,
+        min_slab_ab: float=12.0,
+        min_slab: float=12.0,
+        min_vac: float=20.0,
+        max_normal_search: int=20,
+        symmetrize_slab: bool=False,
+        tasker2_modify_polar: bool=True,
+        drop_polar: bool=True,
+        remove_atom_types: Optional[List[str]]=None,
+        min_vacancy_ratio: float=0.0,
+        max_vacancy_ratio: float=0.3,
+        num_vacancy_ratios: int=1,
+        n_sample_per_ratio: int=5,
+        surface_mapping_fractol: float=1e-5,
+        seed: Optional[int]=None,
+        detect_isolated_atom_range: float=3.0,
+        remove_isolated_atom: bool=True,
+        max_return_slabs: int=500,
+        logger: Optional[Logger]=None,
 ):
+    """Generate slabs with random surface vacancies from a primitive structure.
+
+    Args:
+        prim (Structure): Primitive structure. Make sure to use symmetric structure to prevent
+            unexpected slab generation results. Also, conventional standard cells are recommended.
+        miller_index (tuple[int, int, int]): Miller index for slab generation.
+        symprec (float, optional): Symmetry precision for SpacegroupAnalyzer. Defaults to 0.1.
+        angle_tol (float, optional): Angle tolerance for SpacegroupAnalyzer. Defaults to 8.
+        min_slab_ab (float, optional):
+            Minimum slab size in a and b directions after supercell construction. Defaults to 12.0.
+        min_slab (float, optional): Minimum slab thickness in c direction. Defaults to 12.0.
+        min_vac (float, optional): Minimum vacuum thickness in c direction. Defaults to 20.0.
+        max_normal_search (int, optional):
+            Determines maximum integer supercell factor to search for a normal c direction.
+            Defaults to 20.
+        symmetrize_slab (bool, optional):
+            Whether to symmetrize the slab. Defaults to False as it may lead to high search cost.
+        tasker2_modify_polar (bool, optional): Whether to apply Tasker 2 modification to polar slabs.
+            Defaults to True as polar slabs often result in unphysical DFT results.
+        drop_polar (bool): Whether to drop polar slabs after Tasker modification.
+            Defaults to True.
+        remove_atom_types (Optional[list[str]], optional): List of atom types (as strings) that can
+            be removed. If None, all atom types can be removed. Defaults to None.
+        min_vacancy_ratio (float, optional): Minimum vacancy ratio on surface sites. Defaults to 0.0.
+        max_vacancy_ratio (float, optional): Maximum vacancy ratio on surface sites. Defaults to 0.3.
+        num_vacancy_ratios (int, optional): Number of vacancy ratios to sample between min and max.
+            Defaults to 1. Uses numpy.linspace to generate ratios, therefore num_vacancy_ratios=1 means
+            to use 0.0 vacancy ratio only.
+        n_sample_per_ratio (int, optional): Number of random samples to generate per vacancy ratio.
+            Defaults to 5.
+        surface_mapping_fractol (float, optional): Fractional coordinate tolerance for symmetry mapping.
+            Defaults to 1e-5.
+        seed (Optional[int], optional): Random seed for reproducibility. If None, a random seed is used.
+            Defaults to None.
+        detect_isolated_atom_range (float, optional): Distance range to detect isolated atoms after
+            removal. Defaults to 3.0.
+        remove_isolated_atom (bool, optional): Whether to remove isolated atoms after site removal.
+            Defaults to True.
+        max_return_slabs (int, optional): Maximum number of slabs to return. If more structures are
+            generated, random sampling is applied to reduce the number. Defaults to 500.
+        logger (Optional[Logger], optional): Logger for logging messages.
+            If None, uses default logger. Defaults to None.
+    Returns:
+        tuple[list[str], list[Slab], list[Slab]]:
+            - List of names for the generated slabs with vacancies.
+            - List of generated slab structures with vacancies (to be computed in later steps).
+            - List of generated slabs without vacancies (to be saved into json).
+    """
+    if logger is None:
+        logger = logging.getLogger(__name__)
+
     # Symmetrize makes charge unbalanced slabs in ionic materials. Recommend not to use.
     # Tasker would be helpful, but not always necessary.
     slabs = get_slabs(
@@ -413,23 +500,28 @@ def generate_slabs_with_random_vacancies(
     vac_names = []
 
     if max_vacancy_ratio > 0 and any(get_site_charge(site) != 0 for site in prim):
-        print(
-            "Warning: Removing atoms from ionic slab. May result in charge imbalance."
+        logger.warning(
+            "Removing atoms from ionic slab. May result in charge imbalance."
             " Make sure you know what you are doing!"
         )
 
     if max_vacancy_ratio == 0:
         vac_names = [
-            f"miller_{"_".join([str(ii) for ii in miller_index])}_slab_{slab_id}_remove_0.0000_sample_0_actual_0.0000"
+            (
+                f"miller_{"_".join([str(ii) for ii in miller_index])}"
+                f"_slab_{slab_id}_remove_0.0000_sample_0_actual_0.0000"
+            )
             for slab_id in range(len(slabs))
         ]
         vac_slabs = slabs
         return vac_names, vac_slabs, slabs
 
     for slab_id, slab in enumerate(slabs):
-        print(f"Generating random vacancies, slab: {slab_id + 1}/{len(slabs)}.")
+        logger.info(f"Generating random vacancies, slab: {slab_id + 1}/{len(slabs)}.")
         surface_sites_and_indices = slab.get_surface_sites()
         prefix = f"miller_{"_".join([str(ii) for ii in miller_index])}_slab_{slab_id}_"
+
+        no_symmetry = False
         for remove_ratio in remove_ratios:
             sub_names, sub_slabs, no_symmetry = remove_random_surface_sites(
                 slab, surface_sites_and_indices, remove_ratio,
@@ -444,18 +536,27 @@ def generate_slabs_with_random_vacancies(
             vac_slabs.extend(sub_slabs)
             vac_names.extend(sub_names)
         if no_symmetry:
-            print(
-                "Warning: The two surfaces of the slab are not related by inverse or mirror."
+            logger.warning(
+                "The two surfaces of the slab are not related by inverse or mirror."
                 " Symmetry constraint will be ignored, therefore site removal may result in extra"
                 " dipole in slab model with vacancy."
             )
 
     n_total = len(vac_names)
     if n_total > max_return_slabs:  # Require sub-sampling.
-        print(f"Warning: more structures ({n_total}) generated than required ({max_return_slabs}). Down sampling.")
+        logger.warning(
+            f"More structures ({n_total}) generated than required ({max_return_slabs})."
+            f" Down sampling."
+        )
         sample_inds = rng.choice(n_total, size=max_return_slabs, replace=False).astype(int).tolist()
         vac_names = [vac_names[i] for i in range(n_total) if i in sample_inds]
         vac_slabs = [vac_slabs[i] for i in range(n_total) if i in sample_inds]
     # Replace slash with underscore to prevent filename saving issues.
     vac_names = [name.replace("/", "_") for name in vac_names]
+
     return vac_names, vac_slabs, slabs  # slabs are to be saved into json.
+
+## TODO: quick workaround: Learn from ruoyu, don not write OP for slab generation,
+##  but an initializing commandline cli instead. The rest of OPs can be handled
+##  by existing workflow. The only modification is just to add a new configuration
+##  parameter to allow choosing from ReplicaSetRunner and regular MDRunner.
