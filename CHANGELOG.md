@@ -2,12 +2,12 @@
 
 <!-- version list -->
 
-## v0.2.1 (2025-12-09)
+## v0.10.7 (2025-12-24)
 
 ### Bug Fixes
 
-- Using default vasp KSPACING
-  ([`9a87127`](https://github.com/qchempku2017/pfd-kit/commit/9a87127871e4ed405b91f2424cab087679aa24c7))
+- Update calypso docs
+  ([`1f16018`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/1f16018a12a90a348d5420524d5c1791488a66e5))
 
 
 ## v0.10.6 (2025-12-03)

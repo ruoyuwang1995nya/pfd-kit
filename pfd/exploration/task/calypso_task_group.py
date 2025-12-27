@@ -7,6 +7,7 @@ from typing import (
 )
 
 import numpy as np
+from dargs import Argument
 
 from pfd.constants import (
     calypso_input_file,
@@ -255,11 +256,107 @@ class CalyTaskGroup(ExplorationTaskGroup):
         return task
     
     @classmethod
+    def normalize_config(cls, data: Dict = {}, strict: bool = False) -> Dict:
+        r"""Normalize the argument.
+
+        Parameters
+        ----------
+        data : Dict
+            The input dict of arguments.
+        strict : bool
+            Strictly check the arguments.
+
+        Returns
+        -------
+        data: Dict
+            The normalized arguments.
+
+        """
+        ta = cls.args()
+        base = Argument("base", dict, ta)
+        data = base.normalize_value(data, trim_pattern="_*")
+        base.check_value(data, strict=strict)
+        return data
+
+    @classmethod
+    def args(cls):
+        r"""The argument definition for CALYPSO task group parameters.
+
+        Returns
+        -------
+        arguments: List[dargs.Argument]
+            List of dargs.Argument defines the arguments for CALYPSO task setup.
+        """
+
+        doc_numb_of_species = "Number of different atomic species in the system."
+        doc_name_of_atoms = "List of atomic symbols (e.g., ['Li', 'O']) or nested lists for random selection."
+        doc_numb_of_atoms = "List of number of atoms for each species."
+        doc_distance_of_ions = "Distance matrix between ions or dict of covalent radii adjustments. If None, uses default covalent radii."
+        doc_atomic_number = "List of atomic numbers for each species. Auto-generated if None."
+        doc_pop_size = "Population size for CALYPSO genetic algorithm."
+        doc_max_step = "Maximum number of CALYPSO evolution steps."
+        doc_system_name = "Name of the system for CALYPSO."
+        doc_numb_of_formula = "Number of formula units range [min, max]."
+        doc_pressure = "External pressure for ASE optimization (GPa)."
+        doc_fmax = "Maximum force criterion for structure optimization (eV/Å)."
+        doc_volume = "Volume constraint for structure generation. 0 means no constraint."
+        doc_ialgo = "CALYPSO algorithm type (1 or 2)."
+        doc_pso_ratio = "PSO (Particle Swarm Optimization) ratio."
+        doc_icode = "Local optimization code (e.g., 1=VASP, 2=SIESTA, 15=ASE)."
+        doc_numb_of_lbest = "Number of local best structures to keep."
+        doc_numb_of_local_optim = "Number of structures to perform local optimization."
+        doc_command = "Command to execute for structure optimization."
+        doc_max_time = "Maximum time allowed for each optimization (seconds)."
+        doc_gen_type = "Structure generation type."
+        doc_pick_up = "Whether to pick up from previous run."
+        doc_pick_step = "Step number to pick up from."
+        doc_parallel = "Enable parallel CALYPSO execution."
+        doc_split = "Split CALYPSO tasks."
+        doc_spec_space_group = "Specified space group range [min, max]."
+        doc_vsc = "Variable stoichiometry composition."
+        doc_ctrl_range = "Control range for variable composition [[min, max]]."
+        doc_max_numb_atoms = "Maximum number of atoms in generated structures."
+        doc_opt_step = "Maximum optimization steps for ASE."
+        doc_ens = "Optimizer/ensemble for ASE (e.g., 'lbfgs', 'bfgs', 'fire')."
+
+        return [
+            Argument("numb_of_species", int, optional=False, doc=doc_numb_of_species),
+            Argument("name_of_atoms", [list, str], optional=False, doc=doc_name_of_atoms),
+            Argument("numb_of_atoms", list, optional=False, doc=doc_numb_of_atoms),
+            Argument("distance_of_ions", [dict, list, type(None)], optional=True, default=None, doc=doc_distance_of_ions),
+            Argument("atomic_number", [list, type(None)], optional=True, default=None, doc=doc_atomic_number),
+            Argument("pop_size", int, optional=True, default=30, doc=doc_pop_size),
+            Argument("max_step", int, optional=True, default=5, doc=doc_max_step),
+            Argument("system_name", str, optional=True, default="CALYPSO", doc=doc_system_name),
+            Argument("numb_of_formula", list, optional=True, default=[1, 1], doc=doc_numb_of_formula),
+            Argument("pressure", float, optional=True, default=0.001, doc=doc_pressure),
+            Argument("fmax", float, optional=True, default=0.01, doc=doc_fmax),
+            Argument("volume", float, optional=True, default=0, doc=doc_volume),
+            Argument("ialgo", int, optional=True, default=2, doc=doc_ialgo),
+            Argument("pso_ratio", float, optional=True, default=0.6, doc=doc_pso_ratio),
+            Argument("icode", int, optional=True, default=15, doc=doc_icode),
+            Argument("numb_of_lbest", int, optional=True, default=4, doc=doc_numb_of_lbest),
+            Argument("numb_of_local_optim", int, optional=True, default=4, doc=doc_numb_of_local_optim),
+            Argument("command", str, optional=True, default="sh submit.sh", doc=doc_command),
+            Argument("max_time", int, optional=True, default=9000, doc=doc_max_time),
+            Argument("gen_type", int, optional=True, default=1, doc=doc_gen_type),
+            Argument("pick_up", bool, optional=True, default=False, doc=doc_pick_up),
+            Argument("pick_step", int, optional=True, default=1, doc=doc_pick_step),
+            Argument("parallel", bool, optional=True, default=False, doc=doc_parallel),
+            Argument("split", bool, optional=True, default=True, doc=doc_split),
+            Argument("spec_space_group", list, optional=True, default=[2, 230], doc=doc_spec_space_group),
+            Argument("vsc", bool, optional=True, default=False, doc=doc_vsc),
+            Argument("ctrl_range", list, optional=True, default=[[1, 10]], doc=doc_ctrl_range),
+            Argument("max_numb_atoms", int, optional=True, default=100, doc=doc_max_numb_atoms),
+            Argument("opt_step", int, optional=True, default=1000, doc=doc_opt_step),
+            Argument("ens", str, optional=True, default="lbfgs", doc=doc_ens),
+        ]
+    
+    @classmethod
     def make_task_grp(cls, **kwargs) -> "CalyTaskGroup":
         task_grp = cls()
-        task_grp.set_params(
-            **kwargs
-            )
+        normalized_config = cls.normalize_config(kwargs, strict=False)
+        task_grp.set_params(**normalized_config)
         task_grp.make_task()
         return task_grp
     

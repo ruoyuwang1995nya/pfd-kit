@@ -1,6 +1,4 @@
 # PFD-kit: finetune and distillation from pre-trained atomic models
-> **⚠️ Warning:**  
-> The latest version of `PFD-kit` has been restructured to integrate with the ASE package, offering enhanced functionality and compatibility with modern workflows. Users are encouraged to transition to this updated version for the best experience. For those who wish to access the older version of PFD-kit, it remains available.
 
 [PFD-kit](https://github.com/ruoyuwang1995nya/dp-distill) is a cloud-base workflow for generating of deep-learning force fields from *pre-trained* atomic models (**P**) through fine-tuning (**F**) and distillation (**D**). Compared to training force fields from scratch, PFD requires significantly less training data by leveraging transferable knowledge from large pre-trained model. This reduces computational cost by an order of magnitude, making PFD well-suited for high-throughput calculations.
 
@@ -19,7 +17,7 @@ For complete tutorials and user guide, please refer to our [Online Documentation
 ## 1. Overview
 PFD-kit provides an automated workflow for generating machine-learning force fields from pre-trained atomic models via fine-tuning and knowledge distillation.
 <div style="text-align: center;">
-    <img src="./docs/images/pfd-concept.png" alt="Fig1" style="zoom: 60%;">
+    <img src="./docs/images/pfd-concept.png" alt="Fig1" style="zoom: 50%;">
 </div>
 
 ### Fine-tuning
@@ -32,7 +30,7 @@ While fine-tuned models are accurate, their large architectures can be inefficie
 PFD-kit automates the entire fine-tuning and distillation process. It includes data-selection algorithms that maximize efficiency using entropy-based measures of atomic environments. Built on `dflow`, it supports both local and cloud execution.
 
 <div style="text-align: center;">
-    <img src="./docs/images/pfd-kit-workflow.png" alt="Fig2" style="zoom: 60%;">
+    <img src="./docs/images/pfd-kit-workflow.png" alt="Fig2" style="zoom: 50%;">
 </div>
 
 ## 2. Installation
@@ -51,13 +49,18 @@ PFD-kit supports two major types of workflow, **fine-tuning** and **distillation
 ## Citing 
 If you use PFD-kit in a publication, please cite the following paper:
 ```bibtex
-@misc{wang2025pfdkit,
-  author       = {Ruoyu Wang, Yuxiang Gao, Hongyu Wu and Zhicheng Zhong},
-  title        = {Pre-training, Fine-tuning, and Distillation (PFD): Automatically Generating Machine Learning Force Fields from Universal Models},
-  year         = {2025},
-  eprint       = {arXiv:2502.20809},
-  archivePrefix= {arXiv},
-  primaryClass = {cond-mat.mtrl-sci},
-  url          = {https://arxiv.org/abs/2502.20809}
+@article{wang2025pfd,
+  title = {Pre-training, fine-tuning, and distillation (PFD): Automatically generating machine learning force fields from universal models},
+  author = {Wang, Ruoyu and Gao, Yuxiang and Wu, Hongyu and Zhong, Zhicheng},
+  journal = {Phys. Rev. Mater.},
+  volume = {9},
+  issue = {11},
+  pages = {113802},
+  numpages = {11},
+  year = {2025},
+  month = {Nov},
+  publisher = {American Physical Society},
+  doi = {10.1103/sbz6-btz8},
+  url = {https://link.aps.org/doi/10.1103/sbz6-btz8}
 }
 ```
