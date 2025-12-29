@@ -31,7 +31,8 @@ dependencies = [
     "tabulate",
     "quests @ git+https://github.com/dskoda/quests.git",
     "dpdispatcher",
-    "pymatgen>=2025.10.7"
+    "pymatgen>=2025.10.7",
+    "monty",
 ]
 
 [project.urls]

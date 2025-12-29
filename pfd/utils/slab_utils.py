@@ -555,8 +555,3 @@ def generate_slabs_with_random_vacancies(
     vac_names = [name.replace("/", "_") for name in vac_names]
 
     return vac_names, vac_slabs, slabs  # slabs are to be saved into json.
-
-## TODO: quick workaround: Learn from ruoyu, don not write OP for slab generation,
-##  but an initializing commandline cli instead. The rest of OPs can be handled
-##  by existing workflow. The only modification is just to add a new configuration
-##  parameter to allow choosing from ReplicaSetRunner and regular MDRunner.

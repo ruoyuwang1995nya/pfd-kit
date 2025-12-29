@@ -13,6 +13,19 @@ pfd perturb -n 10 dia_si.extxyz -c 0.03
 ``` 
 The input file can be of any ase-compatible format. The perturbed frames are stored in `pert_dia_si.extxyz`.
 
+## Making slab structures
+Slab structures with surface vacancies can be generated using the `pfd slab` command. For example, to create slabs of Pt(111) with 10 Å thickness and 15 Å vacuum, run:
+```bash
+pfd slab pt.extxyz --miller-indices 1 1 1 --min-slab 10 --min-vac 15
+```
+The generated slabs will be saved in extxyz format.
+
+Replica exchange MD sampler is recommended. To use this, make sure to edit your input.json exploration/config section,
+specify the `runner` option as `replica`.
+
+Then, you should specify a `runner` option as `replica` in every exploration/stage subfield, and specify other REMD options in following the `runner` choice at each stage. 
+For other options, refer to the documentation of ReplicaRunner.
+
 ## Submitting a Workflow
 
 To submit a workflow, navigate to the working directory and run:
