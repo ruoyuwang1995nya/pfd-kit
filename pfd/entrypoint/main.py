@@ -272,14 +272,16 @@ def main_parser() -> argparse.ArgumentParser:
         help="Whether to symmetrize the slab.",
     )
     parser_slab.add_argument(
-        "--tasker2-modify-polar",
-        action="store_true",
-        help="Whether to apply Tasker 2 modification to polar slabs.",
+        "--no-tasker2-modify-polar",
+        action="store_false",
+        dest="tasker2_modify_polar",
+        help="Whether not to apply Tasker 2 modification to polar slabs.",
     )
     parser_slab.add_argument(
-        "--drop-polar",
-        action="store_true",
-        help="Whether to drop polar slabs after Tasker modification.",
+        "--no-drop-polar",
+        action="store_false",
+        dest="drop_polar",
+        help="Whether not to drop polar slabs after Tasker modification.",
     )
     parser_slab.add_argument(
         "--remove-atom-types",
@@ -331,9 +333,10 @@ def main_parser() -> argparse.ArgumentParser:
         help="Distance range to detect isolated atoms after removal.",
     )
     parser_slab.add_argument(
-        "--remove-isolated-atom",
-        action="store_true",
-        help="Whether to remove isolated atoms after site removal.",
+        "--no-remove-isolated-atom",
+        action="store_false",
+        dest="remove_isolated_atom",
+        help="Whether not to remove isolated atoms after site removal.",
     )
     parser_slab.add_argument(
         "--max-return-slabs",
