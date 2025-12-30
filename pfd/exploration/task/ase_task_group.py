@@ -286,7 +286,7 @@ class AseTaskGroup(ConfSamplingTaskGroup):
 
         return [
             Argument("runner", str, optional=True, default="md", doc=doc_runner),
-            Argument("temps", list, optional=True, doc=doc_temps),
+            Argument("temps", list, optional=True, default=None, doc=doc_temps),
             Argument("press", list, optional=True, default=None, doc=doc_press),
             Argument("ens", str, optional=True, default="npt", doc=doc_ens),
             Argument("dt", float, optional=True, default=2, doc=doc_dt),
