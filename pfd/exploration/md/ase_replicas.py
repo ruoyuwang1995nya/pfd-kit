@@ -446,15 +446,10 @@ class ReplicaRunner:
 
         self.logger.info(f"Starting REMD simulation with {len(self.atoms)} atoms.")
         self.logger.info(f"Ensemble: NVT Langevin.")
-        self.logger.info(
-            f"Temperatures: ("
-            f"{np.linspace(
-                params.min_temperature,
-                params.max_temperature,
-                params.num_temperature_steps
-            ).tolist()}"
-            f") K"
-        )
+        temperatures = np.linspace(
+            params.min_temperature, params.max_temperature, params.num_temperature_steps
+        ).tolist()
+        self.logger.info(f"Temperatures: ({temperatures}) K")
 
         start_time = time.time()
         samples = sample_replica_exchange_langevin(
