@@ -12,11 +12,15 @@ from typing import (
 import os
 import dflow
 
+from monty.serialization import dumpfn
+from pymatgen.io.ase import AseAtomsAdaptor
+
 from pfd.utils import (
     bohrium_config_from_dict,
     workflow_config_from_dict,
     perturb
 )
+from pfd.utils.slab_utils import generate_slabs_with_random_vacancies
 
 from ase import Atoms
 from ase.io import read,write
@@ -92,3 +96,36 @@ def perturb_cli(
             supercell=supercell
         )
         write("pert_"+Path(atoms_path).stem+'.extxyz',pert_atom_ls,format='extxyz')
+
+
+def slab_cli(
+        atoms_path_ls: List[Union[str,Path]],
+        miller_indices: List[Tuple[int,int,int]],
+        **kwargs,
+    ):
+    """A CLI function to create slabs from file paths.
+
+    Args:
+        atoms_path_ls: List of file paths containing structures.
+        miller_indices: List of Miller indices for slab generation.
+        **kwargs: Additional arguments for slab generation. See `generate_slabs_with_random_vacancies`
+        in `pfd.utils.slab_utils` for details.
+    """
+    slab_data = {}
+    for atoms_path in atoms_path_ls:
+        atoms_ls = read(atoms_path,index=':')
+        name = Path(atoms_path).stem
+        for atoms_id, atoms in enumerate(atoms_ls):
+            for miller_index in miller_indices:
+                vac_names, vac_slabs, slabs = generate_slabs_with_random_vacancies(
+                    AseAtomsAdaptor.get_structure(atoms),
+                    miller_index=miller_index,
+                    **kwargs,
+                )
+                keyname = f"{name}_{atoms_id}_miller_{miller_index[0]}_{miller_index[1]}_{miller_index[2]}"
+                slab_data[keyname] = {}
+                slab_data[keyname]["slabs"] = slabs
+                slab_data[keyname]["vac_names"] = vac_names
+                vac_slabs_atoms = [AseAtomsAdaptor.get_atoms(slab) for slab in vac_slabs]
+                write(keyname+".extxyz", vac_slabs_atoms, format='extxyz')
+    dumpfn(slab_data, "slab_data.json")
