@@ -17,7 +17,8 @@ from .status import status
 from .submit import FlowGen, resubmit_workflow
 from .common import (
     expand_idx,
-    perturb_cli
+    perturb_cli,
+    slab_cli
 )
 
 
@@ -213,6 +214,142 @@ def main_parser() -> argparse.ArgumentParser:
         help="the supercell replication, support int or 3 ints.",
     )
     #########################################
+    # slab
+    parser_slab = subparsers.add_parser(
+        "slab",
+        help="Generate slabs from structures with optional random surface vacancies",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser_slab.add_argument(
+        "ATOMS",
+        type=str,
+        nargs="+",
+        help="the structure files to generate slabs, support multiple files.",
+    )
+    parser_slab.add_argument(
+        "-m",
+        "--miller-indices",
+        type=str,
+        nargs="+",
+        required=True,
+        help="Miller indices for slab generation."
+             " Each set as a quoted string, e.g. --miller-indices '1 2 3' '1 0 0'",
+    )
+    parser_slab.add_argument(
+        "--symprec",
+        type=float,
+        default=0.1,
+        help="Symmetry precision for SpacegroupAnalyzer.",
+    )
+    parser_slab.add_argument(
+        "--angle-tol",
+        type=float,
+        default=8,
+        help="Angle tolerance for SpacegroupAnalyzer.",
+    )
+    parser_slab.add_argument(
+        "--min-slab-ab",
+        type=float,
+        default=12.0,
+        help="Minimum slab size in a and b directions after supercell construction.",
+    )
+    parser_slab.add_argument(
+        "--min-slab",
+        type=float,
+        default=12.0,
+        help="Minimum slab thickness in c direction.",
+    )
+    parser_slab.add_argument(
+        "--min-vac",
+        type=float,
+        default=20.0,
+        help="Minimum vacuum thickness in c direction.",
+    )
+    parser_slab.add_argument(
+        "--max-normal-search",
+        type=int,
+        default=20,
+        help="Maximum integer supercell factor to search for a normal c direction.",
+    )
+    parser_slab.add_argument(
+        "--symmetrize-slab",
+        action="store_true",
+        help="Whether to symmetrize the slab.",
+    )
+    parser_slab.add_argument(
+        "--no-tasker2-modify-polar",
+        action="store_false",
+        dest="tasker2_modify_polar",
+        help="Whether not to apply Tasker 2 modification to polar slabs.",
+    )
+    parser_slab.add_argument(
+        "--no-drop-polar",
+        action="store_false",
+        dest="drop_polar",
+        help="Whether not to drop polar slabs after Tasker modification.",
+    )
+    parser_slab.add_argument(
+        "--remove-atom-types",
+        type=str,
+        nargs="+",
+        default=None,
+        help="List of atom types (as strings) that can be removed. If None, all atom types can be removed.",
+    )
+    parser_slab.add_argument(
+        "--min-vacancy-ratio",
+        type=float,
+        default=0.0,
+        help="Minimum vacancy ratio on surface sites.",
+    )
+    parser_slab.add_argument(
+        "--max-vacancy-ratio",
+        type=float,
+        default=0.3,
+        help="Maximum vacancy ratio on surface sites.",
+    )
+    parser_slab.add_argument(
+        "--num-vacancy-ratios",
+        type=int,
+        default=1,
+        help="Number of vacancy ratios to sample between min and max.",
+    )
+    parser_slab.add_argument(
+        "--n-sample-per-ratio",
+        type=int,
+        default=5,
+        help="Number of random samples to generate per vacancy ratio.",
+    )
+    parser_slab.add_argument(
+        "--surface-mapping-fractol",
+        type=float,
+        default=1e-5,
+        help="Fractional coordinate tolerance for symmetry mapping.",
+    )
+    parser_slab.add_argument(
+        "--seed",
+        type=int,
+        default=None,
+        help="Random seed for reproducibility.",
+    )
+    parser_slab.add_argument(
+        "--detect-isolated-atom-range",
+        type=float,
+        default=3.0,
+        help="Distance range to detect isolated atoms after removal.",
+    )
+    parser_slab.add_argument(
+        "--no-remove-isolated-atom",
+        action="store_false",
+        dest="remove_isolated_atom",
+        help="Whether not to remove isolated atoms after site removal.",
+    )
+    parser_slab.add_argument(
+        "--max-return-slabs",
+        type=int,
+        default=500,
+        help="Maximum number of slabs to return. If more structures are generated, random sampling is applied.",
+    )
+    #########################################
     # status
     parser_status = subparsers.add_parser(
         "status",
@@ -265,6 +402,24 @@ def main():
     """
     print(logo)
     args = parse_args()
+    # Process miller_indices for slab command
+    if getattr(args, 'command', None) == 'slab':
+        try:
+            processed = []
+            for s in args.miller_indices:
+                if isinstance(s, str):
+                    processed.append(tuple(map(int, s.split())))
+                elif isinstance(s, (tuple, list)) and len(s) == 3:
+                    processed.append(tuple(map(int, s)))
+                else:
+                    raise ValueError(f"Invalid miller index: {s}")
+            args.miller_indices = processed
+        except Exception as e:
+            raise ValueError(
+                f"Failed to parse --miller-indices: {args.miller_indices}."
+                f" Each must be a string of three integers, e.g. '1 2 3'."
+            ) from e
+
     if args.command == "submit":
         print("Submitting workflow")
         with open(args.CONFIG) as fp:
@@ -326,6 +481,30 @@ def main():
             atom_pert_style=args.atom_pert_style,
             atom_pert_prob=args.atom_pert_prob,
             supercell=args.supercell
+        )
+    elif args.command == "slab":
+        slab_cli(
+            atoms_path_ls=args.ATOMS,
+            miller_indices=args.miller_indices,
+            symprec=args.symprec,
+            angle_tol=args.angle_tol,
+            min_slab_ab=args.min_slab_ab,
+            min_slab=args.min_slab,
+            min_vac=args.min_vac,
+            max_normal_search=args.max_normal_search,
+            symmetrize_slab=args.symmetrize_slab,
+            tasker2_modify_polar=args.tasker2_modify_polar,
+            drop_polar=args.drop_polar,
+            remove_atom_types=args.remove_atom_types,
+            min_vacancy_ratio=args.min_vacancy_ratio,
+            max_vacancy_ratio=args.max_vacancy_ratio,
+            num_vacancy_ratios=args.num_vacancy_ratios,
+            n_sample_per_ratio=args.n_sample_per_ratio,
+            surface_mapping_fractol=args.surface_mapping_fractol,
+            seed=args.seed,
+            detect_isolated_atom_range=args.detect_isolated_atom_range,
+            remove_isolated_atom=args.remove_isolated_atom,
+            max_return_slabs=args.max_return_slabs,
         )
     elif args.command is None:
         pass

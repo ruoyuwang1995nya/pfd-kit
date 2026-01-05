@@ -30,7 +30,9 @@ dependencies = [
     "ase>=3.26.0",
     "tabulate",
     "quests @ git+https://github.com/dskoda/quests.git",
-    "dpdispatcher"
+    "dpdispatcher",
+    "pymatgen>=2025.10.7",
+    "monty",
 ]
 
 [project.urls]

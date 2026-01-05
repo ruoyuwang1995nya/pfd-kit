@@ -1,27 +1,9 @@
-import glob
-import json
-import logging
-import os
-import random
-import re
 from pathlib import (
     Path,
 )
-from typing import (
-    List,
-    Optional,
-    Set,
-    Tuple,
-)
+from typing import List
 
-import ase
-import numpy as np
-from dargs import (
-    Argument,
-    ArgumentEncoder,
-    Variant,
-    dargs,
-)
+from dargs import Argument
 from dflow.python import (
     OP,
     OPIO,
@@ -38,21 +20,23 @@ from pfd.constants import (
     ase_traj_name
 )
 
-from pfd.exploration import md
 from pfd.exploration.md import (
-    MDRunner,
+    runners,
     CalculatorWrapper,
 )
 
 from pfd.utils import (
-    BinaryFileInput,
     set_directory,
 )
 
 
-
 class RunASE(OP):
     r"""Execute a ASE MD task.
+
+    Supports:
+        1, MDRunner (ordinary MD simulation with ASE), default if not specified;
+        2, ReplicaRunner (Replica exchange MD simulation with ASE).
+    Customizable via `ip["config"]["runner"]`.
 
     A working directory named `task_name` is created. All input files
     are copied or symbol linked to directory `task_name`. The LAMMPS
@@ -134,8 +118,9 @@ class RunASE(OP):
             calc = CalculatorWrapper.get_calculator(calc_style)
             calc = calc().create(model_path=str(model_files[0]), **config)
 
-            # instantiate MDRunner
-            md_runner = MDRunner.from_file(
+            # instantiate MDRunner or ReplicaRunner.
+            md_runner_cls = runners[config.pop("runner", "md")]
+            md_runner = md_runner_cls.from_file(
                 filename=ase_conf_name
             )
             md_runner.set_calculator(calc)
@@ -159,7 +144,9 @@ class RunASE(OP):
         ]
 
     @staticmethod
-    def normalize_config(data={}):
+    def normalize_config(data=None):
+        if data is None:
+            data = {}
         ta = RunASE.ase_args()
         base = Argument("base", dict, ta)
         data = base.normalize_value(data, trim_pattern="_*")
