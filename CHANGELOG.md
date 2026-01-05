@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.10.7 (2025-12-24)
+
+### Bug Fixes
+
+- Update calypso docs
+  ([`1f16018`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/1f16018a12a90a348d5420524d5c1791488a66e5))
+
+
 ## v0.10.6 (2025-12-03)
 
 ### Bug Fixes

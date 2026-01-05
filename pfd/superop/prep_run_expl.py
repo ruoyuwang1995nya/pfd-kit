@@ -145,8 +145,6 @@ def _prep_run_expl(
     prep_executor = init_executor(prep_config.pop("executor"))
     run_executor = init_executor(run_config.pop("executor"))
     template_slice_config = run_config.pop("template_slice_config", {})
-
-    print(prep_run_steps.inputs.parameters)
     prep_lmp = Step(
         "prep-expl",
         template=PythonOPTemplate(
