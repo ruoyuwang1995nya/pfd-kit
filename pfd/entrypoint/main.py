@@ -95,6 +95,11 @@ def main_parser() -> argparse.ArgumentParser:
         action="store_false",
         help="Keep monitering the progress",
     )
+    parser_resubmit.add_argument(
+        "--unsuccessful-step-keys",
+        action="store_true",
+        help="List and reuse all unsuccessful step keys from previous workflow",
+    )
     ##########################################
     # download
     parser_download = subparsers.add_parser(
@@ -277,6 +282,7 @@ def main():
             reuse=args.reuse,
             fold=args.fold,
             only_submit=args.monitering,
+            unsuccessful_step_keys=args.unsuccessful_step_keys
         )
 
     elif args.command == "download":
