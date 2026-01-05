@@ -2,6 +2,17 @@
 
 <!-- version list -->
 
+## v0.10.8 (2026-01-05)
+
+### Bug Fixes
+
+- Issues with pressure unit
+  ([`d3f7fbd`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/d3f7fbdb8df07ac4b8b54975107171c5cafa0388))
+
+- Update resubmit args
+  ([`0565655`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/0565655dceede963bd5764b502a61c6227029ce5))
+
+
 ## v0.10.7 (2025-12-24)
 
 ### Bug Fixes
