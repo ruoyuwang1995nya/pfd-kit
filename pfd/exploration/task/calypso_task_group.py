@@ -329,7 +329,7 @@ class CalyTaskGroup(ExplorationTaskGroup):
             Argument("max_step", int, optional=True, default=5, doc=doc_max_step),
             Argument("system_name", str, optional=True, default="CALYPSO", doc=doc_system_name),
             Argument("numb_of_formula", list, optional=True, default=[1, 1], doc=doc_numb_of_formula),
-            Argument("pressure", float, optional=True, default=0.001, doc=doc_pressure),
+            Argument("pressure", float, optional=True, default=0., doc=doc_pressure),
             Argument("fmax", float, optional=True, default=0.01, doc=doc_fmax),
             Argument("volume", float, optional=True, default=0, doc=doc_volume),
             Argument("ialgo", int, optional=True, default=2, doc=doc_ialgo),

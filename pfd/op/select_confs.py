@@ -290,7 +290,7 @@ def _h_filter_gpu(
     max_iter = min(max_sel//chunk_size+(max_sel%chunk_size>0), 
                    len(iter_confs)//chunk_size+(len(iter_confs)%chunk_size>0))
     
-    iter_desc = get_descriptors(iter_confs, k=k, cutoff=cutoff,dtype=dtype,concat=False)
+    iter_desc = get_descriptors(iter_confs, k=k, cutoff=cutoff,dtype=dtype)
     logger.info(f"Reading descriptors for iter_confs: {len(iter_desc)}")
     
     dset_desc = get_descriptors(dset_confs, k=k, cutoff=cutoff,dtype=dtype)
