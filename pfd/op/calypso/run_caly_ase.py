@@ -111,9 +111,38 @@ class RunCalyASEOptim(OP):
             input_files = []
 
         config = ip["config"] if ip["config"] is not None else {}
-        stress = config.pop("external_pressure", 0.0)  # GPa
-        pstress = stress * 0.01 * 0.6242  # GPa to eV/A^3
+        #stress = config.pop("external_pressure", 0.0)  # GPa        
+
+        # ==================== FIX BEGIN: 读取正确的压强 (120 GPa) ====================
+        # 逻辑：CALYPSO Task Group 把压强写进了 ase_input.json 的 scalar_pressure 字段
+        # 遍历 input_files 找到这个 json 文件并读取它
+        stress = 0.0
+        found_config = False
         
+        # 尝试从输入文件中寻找 ase_input.json (即 ase_input_name)
+        for fpath in input_files:
+            if fpath.name == ase_input_name:
+                try:
+                    with open(fpath, 'r') as f:
+                        ase_params = json.load(f)
+                        # 读取 scalar_pressure
+                        stress = ase_params.get("scalar_pressure", 0.0)
+                        print(f"DEBUG: Successfully loaded pressure from {fpath.name}: {stress} GPa", flush=True)
+                        found_config = True
+                except Exception as e:
+                    print(f"DEBUG: Error reading {fpath.name}: {e}", flush=True)
+                break
+        
+        if not found_config:
+            # Fallback: 如果没找到文件，尝试从 config 读，或者默认为 0
+            # 这里同时兼容 external_pressure 和 pressure 写法
+            stress = config.pop("pressure", config.pop("external_pressure", 0.0))
+            print(f"DEBUG: ase_input.json not found, falling back to config pressure: {stress} GPa", flush=True)
+        # 计算 Pullay stress (单位转换: GPa -> kbar)
+        pstress = stress * 10 #GPa to kbar
+        print(f"DEBUG: Config Pressure Read -> {stress} GPa", flush=True)
+        # ==================== FIX END ====================
+
         models=ip["models"]
         model_files = [mm.resolve() for mm in models]
 
@@ -196,22 +225,23 @@ class RunCalyASEOptim(OP):
     def write_contar(self, contcar, element, ele, lat, pos):
         '''Write CONTCAR
         '''
-        f = open(contcar,'w',encoding='utf-8')
-        f.write('ASE-DP-OPT\n')
-        f.write('1.0\n')
-        for i in range(3):
-            f.write('%15.10f %15.10f %15.10f\n' % tuple(lat[i]))
-        for x in element:
-            f.write(x + '  ')
-        f.write('\n')
-        for x in element:
-            f.write(str(ele[x]) + '  ')
-        f.write('\n')
-        f.write('Direct\n')
-        na = sum(ele.values())
-        dpos = np.dot(pos,np.linalg.inv(lat))
-        for i in range(na):
-            f.write('%15.10f %15.10f %15.10f\n' % tuple(dpos[i]))
+        with open(contcar, 'w', encoding='utf-8') as f:
+            #f = open(contcar,'w',encoding='utf-8')
+            f.write('ASE-DP-OPT\n')
+            f.write('1.0\n')
+            for i in range(3):
+                f.write('%15.10f %15.10f %15.10f\n' % tuple(lat[i]))
+            for x in element:
+                f.write(x + '  ')
+            f.write('\n')
+            for x in element:
+                f.write(str(ele[x]) + '  ')
+            f.write('\n')
+            f.write('Direct\n')
+            na = sum(ele.values())
+            dpos = np.dot(pos,np.linalg.inv(lat))
+            for i in range(na):
+                f.write('%15.10f %15.10f %15.10f\n' % tuple(dpos[i]))
             
     def Get_Element_Num(self, elements):
         '''Using the Atoms.get_chemical_symbols to Know Element&Num'''
@@ -227,34 +257,40 @@ class RunCalyASEOptim(OP):
     
     def write_outcar(self,outcar, element, ele, volume, lat, pos, ene, force, stress, pstress):
         '''Write OUTCAR'''
-        f = open(outcar,'w',encoding='utf-8')
-        for x in element:
-            f.write('VRHFIN =' + str(x) + '\n')
-        f.write('ions per type =')
-        for x in element:
-            f.write('%5d' % ele[x])
-        f.write('\nDirection     XX             YY             ZZ             XY             YZ             ZX\n')
-        f.write('in kB')
-        f.write('%15.6f' % stress[0])
-        f.write('%15.6f' % stress[1])
-        f.write('%15.6f' % stress[2])
-        f.write('%15.6f' % stress[3])
-        f.write('%15.6f' % stress[4])
-        f.write('%15.6f' % stress[5])
-        f.write('\n')
-        ext_pressure = np.sum(stress[0] + stress[1] + stress[2])/3.0 - pstress
-        f.write('external pressure = %20.6f kB    Pullay stress = %20.6f  kB\n'% (ext_pressure, pstress))
-        f.write('volume of cell : %20.6f\n' % volume)
-        f.write('direct lattice vectors\n')
-        for i in range(3):
-            f.write('%10.6f %10.6f %10.6f\n' % tuple(lat[i]))
-        f.write('POSITION                                       TOTAL-FORCE(eV/Angst)\n')
-        f.write('-------------------------------------------------------------------\n')
-        na = sum(ele.values())
-        for i in range(na):
-            f.write('%15.6f %15.6f %15.6f' % tuple(pos[i]))
-            f.write('%15.6f %15.6f %15.6f\n' % tuple(force[i]))
-        f.write('-------------------------------------------------------------------\n')
-        f.write('energy  without entropy= %20.6f %20.6f\n' % (ene, ene/na))
-        enthalpy = ene + pstress * volume / 1602.17733 # eV to J
-        f.write('enthalpy is  TOTEN    = %20.6f %20.6f\n' % (enthalpy, enthalpy/na))
+        #f = open(outcar,'w',encoding='utf-8')
+        with open(outcar, 'w', encoding='utf-8') as f:
+            for x in element:
+                f.write('VRHFIN =' + str(x) + '\n')
+            f.write('ions per type =')
+            for x in element:
+                f.write('%5d' % ele[x])
+            f.write('\nDirection     XX             YY             ZZ             XY             YZ             ZX\n')
+            f.write('in kB')
+            f.write('%15.6f' % stress[0])
+            f.write('%15.6f' % stress[1])
+            f.write('%15.6f' % stress[2])
+            f.write('%15.6f' % stress[3])
+            f.write('%15.6f' % stress[4])
+            f.write('%15.6f' % stress[5])
+            f.write('\n')
+            mean_stress = np.sum(stress[0] + stress[1] + stress[2])/3.0
+            ext_pressure_diff = np.sum(stress[0] + stress[1] + stress[2])/3.0 - pstress
+            f.write('external pressure = %20.6f kB    Pullay stress = %20.6f  kB\n'% (ext_pressure_diff, pstress))
+            f.write('volume of cell : %20.6f\n' % volume)
+            f.write('direct lattice vectors\n')
+            for i in range(3):
+                f.write('%10.6f %10.6f %10.6f\n' % tuple(lat[i]))
+            f.write('POSITION                                       TOTAL-FORCE(eV/Angst)\n')
+            f.write('-------------------------------------------------------------------\n')
+            na = sum(ele.values())
+            for i in range(na):
+                f.write('%15.6f %15.6f %15.6f' % tuple(pos[i]))
+                f.write('%15.6f %15.6f %15.6f\n' % tuple(force[i]))
+            f.write('-------------------------------------------------------------------\n')
+            f.write('energy  without entropy= %20.6f %20.6f\n' % (ene, ene/na))
+            enthalpy = ene + pstress * volume / 1602.17733 # kb to ev/A^3
+            f.write('enthalpy is  TOTEN    = %20.6f %20.6f\n' % (enthalpy, enthalpy/na))
+            print("DEBUG: Testing my fix for enthalpy...", flush=True)
+            print('enthalpy is  TOTEN    = %20.6f %20.6f\n' % (enthalpy, enthalpy/na), flush=True)
+            print('pstress:', pstress, 'volume:', volume, 'ene:', ene, flush=True)
+            print(f"DEBUG: Real Stress={mean_stress:.2f}, Target={pstress:.2f}, Written External={ext_pressure_diff:.2f}", flush=True)
