@@ -2,6 +2,17 @@
 
 <!-- version list -->
 
+## v0.10.10 (2026-01-25)
+
+### Bug Fixes
+
+- Issues with NoneType in select_confs.py
+  ([`051de33`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/051de33f4c119561b24ee69af0400d64b993354d))
+
+- Issues with wrong pressure writeout
+  ([`5bb9e9b`](https://github.com/ruoyuwang1995nya/pfd-kit/commit/5bb9e9b7ef689af97b4cf613ebfc517e4ba88f44))
+
+
 ## v0.10.9 (2026-01-07)
 
 ### Bug Fixes
