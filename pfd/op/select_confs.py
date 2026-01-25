@@ -181,6 +181,9 @@ class SelectConfs(OP):
         traj_extensions = {'.traj', '.extxyz', '.xyz', '.dump', '.lammpstrj', '.nc', '.h5'}
         
         for path in paths:
+            if path is None:
+                logger.warning("Path entry is None; skipping.")
+                continue
             if path.is_file():
                 expanded_paths.append(path)
             elif path.is_dir():
