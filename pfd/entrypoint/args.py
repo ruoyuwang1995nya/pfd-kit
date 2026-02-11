@@ -1,8 +1,5 @@
 import textwrap
-from typing import (
-    List,
-    Union
-)
+from typing import List, Union
 
 import dargs
 from dargs import (
@@ -10,7 +7,7 @@ from dargs import (
     Variant,
 )
 
-#from pfd.exploration.converge import CheckConv, ConfFilterConv
+# from pfd.exploration.converge import CheckConv, ConfFilterConv
 from pfd.exploration.selector import conf_filter_styles
 from pfd.exploration.converge import CheckConv
 from pfd.exploration.inference import EvalModel
@@ -40,7 +37,13 @@ def conf_args():
     return [
         Argument("prefix", str, optional=True, default=None),
         Argument("fmt", str, optional=True, default="extxyz", doc=doc_fmt),
-        Argument("confs_paths", [str, List[str]], optional=True,default=None, alias=["files"]),
+        Argument(
+            "confs_paths",
+            [str, List[str]],
+            optional=True,
+            default=None,
+            alias=["files"],
+        ),
         Argument("confs_uri", [str, List[str]], optional=True, default=None),
     ]
 
@@ -57,6 +60,7 @@ def task_args():
         Argument("init_fp", bool, optional=True, default=False, doc=doc_init_fp),
         Argument("init_train", bool, optional=True, default=False, doc=doc_init_train),
     ]
+
 
 #### inputs config
 def inputs_args():
@@ -76,14 +80,15 @@ def inputs_args():
     doc_init_confs = "The initial configurations for exploration"
     doc_init_fp_confs = "The configurations for initial first-principles calculations"
     return [
+        Argument("init_confs", dict, conf_args(), optional=False, doc=doc_init_confs),
         Argument(
-            "init_confs", dict, conf_args(), optional=False,
-            doc=doc_init_confs
-            ),
-        Argument(
-            "init_fp_confs", dict, conf_args(), optional=True, default={},
-            doc=doc_init_fp_confs
-            ),
+            "init_fp_confs",
+            dict,
+            conf_args(),
+            optional=True,
+            default={},
+            doc=doc_init_fp_confs,
+        ),
         Argument(
             "init_data_prefix",
             str,
@@ -121,58 +126,68 @@ def inputs_args():
             default=None,
             alias=["teacher_model_uri", "pretrain_model_uri"],
             doc=doc_base_model_uri,
-        )
+        ),
     ]
+
 
 #### Explore
 def ase_args():
-    doc_stages = ("Exploration stages." 
+    doc_stages = (
+        "Exploration stages."
         "The definition of exploration stages of type `List[List[ExplorationTaskGroup]`. "
         "The outer list provides the enumeration of the exploration stages. "
         "Then each stage is defined by a list of exploration task groups. "
-        "Each task group is described in :ref:`the task group definition<task_group_sec>` ")
+        "Each task group is described in :ref:`the task group definition<task_group_sec>` "
+    )
     doc_config = "Configuration of ase exploration"
     return [
-        Argument("config", dict, RunASE.ase_args(),optional=True, 
-                 default={},
-                 doc=doc_config),
-        Argument("stages", List[List[dict]], optional=False, doc=doc_stages)
+        Argument(
+            "config", dict, RunASE.ase_args(), optional=True, default={}, doc=doc_config
+        ),
+        Argument("stages", List[List[dict]], optional=False, doc=doc_stages),
     ]
 
+
 def caly_args():
-    doc_stages = ("Exploration stages." 
+    doc_stages = (
+        "Exploration stages."
         "The definition of exploration stages of type `List[List[ExplorationTaskGroup]`. "
         "The outer list provides the enumeration of the exploration stages. "
         "Then each stage is defined by a list of exploration task groups. "
-        "Each task group is described in :ref:`the task group definition<task_group_sec>` ")
+        "Each task group is described in :ref:`the task group definition<task_group_sec>` "
+    )
     doc_config = "Configuration of ase exploration"
     doc_run_calypso_command = "command of running calypso."
     return [
         Argument(
             "config",
             dict,
-            RunASE.ase_args()+[
-            Argument( "run_calypso_command",
+            RunASE.ase_args()
+            + [
+                Argument(
+                    "run_calypso_command",
                     str,
                     optional=True,
                     default="calypso.x",
                     doc=doc_run_calypso_command,
-        ),
-                ],
+                ),
+            ],
             doc=doc_config,
         ),
-        Argument("stages", List[List[dict]], optional=False, doc=doc_stages)
+        Argument("stages", List[List[dict]], optional=False, doc=doc_stages),
     ]
+
 
 def variant_explore():
     doc = "The type of the exploration"
     doc_ase = "Exploration by ASE"
     doc_calypso = "Exploration by Calypso"
-    return Variant("type",
-                   [
-                    Argument("ase", dict, ase_args(), doc=doc_ase),
-                    Argument("calypso", dict, caly_args(), doc=doc_calypso),
-                    Argument("calypso:merge", dict, caly_args(), doc=doc_calypso),
+    return Variant(
+        "type",
+        [
+            Argument("ase", dict, ase_args(), doc=doc_ase),
+            Argument("calypso", dict, caly_args(), doc=doc_calypso),
+            Argument("calypso:merge", dict, caly_args(), doc=doc_calypso),
         ],
         doc=doc,
     )
@@ -233,6 +248,7 @@ def fp_args(inputs, run):
         ),
     ]
 
+
 def variant_fp():
     doc = "Tpyes of first-principles calculators"
     fp_list = []
@@ -247,16 +263,17 @@ def variant_fp():
 
     return Variant("type", fp_list, doc=doc)
 
+
 def label_args():
     doc_fp = "The configuration for FP"
     return [
         Argument("fp", dict, [], [variant_fp()], optional=True, doc=doc_fp),
     ]
 
+
 #### train config
 def train_args(run_train):
-    """[Modified from DPGEN2] General train config
-    """
+    """[Modified from DPGEN2] General train config"""
     doc_config = "Configuration of training"
     doc_template_script = "File names of the template training script. It can be a `List[str]`, the length of which is the same as `numb_models`. Each template script in the list is used to train a model. Can be a `str`, the models share the same template training script. "
     doc_optional_files = "Optional files for training"
@@ -286,6 +303,7 @@ def train_args(run_train):
         ),
     ]
 
+
 def variant_train():
     doc = "the type of the training model"
     train_list = []
@@ -297,11 +315,13 @@ def variant_train():
         doc=doc,
     )
 
+
 def training_args():
     doc_train = "The configuration for training"
     return [
         Argument("train", dict, [], [variant_train()], optional=False, doc=doc_train),
     ]
+
 
 #### evaluate config
 def variant_conv():
@@ -314,17 +334,29 @@ def variant_conv():
         var_list,
         doc=doc,
     )
-    
+
+
 def evaluate_args():
     doc_max_sel = "Maximum number of selected configurations"
-    doc_model = ("The model type used in the evaluation. "
-                 "It should be consistent with the model type used in training.")
+    doc_model = (
+        "The model type used in the evaluation. "
+        "It should be consistent with the model type used in training."
+    )
     doc_converge = "The method of convergence check."
     return [
-        Argument("max_sel", int, optional=True, default=50,doc=doc_max_sel),
-        Argument("model", str, optional=True, default="dp",doc=doc_model),
-        Argument("converge", dict, [], [variant_conv()], optional=True, default={},doc=doc_converge),
+        Argument("max_sel", int, optional=True, default=50, doc=doc_max_sel),
+        Argument("model", str, optional=True, default="dp", doc=doc_model),
+        Argument(
+            "converge",
+            dict,
+            [],
+            [variant_conv()],
+            optional=True,
+            default={},
+            doc=doc_converge,
+        ),
     ]
+
 
 #### select confs config
 def variant_frame_selector():
@@ -334,34 +366,52 @@ def variant_frame_selector():
         var_list.append(Argument(kk, dict, vv.args(), doc=vv.doc()))
     return Variant("type", var_list, doc=doc)
 
+
 def h_filter_args():
     doc_k = "Number of nearest neighbors to consider"
     doc_cutoff = "Cutoff distance (in unit of angstrom)"
     doc_batch_size = "Batch size for calculating the similarity matrix"
-    doc_h = ("Bandwidth of the Gaussian kernel (in unit of angstrom)." 
-             "It controls the level of 'similarity' between two configurations")
+    doc_h = (
+        "Bandwidth of the Gaussian kernel (in unit of angstrom)."
+        "It controls the level of 'similarity' between two configurations"
+    )
     doc_chunksize = "The chunk size of adding new configurations."
     return [
-        Argument("k", int, optional=True, default=32,doc=doc_k),
-        Argument("cutoff", float, optional=True, default=5.0,doc=doc_cutoff),
-        Argument("batch_size", int, optional=True, default=1000,doc=doc_batch_size),
-        Argument("h", float, optional=True, default=0.015,doc=doc_h),
-        Argument("chunk_size", int, optional=True, default=10,doc=doc_chunksize),
+        Argument("k", int, optional=True, default=32, doc=doc_k),
+        Argument("cutoff", float, optional=True, default=5.0, doc=doc_cutoff),
+        Argument("batch_size", int, optional=True, default=1000, doc=doc_batch_size),
+        Argument("h", float, optional=True, default=0.015, doc=doc_h),
+        Argument("chunk_size", int, optional=True, default=10, doc=doc_chunksize),
     ]
 
+
 def select_confs_args():
-    doc_test_size = ("The number of data frames split from training data as test set." 
-                     "If `test_size<1`, it is the portion of test set. If `test_size>=1`," 
-                     "it is the number of frames in the test set.")
+    doc_test_size = (
+        "The number of data frames split from training data as test set."
+        "If `test_size<1`, it is the portion of test set. If `test_size>=1`,"
+        "it is the number of frames in the test set."
+    )
     doc_h_filter = "Select configurations based on entropy contribution"
     return [
-        Argument("test_size",float,
-            optional=True, default=0.1, doc=doc_test_size),
-        Argument("frame_filter", List[dict], [],[variant_frame_selector()],
-                 optional=True, default=[]),
-        Argument("h_filter", dict, h_filter_args(),doc=doc_h_filter)
+        Argument("test_size", float, optional=True, default=0.1, doc=doc_test_size),
+        Argument(
+            "frame_filter",
+            List[dict],
+            [],
+            [variant_frame_selector()],
+            optional=True,
+            default=[],
+        ),
+        Argument(
+            "h_filter",
+            dict,
+            h_filter_args(),
+            optional=True,
+            default=None,
+            doc=doc_h_filter,
+        ),
     ]
-            
+
 
 #### dflow related
 def dflow_conf_args():
@@ -561,7 +611,6 @@ def wf_args(default_step_config=normalize_step_dict({})):
     )
 
 
-
 def submit_args(default_step_config=normalize_step_dict({})):
     """Normalize the full input arguments of the submit script
 
@@ -574,10 +623,13 @@ def submit_args(default_step_config=normalize_step_dict({})):
     return (
         wf_args(default_step_config)
         + [
-        Argument("task",dict, task_args()),
-        Argument("inputs",dict, inputs_args()),
-        Argument("select_confs", dict, select_confs_args(), optional=True, default={}),
-        Argument("evaluate", dict, evaluate_args(), optional=True, default={})]
+            Argument("task", dict, task_args()),
+            Argument("inputs", dict, inputs_args()),
+            Argument(
+                "select_confs", dict, select_confs_args(), optional=True, default={}
+            ),
+            Argument("evaluate", dict, evaluate_args(), optional=True, default={}),
+        ]
         + training_args()
         + label_args()
         + explore_args()
