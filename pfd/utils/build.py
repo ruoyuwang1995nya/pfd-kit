@@ -91,8 +91,9 @@ def perturbed_atoms(
     pert_atoms_ls = []
     for ii in range(pert_num):
         cell_perturb_matrix = get_cell_perturb_matrix(cell_pert_fraction)
+        frac_positions = atoms.get_scaled_positions()
         pert_cell = np.matmul(atoms.get_cell().array, cell_perturb_matrix)
-        pert_positions = atoms.get_positions().copy()
+        pert_positions = np.dot(frac_positions, pert_cell)
         pert_natoms = int(atom_pert_prob * len(atoms))
         pert_atom_id = sorted(
             np.random.choice(
