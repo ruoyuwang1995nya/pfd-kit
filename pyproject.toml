@@ -29,6 +29,7 @@ dependencies = [
     "periodictable",
     "ase>=3.26.0",
     "tabulate",
+    "pytest",
     "quests @ git+https://github.com/dskoda/quests.git",
     "dpdispatcher"
 ]
